@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import { NavLink } from "react-router-dom";
+import { BtnToggleTheme } from "../ui/buttons/BtnToggleTheme";
 
 export const Sidebar = () => {
   const links = [
@@ -62,6 +63,7 @@ export const Sidebar = () => {
           );
         })}
       </nav>
+      <BtnToggleTheme />
     </div>
   );
 };
