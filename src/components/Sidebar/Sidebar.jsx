@@ -52,7 +52,7 @@ export const Sidebar = () => {
               key={index}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-start ${
+                `flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-center sm:justify-start ${
                   isActive
                     ? "text-blue-600 dark:text-white"
                     : "text-gray-600 dark:text-gray-400"
