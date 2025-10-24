@@ -1,5 +1,6 @@
 import { HeaderSticky } from "../components/HomePageComponents/HeaderSticky";
 import { InputPublicar } from "../components/HomePageComponents/InputPublicar";
+import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 
 export const HomePage = () => {
   return (
@@ -9,6 +10,7 @@ export const HomePage = () => {
           <HeaderSticky />
           <div className="overflow-y-auto">
             <InputPublicar />
+            <PublicacionCard />
           </div>
           Principal
         </article>
