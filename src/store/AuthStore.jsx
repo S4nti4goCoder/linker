@@ -5,8 +5,9 @@ export const useAuthStore = create((set) => ({
   setCredenciales: (p) => set({ credenciales: p }),
   crearUserYLogin: async (p) => {
     const { data } = await supabase.auth.signUp({
-      email: "",
-      password: "",
+      email: p.email,
+      password: p.password,
     });
+    return data.useAuthStore;
   },
 }));

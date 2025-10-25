@@ -1,12 +1,20 @@
 import { Icon } from "@iconify/react";
 import logo from "../assets/logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useGenerarCodigosAleatorios } from "../hooks/useGenerarCodigosAleatorios";
+import { useAuthStore } from "../store/AuthStore";
 
 export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setCredenciales } = useAuthStore();
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  useEffect(() => {
+    const response = useGenerarCodigosAleatorios();
+    const correoCompleto = response + "gmail.com";
+    setCredenciales({ email: correoCompleto, password: response });
+  }, []);
   return (
     <div className="flex h-screen w-full">
       <section className="hidden md:flex md:w-1/2 bg-[#00b0f0] flex-col justify-center items-center overflow-hidden">
@@ -42,6 +50,7 @@ export const LoginPage = () => {
             <div className="relative mb-4">
               <input
                 placeholder="Ingresa la contraseña"
+                type={showPassword ? "text" : "password"}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"
               />
               <button
