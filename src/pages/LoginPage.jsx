@@ -3,20 +3,30 @@ import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
 import { useGenerarCodigosAleatorios } from "../hooks/useGenerarCodigosAleatorios";
 import { useAuthStore } from "../store/AuthStore";
+import { useCrearUsuarioYSesionMutate } from "../stack/LoginStack";
+import { Toaster } from "sonner";
+import { useForm } from "react-hook-form";
 
 export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { setCredenciales } = useAuthStore();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const { handleSubmit } = useForm();
+  const { isPending, mutate } = useCrearUsuarioYSesionMutate();
   useEffect(() => {
     const response = useGenerarCodigosAleatorios();
-    const correoCompleto = response + "gmail.com";
+    const correoCompleto = response + "@gmail.com";
     setCredenciales({ email: correoCompleto, password: response });
+    setEmail(correoCompleto);
+    setPassword(response);
   }, []);
   return (
-    <div className="flex h-screen w-full">
+    <main className="flex h-screen w-full">
+      <Toaster />
       <section className="hidden md:flex md:w-1/2 bg-[#00b0f0] flex-col justify-center items-center overflow-hidden">
         <div className="px-8 text-white text-center flex flex-col gap-4">
           <div className="flex  items-center gap-3 justify-center">
@@ -40,16 +50,18 @@ export const LoginPage = () => {
             Iniciar sesión{" "}
             <span className="text-[#0091EA] text-xl">(modo invitado)</span>
           </h1>
-          <form>
+          <form onSubmit={handleSubmit(mutate)}>
             <div className="mb-4">
               <input
                 placeholder="tucorreo@ejemplo.com"
+                value={email}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"
               />
             </div>
             <div className="relative mb-4">
               <input
                 placeholder="Ingresa la contraseña"
+                value={password}
                 type={showPassword ? "text" : "password"}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"
               />
@@ -64,6 +76,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               className="w-full bg-gray-200 text-gray-500 font-medium py-3 rounded-full hover:bg-[#00AFF0] transition duration-200 cursor-pointer hover:text-white"
+              disabled={isPending}
             >
               Ingresar
             </button>
@@ -91,6 +104,6 @@ export const LoginPage = () => {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 };

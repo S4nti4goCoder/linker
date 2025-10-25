@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { supabase } from "../supabase/supabase.config";
 
 export const useAuthStore = create((set) => ({
   credenciales: null,
@@ -8,6 +9,6 @@ export const useAuthStore = create((set) => ({
       email: p.email,
       password: p.password,
     });
-    return data.useAuthStore;
+    return data.user;
   },
 }));
