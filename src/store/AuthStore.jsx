@@ -16,7 +16,6 @@ export const useAuthStore = create((set) => ({
 export const useSubscription = create((set) => {
   const store = {
     user: null,
-    setUser: (user) => set({ user }),
   };
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session?.user) {
