@@ -13,13 +13,14 @@ export const useAuthStore = create((set) => ({
   },
 }));
 
-export const useSubscription = create((set) => {
+export const useSubcription = create((set) => {
   const store = {
     user: null,
   };
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session?.user) {
       set({ user: session.user });
+      console.log("user", session.user)
     }
   });
   supabase.auth.onAuthStateChange((_event, session) => {
