@@ -4,6 +4,7 @@ import { supabase } from "../supabase/supabase.config";
 const tabla = "usuarios";
 
 export const useUsuariosStore = create((set) => ({
+  dataUsuarioAuth: null,
   mostrarUsuarioAuth: async (p) => {
     const { data, error } = await supabase
       .from(tabla)
@@ -13,6 +14,7 @@ export const useUsuariosStore = create((set) => ({
     if (error) {
       throw new Error(error.message);
     }
+    set({ dataUsuarioAuth: data });
     return data;
   },
 }));
