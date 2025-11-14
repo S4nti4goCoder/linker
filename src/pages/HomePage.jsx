@@ -4,6 +4,7 @@ import { InputPublicar } from "../components/HomePageComponents/InputPublicar";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 
 export const HomePage = () => {
+  
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       <FormPost />

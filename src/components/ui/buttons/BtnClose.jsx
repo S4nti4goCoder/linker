@@ -1,7 +1,9 @@
-export const BtnClose = () => {
+import { Icon } from "@iconify/react";
+
+export const BtnClose = ({ funcion }) => {
   return (
-    <div className="h-screen bg-amber-300 text-black">
-      <span>BtnClose</span>
+    <div className="absolute top-3 right-3 cursor-pointer" onClick={funcion}>
+      <Icon icon="ep:close-bold" width={20} height={20} />
     </div>
   );
 };
