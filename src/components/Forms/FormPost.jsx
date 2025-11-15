@@ -1,6 +1,6 @@
 import { BtnClose } from "../ui/buttons/BtnClose";
 import { useUsuariosStore } from "../../store/UsuariosStore";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { Icon } from "@iconify/react";
 
