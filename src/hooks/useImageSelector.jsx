@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { usePostStore } from "../store/PostStore";
 import imageCompression from "browser-image-compression";
+import { Icon } from "@iconify/react";
 
 export const useImageSelector = () => {
   const [file, setFile] = useState(null);
@@ -51,21 +52,92 @@ export const useImageSelector = () => {
       setFiletype("video");
     }
   };
-  return file, fileUrl, fileType, fileInputRef, handleImageChange;
+  return {
+    file,
+    fileUrl,
+    fileType,
+    fileInputRef,
+    handleImageChange,
+    openFileSelector,
+  };
 };
 
 export const ImageSelector = () => {
-  const { file, fileUrl, fileType, fileInputRef, handleImageChange } =
-    useImageSelector();
+  const {
+    file,
+    fileUrl,
+    fileType,
+    fileInputRef,
+    handleImageChange,
+    openFileSelector,
+  } = useImageSelector();
   return (
-    <div>
-      imagen,video
+    <section className="relative w-full max-w-md bg-[#242526] rounded-lg shadow-xl overflow-hidden">
+      <header className="relative h-12 flex items-center justify-center border-b border-gray-700">
+        <h2 className="text-white font-medium">Agregar fotos/videos</h2>
+        <button className="absolute right-4 text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer">
+          <Icon icon="mdi:close" className="text-xl" />
+        </button>
+      </header>
+      <main className="p-8 flex flex-col items-center justify-center min-h-60 transition-colors duration-300">
+        {fileUrl ? (
+          <div className="relative inline-block group">
+            {fileType === "image" ? (
+              <img
+                src={fileUrl}
+                className="w-full max-w-[280px] max-h-[280px] rounded-lg object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+              />
+            ) : (
+              <video
+                controls
+                src={fileUrl}
+                className="w-full max-w-[280px] max-h-[280px] rounded-lg object-contain"
+              />
+            )}
+            <button
+              type="button"
+              className="absolute top-2 right-2 w-8 h-8 bg-black bg-opacity-60 rounded-full border-none cursor-pointer flex items-center justify-center transition duration-300 opacity-0 group-hover:opacity-100 hover:bg-opacity-80"
+            >
+              <Icon icon="mdi:close" className="text-white text-lg" />
+            </button>
+            <button
+              type="button"
+              onClick={openFileSelector}
+              className="absolute bottom-2 right-2 w-8 h-8 bg-black bg-opacity-60 rounded-full border-none cursor-pointer flex items-center justify-center transition duration-300 opacity-0 group-hover:opacity-100 hover:bg-opacity-80"
+            >
+              <Icon
+                icon="lets-icons:edit-fill"
+                className="text-white text-lg"
+              />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="w-16 h-16 rounded-full bg-[#3a3b3c] flex items-center justify-center mb-4">
+              <Icon
+                icon="mdi:video-image"
+                className="text-3xl text-[#e4e6eb]"
+              />
+            </div>
+            <h3 className="text-white text-lg front-medium mb-1">
+              Agregar fotos/videos
+            </h3>
+            <p className="text-gray-400 text-sm">o arrastra y suelta</p>
+            <button
+              onClick={openFileSelector}
+              className="mt-6 px-4 py-2 bg-[#3a3b3c] text-white rounded-lg hover:bg-[#4a4b4c] transition-colors duration-200"
+            >
+              Seleccionar archivos
+            </button>
+          </>
+        )}
+      </main>
       <input
         type="file"
         accept="image/*,video/*"
         ref={fileInputRef}
         onClick={handleImageChange}
       />
-    </div>
+    </section>
   );
 };
