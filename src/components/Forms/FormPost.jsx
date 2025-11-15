@@ -2,10 +2,19 @@ import { BtnClose } from "../ui/buttons/BtnClose";
 import { useUsuariosStore } from "../../store/UsuariosStore";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
+import { Icon } from "@iconify/react";
 
 export const FormPost = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const textareaRef = useRef(null);
+  const [postText, setPostText] = useState("");
+  const addEmoji = (emojiData) => {
+    const emojiChar = emojiData.emoji;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+  };
   return (
     <section className="fixed z-50 flex items-center justify-center inset-0">
       <div className="absolute inset-0 backdrop-blur-sm cursor-pointer"></div>
@@ -27,14 +36,30 @@ export const FormPost = () => {
           <form>
             <div className="relative">
               <textarea
+                ref={textareaRef}
                 placeholder="¿Qué estás pensando?"
                 className="w-full placeholder-gray-500 outline-none"
               />
               {showEmojiPicker && (
-                <div>
-                  <EmojiPicker />
+                <div className="absolute top-10 left-10 mt-2">
+                  <EmojiPicker onEmojiClick={addEmoji} theme="auto" />
                 </div>
               )}
+              <div className="mt-4 flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="py-2 px-4 rounded-lg font-medium bg-primary cursor-pointer"
+                >
+                  Publicar
+                </button>
+                <button
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  type="button"
+                  className="p-1 text-black/50 dark:text-white/50 hover:bg-gray-700 rounded-full cursor-pointer"
+                >
+                  <Icon icon="mdi:emoticon-outline" className="text-2xl" />
+                </button>
+              </div>
             </div>
           </form>
         </main>
