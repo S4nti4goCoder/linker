@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { Icon } from "@iconify/react";
 import { ImageSelector } from "../../hooks/useImageSelector";
+import { usePostStore } from "../../store/PostStore";
 
 export const FormPost = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
@@ -11,6 +12,7 @@ export const FormPost = () => {
   const textareaRef = useRef(null);
   const pickerRef = useRef(null);
   const [postText, setPostText] = useState("");
+  const { stateImage, setStateImage, setStateForm } = usePostStore();
   const addEmoji = (emojiData) => {
     const emojiChar = emojiData.emoji;
     const textarea = textareaRef.current;
@@ -42,7 +44,7 @@ export const FormPost = () => {
       <section className="bg-white relative w-full max-w-md dark:bg-bg-dark rounded-lg shadow-xl">
         <header className="flex items-center justify-between p-4 border-b border-gray-500/40">
           <h2 className="text-xl font-semibold">Crear Publicación</h2>
-          <BtnClose />
+          <BtnClose funcion={setStateForm} />
         </header>
         <main className="p-4 space-y-4">
           <section className="flex items-center gap-1">
@@ -89,7 +91,7 @@ export const FormPost = () => {
               </div>
             </div>
           </form>
-          <ImageSelector />
+          {stateImage && <ImageSelector />}
         </main>
         <footer className="p-4 border-t border-gray-500/40">
           <div className="flex items-center justify-between p-3 border border-gray-500/40">
@@ -98,6 +100,7 @@ export const FormPost = () => {
             </span>
             <div className="flex space-x-4">
               <button
+                onClick={setStateImage}
                 className="p-1 rounded-full text-black/50 dark:text-white/50 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                 aria-label="Agregar imagen"
               >
