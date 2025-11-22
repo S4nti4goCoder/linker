@@ -57,4 +57,7 @@ export const usePostStore = create((set) => ({
   setStateForm: () => {
     set((state) => ({ stateForm: !state.stateForm }));
   },
+  InsertarPost: async (p, file) => {
+    await InsertarPost(p, file);
+  },
 }));
