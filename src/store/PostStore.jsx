@@ -61,4 +61,7 @@ export const usePostStore = create((set) => ({
   insertarPost: async (p, file) => {
     await InsertarPost(p, file);
   },
+  mostrarPost: async (p) => {
+    const { data, error } = await supabase.rpc("", {});
+  },
 }));
