@@ -5,7 +5,7 @@ import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
 
 export const useInsertarPostMutate = () => {
-  const { insertarPost, file } = usePostStore();
+  const { insertarPost, file, setStateForm, setFile } = usePostStore();
   const fechaActual = useFormattedDate();
   const { dataUsuarioAuth } = useUsuariosStore();
   return useMutation({
@@ -30,6 +30,8 @@ export const useInsertarPostMutate = () => {
     },
     onSuccess: () => {
       toast.success("Publicado");
+      setStateForm(false);
+      setFile(null);
     },
   });
 };
