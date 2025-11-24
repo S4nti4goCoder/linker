@@ -17,7 +17,7 @@ export const useInsertarPostMutate = () => {
         if (ext === "mp4") type = "video";
       }
       const p = {
-        titulo: data.titulo,
+        descripcion: data.descripcion,
         url: "-",
         fecha: fechaActual,
         id_usuario: dataUsuarioAuth?.id,

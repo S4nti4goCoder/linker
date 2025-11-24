@@ -5,6 +5,8 @@ import EmojiPicker from "emoji-picker-react";
 import { Icon } from "@iconify/react";
 import { ImageSelector } from "../../hooks/useImageSelector";
 import { usePostStore } from "../../store/PostStore";
+import { useInsertarPostMutate } from "../../stack/PostStack";
+import { useForm } from "react-hook-form";
 
 export const FormPost = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
@@ -12,7 +14,10 @@ export const FormPost = () => {
   const textareaRef = useRef(null);
   const pickerRef = useRef(null);
   const [postText, setPostText] = useState("");
-  const { stateImage, setStateImage, setStateForm } = usePostStore();
+  const { stateImage, setStateImage, setStateForm, file } = usePostStore();
+  const { mutate, isPending } = useInsertarPostMutate();
+  const { handleSubmit, setValue } = useForm();
+  const puedePublicar = postText.trim().length > 0 || file !== null;
   const addEmoji = (emojiData) => {
     const emojiChar = emojiData.emoji;
     const textarea = textareaRef.current;
@@ -28,6 +33,7 @@ export const FormPost = () => {
   };
   const handleTextchange = (e) => {
     setPostText(e.target.value);
+    setValue("descripcion", e.target.value);
   };
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -56,7 +62,9 @@ export const FormPost = () => {
               <span className="font-medium">{dataUsuarioAuth?.nombre}</span>
             </div>
           </section>
-          <form>
+          <form
+            onSubmit={handleSubmit(() => mutate({ descripcion: postText }))}
+          >
             <div className="relative">
               <textarea
                 ref={textareaRef}
@@ -76,8 +84,13 @@ export const FormPost = () => {
               )}
               <div className="mt-4 flex items-center justify-between">
                 <button
+                  disabled={!puedePublicar || isPending}
                   type="submit"
-                  className="py-2 px-4 rounded-lg font-medium bg-primary cursor-pointer"
+                  className={`py-2 px-4 rounded-lg font-medium ${
+                    puedePublicar
+                      ? "bg-primary cursor-pointer"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
                 >
                   Publicar
                 </button>

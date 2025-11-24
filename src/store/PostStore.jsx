@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
 
 const tabla = "publicaciones";
-const InsertarPost = async (p) => {
+const InsertarPost = async (p, file) => {
   const { data, error } = await supabase
     .from(tabla)
     .insert(p)
@@ -15,12 +15,13 @@ const InsertarPost = async (p) => {
     const nuevo_id = data?.id;
     const urlImagen = await subirArchivo(nuevo_id, file);
     const pUrl = {
-      url: urlImagen,
+      url: urlImagen.publicUrl,
       id: nuevo_id,
     };
     await EditarPublicacion(pUrl);
   }
 };
+
 const EditarPublicacion = async (p) => {
   const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
   if (error) {
@@ -57,7 +58,7 @@ export const usePostStore = create((set) => ({
   setStateForm: () => {
     set((state) => ({ stateForm: !state.stateForm }));
   },
-  InsertarPost: async (p, file) => {
+  insertarPost: async (p, file) => {
     await InsertarPost(p, file);
   },
 }));
