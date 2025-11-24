@@ -4,9 +4,11 @@ import { HeaderSticky } from "../components/HomePageComponents/HeaderSticky";
 import { InputPublicar } from "../components/HomePageComponents/InputPublicar";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { usePostStore } from "../store/PostStore";
+import { useMostrarPostQuery } from "../stack/PostStack";
 
 export const HomePage = () => {
   const { stateForm, setStateForm } = usePostStore();
+  const { data } = useMostrarPostQuery();
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       <Toaster />

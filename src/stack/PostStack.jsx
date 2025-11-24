@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { usePostStore } from "../store/PostStore";
 import { useFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
@@ -33,5 +33,15 @@ export const useInsertarPostMutate = () => {
       setStateForm(false);
       setFile(null);
     },
+  });
+};
+
+export const useMostrarPostQuery = () => {
+  const { dataUsuarioAuth } = useUsuariosStore();
+  const { mostrarPost } = usePostStore();
+  return useQuery({
+    queryKey: ["mostrar post", { id_usuario: dataUsuarioAuth?.id }],
+    queryFn: () =>
+      mostrarPost({ id_usuario: dataUsuarioAuth?.id, desde: 0, hasta: 10 }),
   });
 };
