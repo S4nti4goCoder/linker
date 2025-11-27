@@ -6,6 +6,7 @@ import { PublicacionCard } from "../components/HomePageComponents/PublicacionCar
 import { usePostStore } from "../store/PostStore";
 import { useMostrarPostQuery } from "../stack/PostStack";
 import { useEffect, useRef } from "react";
+import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 
 export const HomePage = () => {
   const { stateForm, setStateForm } = usePostStore();
@@ -32,7 +33,7 @@ export const HomePage = () => {
       el.addEventListener("scroll", handleScroll);
       return () => el.removeEventListener("scroll", handleScroll);
     }
-  }, [fetchNextPage,hasNextPage,isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       <Toaster />
@@ -47,6 +48,7 @@ export const HomePage = () => {
                 <PublicacionCard key={`${pageIndex}-${index}`} item={item} />
               ))
             )}
+            {isFetchingNextPage && <SpinnerLocal />}
           </div>
         </article>
         <article>Sidebar derecho</article>

@@ -23,13 +23,7 @@ export const PublicacionCard = ({ item }) => {
       </div>
       <div className="mt-3">
         <p className="mb-2"> {item?.descripcion} </p>
-        <div>
-          <PostImageFrame
-            src={
-              "https://images.unsplash.com/photo-1590099914662-a76f2f83b802?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8OSUzQTE2fGVufDB8fDB8fHww&fm=jpg&q=60&w=3000"
-            }
-          />
-        </div>
+        <div>{item?.url !== "-" && <PostImageFrame src={item?.url} />}</div>
         <div className="flex justify-between mt-4">
           <button>
             <Icon
