@@ -1,10 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { useImageExtractColor } from "../../hooks/useImageExtractColor";
 import { FastAverageColor } from "fast-average-color";
 
 export const PostVideoFrame = ({ src }) => {
   const videoRef = useRef(null);
   const [bgColor, setBgColor] = useState("#e5e7eb");
+  const containerRef = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const video = videoRef.current;
+        if (!video) return;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => {
+      if (containerRef.current) observer.unobserve(containerRef.current);
+    };
+  }, []);
   useEffect(() => {
     const fac = new FastAverageColor();
     const video = videoRef.current;
@@ -36,6 +54,7 @@ export const PostVideoFrame = ({ src }) => {
   }, [src]);
   return (
     <div
+      ref={containerRef}
       className="rounded-lg overflow-hidden flex items-center justify-center max-h-[500px]"
       style={{ backgroundColor: bgColor }}
     >
