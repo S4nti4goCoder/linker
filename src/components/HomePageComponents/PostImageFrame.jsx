@@ -13,7 +13,7 @@ export const PostImageFrame = ({ src }) => {
         ref={imgRef}
         src={src}
         crossOrigin="anonymous"
-        className="object-contain max-h-[500px] bg"
+        className="object-contain max-h-[500px]"
       />
     </div>
   );
