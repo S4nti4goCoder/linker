@@ -1,8 +1,12 @@
 import { Icon } from "@iconify/react";
 import { PostImageFrame } from "./PostImageFrame";
 import { PostVideoFrame } from "./PostVideoFrame";
+import { usePostStore } from "../../store/PostStore";
+import { useLikePostMutate } from "../../stack/PostStack";
 
 export const PublicacionCard = ({ item }) => {
+  const { setItemSelect } = usePostStore();
+  const { mutate } = useLikePostMutate();
   return (
     <div className="border-b border-gray-500/50 p-4">
       <div className="flex justify-between">
@@ -33,10 +37,21 @@ export const PublicacionCard = ({ item }) => {
             ))}
         </div>
         <div className="flex justify-between mt-4">
-          <button>
+          <button
+            onClick={() => {
+              setItemSelect(item);
+              mutate();
+            }}
+          >
             <Icon
-              icon={"mdi:heart-outline"}
-              className="text-3xl p-1 rounded-full text-gray-400 hover:bg-[rgba(78,184,233,0.2)] cursor-pointer"
+              icon={
+                item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"
+              }
+              className={`text-3xl p-1 rounded-full ${
+                item?.like_usuario_actual
+                  ? "text-[#0091EA]"
+                  : "text-gray-400 hover:bg-[rgba(78,184,233,0.2)]"
+              } cursor-pointer`}
             />
           </button>
           <button className="flex items-center gap-2 cursor_pointer">
