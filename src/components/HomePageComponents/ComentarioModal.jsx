@@ -1,7 +1,14 @@
 import { Icon } from "@iconify/react";
 import { BtnClose } from "../ui/buttons/BtnClose";
+import { useInsertarComentarioMutate } from "../../stack/ComentariosStack";
+import { useState } from "react";
 
 export const ComentarioModal = ({ item, onClose }) => {
+  const [comentario, setComentario] = useState("");
+  const { mutate: comentarioMutate } = useInsertarComentarioMutate({
+    comentario: comentario,
+    setComentario: setComentario,
+  });
   return (
     <main className="fixed inset-0 z-100 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <section className="dark:bg-neutral-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col relative">
@@ -33,6 +40,8 @@ export const ComentarioModal = ({ item, onClose }) => {
               />
               <input
                 placeholder="Escribe un comentario..."
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
                 className="flex-1 bg-gray-100 dark:bg-neutral-800 text-sm rounded-2xl px-4 py-2 focus:outline-none resize-none"
               />
               <button className="text-gray-500 hover:text-gray-700 relative">
@@ -40,7 +49,7 @@ export const ComentarioModal = ({ item, onClose }) => {
               </button>
             </section>
             <section className="flex justify-end">
-              <button className="flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 cursor-not-allowed">
+              <button className="flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 cursor-not-allowed" onClick={comentarioMutate}>
                 <Icon icon="iconamoon:send-fill" width="20" height="20" />
                 Publicar
               </button>
