@@ -62,6 +62,18 @@ export const PublicacionCard = ({ item }) => {
             <span className="text-xs md:text-sm text-gray-400">Comentar</span>
           </button>
         </div>
+        <div className="flex gap-4 mt-1">
+          {item?.likes > 0 && (
+            <span className="text-xs text-gray-400">
+              {item?.likes} me gusta{" "}
+            </span>
+          )}
+          {item?.comentarios_count > 0 && (
+            <span className="text-xs text-gray-400 cursor-pointer hover:underline">
+              {item?.comentarios_count} comentarios{" "}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
