@@ -35,7 +35,18 @@ export const useInsertarPostMutate = () => {
     },
   });
 };
-
+export const useLikePostMutate = () => {
+  const { likePost, itemSelect } = usePostStore();
+  const { dataUsuarioAuth } = useUsuariosStore();
+  return useMutation({
+    mutationKey: ["like post"],
+    mutationFn: () =>
+      likePost({ p_post_id: itemSelect?.id, p_user_id: dataUsuarioAuth?.id }),
+    onError: (error) => {
+      toast.error("Error al dar like: " + error.message);
+    },
+  });
+};
 export const useMostrarPostQuery = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mostrarPost } = usePostStore();
