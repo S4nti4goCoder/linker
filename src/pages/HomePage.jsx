@@ -9,9 +9,11 @@ import { useEffect, useRef } from "react";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 import { useSupabaseSubscription } from "../hooks/useSupabaseSubscription";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
+import { useComentariosStore } from "../store/ComentariosStore";
 
 export const HomePage = () => {
   const { stateForm, setStateForm } = usePostStore();
+  const { showModal } = useComentariosStore();
   const {
     data: dataPost,
     fetchNextPage,
@@ -60,7 +62,7 @@ export const HomePage = () => {
         </article>
         <article>Sidebar derecho</article>
       </section>
-      <ComentarioModal />
+      {showModal && <ComentarioModal />}
     </main>
   );
 };
