@@ -4,13 +4,17 @@ import { useInsertarComentarioMutate } from "../../stack/ComentariosStack";
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useComentariosStore } from "../../store/ComentariosStore";
+import { useUsuariosStore } from "../../store/UsuariosStore";
+import { usePostStore } from "../../store/PostStore";
 
-export const ComentarioModal = ({ item, onClose }) => {
+export const ComentarioModal = () => {
   const [comentario, setComentario] = useState("");
+  const { itemSelect: item } = usePostStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef(null);
   const textComentarioRef = useRef(null);
   const { setShowModal } = useComentariosStore();
+  const { dataUsuarioAuth } = useUsuariosStore();
   const { mutate: comentarioMutate } = useInsertarComentarioMutate({
     comentario: comentario,
     setComentario: setComentario,
@@ -45,15 +49,15 @@ export const ComentarioModal = ({ item, onClose }) => {
           <div className="flex items-center gap-3 text-black dark:text-white">
             <img
               className="w-12 h-12 rounded-full object-cover"
-              src="https://images.unsplash.com/photo-1761839256601-e768233e25e7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
+              src={item?.foto_perfil}
             />
             <div className="flex items-center gap-2">
               <span className="font-bold lg:max-w-none lg:overflow-visible md:text-ellipsis max-w-[200px] truncate whitespace-nowrap overflow-hidden">
-                Nombre usuario
+                {item?.nombre_usuario}
               </span>
             </div>
           </div>
-          <span>Descripción</span>
+          <span>{item?.descripcion}</span>
           <BtnClose funcion={setShowModal} />
         </header>
         <section className="p-4 overflow-y-auto flex-1">
@@ -64,7 +68,7 @@ export const ComentarioModal = ({ item, onClose }) => {
             <section className="flex w-full gap-4">
               <img
                 className="w-10 h-10 rounded-full object-cover"
-                src="https://images.unsplash.com/photo-1761839256601-e768233e25e7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
+                src={dataUsuarioAuth?.foto_perfil}
                 alt="avatar"
               />
               <input
