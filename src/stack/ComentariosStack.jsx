@@ -28,7 +28,7 @@ export const useInsertarComentarioMutate = (p) => {
     },
   });
 };
-export const useMostrarComentarios = () => {
+export const useMostrarComentariosQuery = () => {
   const { mostrarComentarios } = useComentariosStore();
   const { itemSelect } = usePostStore();
   return useQuery({

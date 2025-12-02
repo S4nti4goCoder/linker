@@ -1,11 +1,16 @@
 import { Icon } from "@iconify/react";
 import { BtnClose } from "../ui/buttons/BtnClose";
-import { useInsertarComentarioMutate } from "../../stack/ComentariosStack";
+import {
+  useInsertarComentarioMutate,
+  useMostrarComentariosQuery,
+} from "../../stack/ComentariosStack";
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useComentariosStore } from "../../store/ComentariosStore";
 import { useUsuariosStore } from "../../store/UsuariosStore";
 import { usePostStore } from "../../store/PostStore";
+import { SpinnerLocal } from "../ui/spinners/SpinnerLocal";
+import { ComentarioCard } from "./ComentarioCard";
 
 export const ComentarioModal = () => {
   const [comentario, setComentario] = useState("");
@@ -14,6 +19,8 @@ export const ComentarioModal = () => {
   const pickerRef = useRef(null);
   const textComentarioRef = useRef(null);
   const { setShowModal } = useComentariosStore();
+  const { data: dataComentarios, isLoading: isLoadingComentarios } =
+    useMostrarComentariosQuery();
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mutate: comentarioMutate } = useInsertarComentarioMutate({
     comentario: comentario,
@@ -61,7 +68,14 @@ export const ComentarioModal = () => {
           <BtnClose funcion={setShowModal} />
         </header>
         <section className="p-4 overflow-y-auto flex-1">
-          <p>Sin Comentarios</p>
+          {isLoadingComentarios ? (
+            <SpinnerLocal />
+          ) : (
+            dataComentarios?.length > 0 &&
+            dataComentarios.map((item, index) => {
+              return <ComentarioCard item={item} key={index} />;
+            })
+          )}
         </section>
         <footer className="flex items-center gap-2 p-4 bg-white dark:bg-neutral-900">
           <section className="w-full gap-2 flex flex-col">
