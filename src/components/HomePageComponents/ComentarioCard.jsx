@@ -20,9 +20,7 @@ export const ComentarioCard = ({ item }) => {
           </div>
           <div className="flex gap-3 mt-1 text-xs text-gray-500 ml-2 relative">
             <span>{useRelativeTime(item?.fecha)}</span>
-            <button>
-              Responder
-            </button>
+            <button className="hover:underline cursor-pointer">Responder</button>
           </div>
           {item?.respuestas_count > 0 && (
             <button className="text-gray-400 mt-2 text-xs">
