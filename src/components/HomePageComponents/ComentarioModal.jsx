@@ -73,7 +73,7 @@ export const ComentarioModal = () => {
           ) : (
             dataComentarios?.length > 0 &&
             dataComentarios.map((item, index) => {
-              return <ComentarioCard item={item} key={index} />;
+              return (<ComentarioCard item={item} key={index} />)
             })
           )}
         </section>

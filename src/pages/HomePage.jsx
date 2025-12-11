@@ -10,10 +10,13 @@ import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 import { useSupabaseSubscription } from "../hooks/useSupabaseSubscription";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { useComentariosStore } from "../store/ComentariosStore";
+import { useMostrarRespuestaComentariosQuery } from "../stack/RespuestasComentariosStack";
 
 export const HomePage = () => {
   const { stateForm, setStateForm, itemSelect } = usePostStore();
   const { showModal } = useComentariosStore();
+  const { data: dataRespuestaComentario } =
+    useMostrarRespuestaComentariosQuery();
   const {
     data: dataPost,
     fetchNextPage,
@@ -50,7 +53,7 @@ export const HomePage = () => {
     options: { event: "*", schema: "public", table: "comentarios" },
     queryKey: ["mostrar comentarios"],
   });
-  
+
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       <Toaster />
