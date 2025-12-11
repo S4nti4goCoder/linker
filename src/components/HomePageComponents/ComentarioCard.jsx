@@ -1,6 +1,13 @@
 import { useRelativeTime } from "../../hooks/useRelativeTime";
+import { useRespuestasComentariosStore } from "../../store/RespuestasComentariosStore";
+import { InputRespuestaAComentario } from "./InputRespuestaAComentario";
 
 export const ComentarioCard = ({ item }) => {
+  const {
+    respuestaActivaParaComentarioId,
+    limpiarRespuestaActiva,
+    setRespuestaActiva,
+  } = useRespuestasComentariosStore();
   return (
     <div className="pl-4">
       <span>ComentarioCard</span>
@@ -20,7 +27,18 @@ export const ComentarioCard = ({ item }) => {
           </div>
           <div className="flex gap-3 mt-1 text-xs text-gray-500 ml-2 relative">
             <span>{useRelativeTime(item?.fecha)}</span>
-            <button className="hover:underline cursor-pointer">Responder</button>
+            <button
+              className="hover:underline cursor-pointer"
+              onClick={() =>
+                respuestaActivaParaComentarioId === item?.id
+                  ? limpiarRespuestaActiva()
+                  : setRespuestaActiva(item?.id)
+              }
+            >
+              {respuestaActivaParaComentarioId === item?.id
+                ? "Cancelar"
+                : "Responder"}
+            </button>
           </div>
           {item?.respuestas_count > 0 && (
             <button className="text-gray-400 mt-2 text-xs">
@@ -28,6 +46,12 @@ export const ComentarioCard = ({ item }) => {
                 ? `Ver ${item?.respuestas_count} respuesta`
                 : `Ver las ${item?.respuestas_count} respuestas`}
             </button>
+          )}
+          {respuestaActivaParaComentarioId === item?.id && (
+            <div>
+              <div className="w-4 h-4 border-l-2 border-b-2 border-gray-300 dark:border-gray-600 rounded-bl-lg absolute bottom-18 -ml-[29px]" />
+              <InputRespuestaAComentario />
+            </div>
           )}
         </div>
       </div>
