@@ -41,3 +41,11 @@ export const useEditarFotoUserMutate = () => {
     },
   });
 };
+
+export const useContarUsuariosTodosQuery = () => {
+  const { contarUsuariosTodos } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["contar usuarios todos"],
+    queryFn: contarUsuariosTodos,
+  });
+};

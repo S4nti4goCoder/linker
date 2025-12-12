@@ -63,6 +63,12 @@ export const HomePage = () => {
     queryKey: ["mostrar respuesta comentario"],
   });
 
+  useSupabaseSubscription({
+    channelName: "public:usuarios",
+    options: { event: "*", schema: "public", table: "usuarios" },
+    queryKey: ["contar usuarios todos"],
+  });
+
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       {dataUsuarioAuth?.foto_perfil === "-" && <FormActualizarPerfil />}
