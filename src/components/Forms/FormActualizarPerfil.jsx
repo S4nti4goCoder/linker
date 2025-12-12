@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { ImageSelectorFoto } from "../../hooks/useImageSelectorFoto";
+import { useEditarFotoUserMutate } from "../../stack/UsuariosStack";
 
 export const FormActualizarPerfil = () => {
   const {
@@ -7,6 +8,7 @@ export const FormActualizarPerfil = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const {mutate} = useEditarFotoUserMutate()
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg w-full max-w-md p-6">
@@ -19,7 +21,7 @@ export const FormActualizarPerfil = () => {
           </span>
           <ImageSelectorFoto />
         </section>
-        <form onSubmit={handleSubmit()}>
+        <form onSubmit={handleSubmit(mutate)}>
           <div className="mb-4">
             <input
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"
