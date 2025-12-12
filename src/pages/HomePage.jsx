@@ -87,7 +87,6 @@ export const HomePage = () => {
             {isFetchingNextPage && <SpinnerLocal />}
           </div>
         </article>
-        <article>Sidebar derecho</article>
       </section>
       {showModal && <ComentarioModal />}
     </main>

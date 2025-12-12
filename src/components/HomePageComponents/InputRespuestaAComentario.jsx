@@ -75,11 +75,15 @@ export const InputRespuestaAComentario = () => {
         </section>
         <section className="flex justify-end">
           <button
-            className="flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 cursor-not-allowed"
+            className={`flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 cursor-not-allowed ${
+              comentario.trim() === ""
+                ? "cursor-not-allowed text-gray-500"
+                : "cursor-pointer text-[#00AEF0] hover:bg-blue-600/10"
+            }`}
             onClick={comentarioMutate}
           >
             <Icon icon="iconamoon:send-fill" width="20" height="20" />
-            Publicar
+            Responder
           </button>
         </section>
       </section>

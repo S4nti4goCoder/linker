@@ -51,7 +51,7 @@ export const ComentarioModal = () => {
   }, []);
   return (
     <main className="fixed inset-0 z-100 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <section className="dark:bg-neutral-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col relative">
+      <section className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col relative">
         <header className="h-25 sticky p-4 border-b border-gray-400/20">
           <div className="flex items-center gap-3 text-black dark:text-white">
             <img
@@ -73,7 +73,7 @@ export const ComentarioModal = () => {
           ) : (
             dataComentarios?.length > 0 &&
             dataComentarios.map((item, index) => {
-              return (<ComentarioCard item={item} key={index} />)
+              return <ComentarioCard item={item} key={index} />;
             })
           )}
         </section>
@@ -110,11 +110,15 @@ export const ComentarioModal = () => {
             </section>
             <section className="flex justify-end">
               <button
-                className="flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 cursor-not-allowed"
+                className={`flex justify-end gap-1 px-4 py-2 rounded-full text-sm text-gray-500 ${
+                  comentario.trim() === ""
+                    ? "cursor-not-allowed text-gray-500"
+                    : "cursor-pointer text-[#00AEF0] hover:bg-blue-600/10"
+                }`}
                 onClick={comentarioMutate}
               >
                 <Icon icon="iconamoon:send-fill" width="20" height="20" />
-                Publicar
+                Comentar
               </button>
             </section>
           </section>
