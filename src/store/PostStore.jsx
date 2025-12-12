@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
 
 const tabla = "publicaciones";
+
 const InsertarPost = async (p, file) => {
   const { data, error } = await supabase
     .from(tabla)
@@ -28,6 +29,7 @@ const EditarPublicacion = async (p) => {
     throw new Error(error.message);
   }
 };
+
 const subirArchivo = async (id, file) => {
   const ruta = "publicaciones/" + id;
   const { data, error } = await supabase.storage
