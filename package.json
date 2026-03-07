@@ -16,7 +16,6 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "browser-image-compression": "^2.0.2",
     "dayjs": "^1.11.19",
-    "emoji-picker-react": "^4.15.1",
     "fast-average-color": "^9.5.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
