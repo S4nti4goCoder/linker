@@ -4,67 +4,56 @@ import { BtnToggleTheme } from "../ui/buttons/BtnToggleTheme";
 import { BtnLogout } from "../ui/buttons/BtnLogout";
 import { BtnNewPost } from "../ui/buttons/BtnNewPost";
 
+const linksActivos = [
+  { label: "Inicio", icon: "ic:baseline-home", to: "/" },
+  { label: "Mi perfil", icon: "ic:baseline-account-circle", to: "/mi-perfil" },
+];
+
+const linksPróximamente = [
+  { label: "Notificaciones", icon: "ic:baseline-notifications" },
+  { label: "Mensajes", icon: "ic:baseline-message" },
+  { label: "Colecciones", icon: "ic:baseline-collections-bookmark" },
+];
+
 export const Sidebar = () => {
-  const links = [
-    {
-      label: "Inicio",
-      icon: "ic:baseline-home",
-      to: "/",
-    },
-    {
-      label: "Notificaciones",
-      icon: "ic:baseline-notifications",
-      to: "/notificaciones",
-    },
-    {
-      label: "Mensajes",
-      icon: "ic:baseline-message",
-      to: "/mensajes",
-    },
-    {
-      label: "Colecciones",
-      icon: "ic:baseline-collections-bookmark",
-      to: "/colecciones",
-    },
-    {
-      label: "Suscripciones",
-      icon: "ic:baseline-person",
-      to: "/suscripciones",
-    },
-    {
-      label: "Añadir tarjeta",
-      icon: "ic:baseline-credit-card",
-      to: "/tarjeta",
-    },
-    {
-      label: "Mi perfil",
-      icon: "ic:baseline-account-circle",
-      to: "/mi-perfil",
-    },
-  ];
   return (
     <div className="h-screen p-2 bg-white dark:bg-bg-dark transition-all duration-300 flex flex-col">
-      <div className=" flex justify-center items-center h-8 w-8 rounded-full bg-blue-100 text-primary font-bold text-xs m-2">LK</div>
-      <nav className="flex-1 flex flex-col gap-2 items-center ">
-        {links.map((item, index) => {
-          return (
-            <NavLink
-              key={index}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-center sm:justify-start ${
-                  isActive
-                    ? "text-blue-600 dark:text-white"
-                    : "text-gray-600 dark:text-gray-400"
-                }`
-              }
-            >
-              <Icon icon={item.icon} width={24} height={24} />
-              <span className="hidden sm:block">{item.label}</span>
-            </NavLink>
-          );
-        })}
+      <div className="flex justify-center items-center h-8 w-8 rounded-full bg-blue-100 text-primary font-bold text-xs m-2">
+        LK
+      </div>
+      <nav className="flex-1 flex flex-col gap-2 items-center">
+        {linksActivos.map((item, index) => (
+          <NavLink
+            key={index}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-center sm:justify-start ${
+                isActive
+                  ? "text-blue-600 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400"
+              }`
+            }
+          >
+            <Icon icon={item.icon} width={24} height={24} />
+            <span className="hidden sm:block">{item.label}</span>
+          </NavLink>
+        ))}
+
+        {/* Separador */}
+        <div className="w-full border-t border-gray-200 dark:border-gray-700 my-1" />
+
+        {linksPróximamente.map((item, index) => (
+          <div
+            key={index}
+            title="Próximamente"
+            className="flex items-center gap-3 p-2 rounded-lg w-full justify-center sm:justify-start text-gray-300 dark:text-gray-600 cursor-not-allowed select-none"
+          >
+            <Icon icon={item.icon} width={24} height={24} />
+            <span className="hidden sm:block text-sm">{item.label}</span>
+          </div>
+        ))}
       </nav>
+
       <BtnToggleTheme />
       <BtnLogout />
       <BtnNewPost />
