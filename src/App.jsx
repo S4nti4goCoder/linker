@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MyRoutes } from "./routers/router";
 import { useThemeStore } from "./store/ThemeStore";
 import { useEffect } from "react";
+import { FormPost } from "./components/Forms/FormPost";
+import { usePostStore } from "./store/PostStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +17,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const { theme } = useThemeStore();
+  const { stateForm } = usePostStore();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -23,10 +26,11 @@ function App() {
     } else {
       root.classList.remove("dark");
     }
-  }, [theme]); // ← solo se ejecuta cuando theme cambia
+  }, [theme]);
 
   return (
     <QueryClientProvider client={queryClient}>
+      {stateForm && <FormPost />}
       <MyRoutes />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

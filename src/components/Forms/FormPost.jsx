@@ -40,7 +40,7 @@ export const FormPost = () => {
         className="absolute inset-0 backdrop-blur-sm cursor-pointer"
         onClick={() => setStateForm(false)}
       />
-      <section className="bg-white relative w-full max-w-md dark:bg-bg-dark rounded-lg shadow-xl">
+      <section className="bg-white dark:bg-bg-dark text-black dark:text-white relative w-full max-w-md rounded-lg shadow-xl">
         <header className="flex items-center justify-between p-4 border-b border-gray-500/40">
           <h2 className="text-xl font-semibold">Crear Publicación</h2>
           <BtnClose funcion={() => setStateForm(false)} />
@@ -51,9 +51,7 @@ export const FormPost = () => {
               className="w-10 h-10 rounded-full mr-3 object-cover"
               src={dataUsuarioAuth?.foto_perfil}
             />
-            <div>
-              <span className="font-medium">{dataUsuarioAuth?.nombre}</span>
-            </div>
+            <span className="font-medium">{dataUsuarioAuth?.nombre}</span>
           </section>
           <form onSubmit={handleSubmit(() => mutate({ descripcion: postText }))}>
             <div className="relative">
@@ -62,13 +60,14 @@ export const FormPost = () => {
                 placeholder="¿Qué estás pensando?"
                 value={postText}
                 onChange={handleTextchange}
-                className="w-full placeholder-gray-500 outline-none"
+                className="w-full bg-transparent placeholder-gray-500 dark:placeholder-gray-400 outline-none resize-none text-black dark:text-white"
+                rows={4}
               />
               <div className="mt-4 flex items-center justify-between">
                 <button
                   disabled={!puedePublicar || isPending}
                   type="submit"
-                  className={`py-2 px-4 rounded-lg font-medium ${
+                  className={`py-2 px-4 rounded-lg font-medium text-white ${
                     puedePublicar
                       ? "bg-primary cursor-pointer"
                       : "bg-gray-400 cursor-not-allowed"
@@ -86,7 +85,7 @@ export const FormPost = () => {
                   <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     type="button"
-                    className="p-1 text-black/50 dark:text-white/50 hover:bg-gray-700 rounded-full cursor-pointer"
+                    className="p-1 text-black/50 dark:text-white/50 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full cursor-pointer"
                   >
                     <Icon icon="mdi:emoticon-outline" className="text-2xl" />
                   </button>
@@ -98,7 +97,7 @@ export const FormPost = () => {
         </main>
         <footer className="p-4 border-t border-gray-500/40">
           <div className="flex items-center justify-between p-3 border border-gray-500/40">
-            <span className="text-sm dark:text-white">Agregar a tu Publicación</span>
+            <span className="text-sm">Agregar a tu Publicación</span>
             <div className="flex space-x-4">
               <button
                 onClick={setStateImage}
