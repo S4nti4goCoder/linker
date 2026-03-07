@@ -7,6 +7,7 @@ import { usePostStore } from "../store/PostStore";
 import { useMostrarPostQuery } from "../stack/PostStack";
 import { useEffect, useRef } from "react";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
+import { SkeletonPost } from "../components/ui/spinners/SkeletonPost";
 import { useSupabaseSubscription } from "../hooks/useSupabaseSubscription";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { useComentariosStore } from "../store/ComentariosStore";
@@ -15,11 +16,12 @@ import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { useUsuariosStore } from "../store/UsuariosStore";
 
 export const HomePage = () => {
-  const { stateForm, setStateForm, itemSelect } = usePostStore();
+  const { stateForm } = usePostStore();
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
-  const { data: dataRespuestaComentario } =
-    useMostrarRespuestaComentariosQuery();
+
+  useMostrarRespuestaComentariosQuery();
+
   const {
     data: dataPost,
     fetchNextPage,
@@ -27,9 +29,12 @@ export const HomePage = () => {
     isFetchingNextPage,
     isLoading: isLoadingPost,
   } = useMostrarPostQuery();
+
   const scrollRef = useRef(null);
+
   useEffect(() => {
     const el = scrollRef.current;
+    if (!el) return;
     const handleScroll = () => {
       if (
         el.scrollTop + el.clientHeight >= el.scrollHeight - 200 &&
@@ -39,10 +44,8 @@ export const HomePage = () => {
         fetchNextPage();
       }
     };
-    if (el) {
-      el.addEventListener("scroll", handleScroll);
-      return () => el.removeEventListener("scroll", handleScroll);
-    }
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useSupabaseSubscription({
@@ -76,14 +79,29 @@ export const HomePage = () => {
       {stateForm && <FormPost />}
       <section className="flex flex-col w-full h-screen">
         <article className="flex flex-col h-screen overflow-hidden border border-gray-200 border-t-0 border-b-0 dark:border-gray-600">
-          <HeaderSticky position="top-left" />
+          <HeaderSticky />
           <div ref={scrollRef} className="overflow-y-auto">
             <InputPublicar />
-            {dataPost?.pages?.map((page, pageIndex) =>
-              page?.map((item, index) => (
-                <PublicacionCard key={`${pageIndex}-${index}`} item={item} />
-              ))
+
+            {/* Skeleton mientras carga por primera vez */}
+            {isLoadingPost && (
+              <>
+                <SkeletonPost />
+                <SkeletonPost />
+                <SkeletonPost />
+                <SkeletonPost />
+              </>
             )}
+
+            {/* Posts */}
+            {!isLoadingPost &&
+              dataPost?.pages?.map((page, pageIndex) =>
+                page?.map((item, index) => (
+                  <PublicacionCard key={`${pageIndex}-${index}`} item={item} />
+                )),
+              )}
+
+            {/* Spinner al cargar más páginas */}
             {isFetchingNextPage && <SpinnerLocal />}
           </div>
         </article>
