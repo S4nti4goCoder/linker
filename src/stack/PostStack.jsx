@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { usePostStore } from "../store/PostStore";
 import { useFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
@@ -8,13 +12,15 @@ export const useInsertarPostMutate = () => {
   const { insertarPost, file, setStateForm, setFile } = usePostStore();
   const fechaActual = useFormattedDate();
   const { dataUsuarioAuth } = useUsuariosStore();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["insertar post"],
     mutationFn: async (data) => {
       let type = "imagen";
       if (file && file.name) {
         const ext = file.name.split(".").pop()?.toLowerCase();
-        if (ext === "mp4") type = "video";
+        if (ext === "mp4" || ext === "mov" || ext === "webm") type = "video";
       }
       const p = {
         descripcion: data.descripcion,
@@ -26,15 +32,17 @@ export const useInsertarPostMutate = () => {
       await insertarPost(p, file);
     },
     onError: (error) => {
-      toast.error("Error al insertar post: " + error.message);
+      toast.error("Error al publicar: " + error.message);
     },
     onSuccess: () => {
-      toast.success("Publicado");
-      setStateForm(false);
+      toast.success("¡Publicado!");
+      setStateForm(false); // ahora sí cierra el modal
       setFile(null);
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
     },
   });
 };
+
 export const useLikePostMutate = () => {
   const { likePost, itemSelect } = usePostStore();
   const { dataUsuarioAuth } = useUsuariosStore();
@@ -47,6 +55,7 @@ export const useLikePostMutate = () => {
     },
   });
 };
+
 export const useMostrarPostQuery = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mostrarPost } = usePostStore();
@@ -54,7 +63,7 @@ export const useMostrarPostQuery = () => {
   return useInfiniteQuery({
     queryKey: ["mostrar post", { id_usuario: dataUsuarioAuth?.id }],
     queryFn: async ({ pageParam = 0 }) => {
-      const data = mostrarPost({
+      const data = await mostrarPost({
         id_usuario: dataUsuarioAuth?.id,
         desde: pageParam,
         hasta: cant_pagina,
