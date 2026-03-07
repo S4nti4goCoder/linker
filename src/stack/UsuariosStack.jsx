@@ -10,18 +10,20 @@ export const useMostrarUsuarioAuthQuery = () => {
   return useQuery({
     queryKey: ["mostrar user auth"],
     queryFn: () => mostrarUsuarioAuth({ id_auth: user?.id }),
+    enabled: !!user?.id,
   });
 };
 
-export const useEditarFotoUserMutate = () => {
-  const { file } = useGlobalStore();
+export const useEditarFotoUserMutate = (onClose) => {
+  const { file, setFile, setFileUrl } = useGlobalStore();
   const { editarUsuarios, dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["editar foto user"],
     mutationFn: async (data) => {
-      if (file.size === undefined) {
-        return;
+      if (!data.nombre || data.nombre.trim().length < 3) {
+        throw new Error("El nombre debe tener al menos 3 caracteres");
       }
       const p = {
         nombre: data.nombre,
@@ -30,14 +32,17 @@ export const useEditarFotoUserMutate = () => {
       await editarUsuarios(p, dataUsuarioAuth?.foto_perfil, file);
     },
     onError: (error) => {
-      toast.error("Error al editar usuario: " + error.message);
+      toast.error("Error al guardar: " + error.message);
     },
     onSuccess: () => {
-      if (file.size === undefined) {
-        return toast.info("Seleccione una imagen");
-      }
-      toast.success("Datos guardados");
-      queryClient.invalidateQueries(["mostrar user auth"]);
+      toast.success("¡Datos guardados!");
+      // Sintaxis correcta para TanStack Query v5
+      queryClient.invalidateQueries({ queryKey: ["mostrar user auth"] });
+      // Limpiar el file del store
+      setFile([]);
+      setFileUrl("-");
+      // Cerrar el form si viene del perfil
+      if (onClose) onClose();
     },
   });
 };

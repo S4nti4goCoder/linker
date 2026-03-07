@@ -9,17 +9,14 @@ export const FormActualizarPerfil = ({ onClose }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { mutate, isPending } = useEditarFotoUserMutate();
 
-  const handleGuardar = (data) => {
-    mutate(data);
-    if (onClose) onClose();
-  };
+  // Pasamos onClose al hook para que cierre al terminar
+  const { mutate, isPending } = useEditarFotoUserMutate(onClose);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        {/* Solo mostrar X si se puede cerrar (viene del perfil, no del onboarding) */}
+        {/* X solo aparece si se puede cerrar (desde perfil, no onboarding) */}
         {onClose && <BtnClose funcion={onClose} />}
         <h1 className="text-2xl font-bold text-center mb-4">
           Actualización de datos
@@ -30,7 +27,7 @@ export const FormActualizarPerfil = ({ onClose }) => {
           </span>
           <ImageSelectorFoto />
         </section>
-        <form onSubmit={handleSubmit(handleGuardar)}>
+        <form onSubmit={handleSubmit(mutate)}>
           <div className="mb-4">
             <input
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"
@@ -51,7 +48,7 @@ export const FormActualizarPerfil = ({ onClose }) => {
           <button
             type="submit"
             disabled={isPending}
-            className="cursor-pointer w-full bg-gray-200 text-gray-500 font-medium py-3 rounded-full hover:bg-[#00AFF0] hover:text-white transition duration-200 disabled:opacity-60"
+            className="cursor-pointer w-full bg-gray-200 text-gray-500 font-medium py-3 rounded-full hover:bg-[#00AFF0] hover:text-white transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isPending ? "Guardando..." : "GUARDAR"}
           </button>
