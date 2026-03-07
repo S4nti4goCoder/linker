@@ -6,3 +6,12 @@
   --color-primary: #0466c8;
   --color-bg-dark: #2e3138;
 }
+
+/* Ocultar scrollbar completamente pero mantener funcionalidad */
+.overflow-y-auto {
+  scrollbar-width: none;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
