@@ -8,13 +8,12 @@ export const useThemeStore = create(
       setTheme: () =>
         set((state) => {
           const newTheme = state.theme === "light" ? "dark" : "light";
-          document.documentElement.classList.remove(state.theme);
-          document.documentElement.classList.add(newTheme);
+          // Solo actualiza el estado, App.jsx se encarga del DOM
           return { theme: newTheme };
         }),
     }),
     {
       name: "theme-storage-linker",
-    }
-  )
+    },
+  ),
 );
