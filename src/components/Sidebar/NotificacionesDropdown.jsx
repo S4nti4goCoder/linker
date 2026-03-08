@@ -16,7 +16,7 @@ const NotificacionItem = ({ notif }) => {
   const tipo = iconoTipo[notif.tipo] || iconoTipo.like;
   return (
     <div className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${!notif.leida ? "bg-blue-50 dark:bg-blue-500/5" : ""}`}>
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <img
           src={notif.origen?.foto_perfil || "https://ui-avatars.com/api/?name=U"}
           className="w-10 h-10 rounded-full object-cover"
@@ -30,7 +30,7 @@ const NotificacionItem = ({ notif }) => {
         <span className="text-xs text-gray-400">{useRelativeTime(notif.fecha)}</span>
       </div>
       {!notif.leida && (
-        <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
+        <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
       )}
     </div>
   );
