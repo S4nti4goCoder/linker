@@ -3,6 +3,8 @@ import { useComentariosStore } from "../../store/ComentariosStore";
 import { useRespuestasComentariosStore } from "../../store/RespuestasComentariosStore";
 import { InputRespuestaAComentario } from "./InputRespuestaAComentario";
 import { RespuestaCard } from "./RespuestaCard";
+import { useToggleLikeComentarioMutate, useObtenerLikesComentarioQuery } from "../../stack/ComentariosStack";
+import { Icon } from "@iconify/react";
 
 export const ComentarioCard = ({ item }) => {
   const {
@@ -11,26 +13,47 @@ export const ComentarioCard = ({ item }) => {
     setRespuestaActiva,
     dataRespuestaComentario,
   } = useRespuestasComentariosStore();
-  const { setItemSelect, itemSelect: itemSelectComentario } =
-    useComentariosStore();
+  const { setItemSelect, itemSelect: itemSelectComentario } = useComentariosStore();
+
+  const { data: likesData } = useObtenerLikesComentarioQuery(item?.id);
+  const { mutate: toggleLike } = useToggleLikeComentarioMutate(item?.id);
+
   return (
     <div className="pl-4">
-      <div className="flex items-start gap-2 group ralative w-full">
+      <div className="flex items-start gap-2 group relative w-full">
         <img
-          src={item?.foto_usuario}
+          src={item?.foto_perfil || "https://placehold.co/36x36"}
           className="w-9 h-9 rounded-full object-cover"
         />
         <div className="flex-1 relative">
           <div className="relative bg-gray-100 dark:bg-neutral-800 p-2 rounded-xl text-sm w-fit max-w-[90%] flex gap-2">
             <section>
               <span className="font-semibold block text-xs">
-                {item?.nombre_usuario}
+                {item?.nombre}
               </span>
               <p>{item?.comentario}</p>
             </section>
           </div>
-          <div className="flex gap-3 mt-1 text-xs text-gray-500 ml-2 relative">
+
+          {/* Botón like flotante sobre la burbuja */}
+          {likesData?.count > 0 && (
+            <div className="absolute -bottom-2 right-[10%] bg-white dark:bg-neutral-700 rounded-full px-1.5 py-0.5 flex items-center gap-1 shadow text-xs border border-gray-100 dark:border-neutral-600">
+              <Icon icon="mdi:heart" className="text-red-500 text-xs" />
+              <span>{likesData.count}</span>
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2 text-xs text-gray-500 ml-2 relative">
             <span>{useRelativeTime(item?.fecha)}</span>
+            {/* Like */}
+            <button
+              onClick={() => toggleLike()}
+              className={`font-semibold hover:underline cursor-pointer transition-colors ${
+                likesData?.liked ? "text-red-500" : "hover:text-red-400"
+              }`}
+            >
+              {likesData?.liked ? "❤️ Me gusta" : "Me gusta"}
+            </button>
             <button
               className="hover:underline cursor-pointer"
               onClick={() =>
@@ -44,6 +67,7 @@ export const ComentarioCard = ({ item }) => {
                 : "Responder"}
             </button>
           </div>
+
           {item?.respuestas_count > 0 && (
             <button
               className="text-gray-400 mt-2 text-xs hover:underline cursor-pointer"
@@ -55,9 +79,9 @@ export const ComentarioCard = ({ item }) => {
             </button>
           )}
           {itemSelectComentario?.id === item?.id &&
-            dataRespuestaComentario?.map((item, index) => {
-              return <RespuestaCard item={item} />;
-            })}
+            dataRespuestaComentario?.map((item, index) => (
+              <RespuestaCard key={index} item={item} />
+            ))}
           {respuestaActivaParaComentarioId === item?.id && (
             <div>
               <div className="w-4 h-4 border-l-2 border-b-2 border-gray-300 dark:border-gray-600 rounded-bl-lg absolute bottom-18 -ml-[29px]" />

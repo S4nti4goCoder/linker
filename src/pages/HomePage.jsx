@@ -2,7 +2,6 @@ import { Toaster } from "sonner";
 import { HeaderSticky } from "../components/HomePageComponents/HeaderSticky";
 import { InputPublicar } from "../components/HomePageComponents/InputPublicar";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
-import { usePostStore } from "../store/PostStore";
 import { useMostrarPostQuery } from "../stack/PostStack";
 import { useEffect, useRef } from "react";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
@@ -70,6 +69,13 @@ export const HomePage = () => {
     queryKey: ["contar usuarios todos"],
   });
 
+  // ✅ NUEVO
+  useSupabaseSubscription({
+    channelName: "public:likes_comentarios",
+    options: { event: "*", schema: "public", table: "likes_comentarios" },
+    queryKey: ["likes comentario"],
+  });
+
   return (
     <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
       {dataUsuarioAuth?.foto_perfil === "-" && <FormActualizarPerfil />}
@@ -80,7 +86,6 @@ export const HomePage = () => {
           <div ref={scrollRef} className="overflow-y-auto">
             <InputPublicar />
 
-            {/* Skeleton mientras carga por primera vez */}
             {isLoadingPost && (
               <>
                 <SkeletonPost />
@@ -90,7 +95,6 @@ export const HomePage = () => {
               </>
             )}
 
-            {/* Posts */}
             {!isLoadingPost &&
               dataPost?.pages?.map((page, pageIndex) =>
                 page?.map((item, index) => (
@@ -98,7 +102,6 @@ export const HomePage = () => {
                 )),
               )}
 
-            {/* Spinner al cargar más páginas */}
             {isFetchingNextPage && <SpinnerLocal />}
           </div>
         </article>
