@@ -27,7 +27,9 @@ export const useInsertarComentarioMutate = ({ comentario, setComentario }) => {
     },
     onSuccess: () => {
       setComentario("");
-      queryClient.invalidateQueries({ queryKey: ["mostrar comentarios"] });
+      queryClient.invalidateQueries({
+        queryKey: ["mostrar comentarios", { id_publicacion: itemSelect?.id }],
+      });
     },
   });
 };
@@ -39,6 +41,7 @@ export const useMostrarComentariosQuery = () => {
     queryKey: ["mostrar comentarios", { id_publicacion: itemSelect?.id }],
     queryFn: () => mostrarComentarios({ id_publicacion: itemSelect?.id }),
     enabled: !!itemSelect?.id,
+    staleTime: 0,
   });
 };
 

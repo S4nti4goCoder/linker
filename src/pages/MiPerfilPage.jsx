@@ -1,6 +1,5 @@
 import { useUsuariosStore } from "../store/UsuariosStore";
-import { usePostStore } from "../store/PostStore";
-import { useMostrarPostQuery } from "../stack/PostStack";
+import { useMostrarPostPublicoQuery } from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
@@ -16,12 +15,10 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
 
   return (
     <div className="relative">
-      {/* Banner */}
       <div
         className="h-32 w-full transition-colors duration-500"
         style={{ backgroundColor: bgColor || "#0466c8" }}
       />
-      {/* Foto, nombre y botón */}
       <div className="px-4 pb-4 border-b border-gray-200 dark:border-gray-600">
         <div className="flex justify-between items-end -mt-12">
           <img
@@ -50,10 +47,10 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
   );
 };
 
-const ProfileStats = ({ misPost }) => {
-  const totalPosts = misPost?.length ?? 0;
+const ProfileStats = ({ posts }) => {
+  const totalPosts = posts?.length ?? 0;
   const totalLikes =
-    misPost?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
+    posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
 
   return (
     <div className="flex border-b border-gray-200 dark:border-gray-600">
@@ -73,7 +70,6 @@ export const MiPerfilPage = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
   const [showEditForm, setShowEditForm] = useState(false);
-  const { stateForm } = usePostStore();
 
   const {
     data: dataPost,
@@ -81,7 +77,7 @@ export const MiPerfilPage = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useMostrarPostQuery();
+  } = useMostrarPostPublicoQuery(dataUsuarioAuth?.id);
 
   const scrollRef = useRef(null);
 
@@ -101,13 +97,7 @@ export const MiPerfilPage = () => {
     return () => el.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const misPost = dataUsuarioAuth?.id
-    ? dataPost?.pages
-        ?.flatMap((p) => p)
-        ?.filter(
-          (post) => Number(post?.id_usuario) === Number(dataUsuarioAuth?.id),
-        )
-    : [];
+  const misPost = dataPost?.pages?.flatMap((p) => p) ?? [];
 
   return (
     <main className="flex flex-col h-screen overflow-hidden">
@@ -125,20 +115,19 @@ export const MiPerfilPage = () => {
           onEditClick={() => setShowEditForm(true)}
         />
 
-        <ProfileStats misPost={misPost} />
+        <ProfileStats posts={misPost} />
 
-        {/* Posts */}
         <div>
           {isLoading ? (
             <SpinnerLocal />
-          ) : misPost?.length === 0 ? (
+          ) : misPost.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400">
               <Icon icon="mdi:post-outline" className="text-5xl mb-3" />
               <p className="text-sm">Aún no tienes publicaciones</p>
             </div>
           ) : (
-            misPost?.map((item, index) => (
-              <PublicacionCard key={index} item={item} />
+            misPost.map((item) => (
+              <PublicacionCard key={item.id} item={item} />
             ))
           )}
           {isFetchingNextPage && <SpinnerLocal />}

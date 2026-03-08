@@ -105,14 +105,17 @@ export const useEliminarPostMutate = (onClose) => {
   });
 };
 
-export const useMostrarPostPublicoQuery = (id_usuario) => {
+// ✅ Ahora filtra por autor en la DB con _id_autor
+export const useMostrarPostPublicoQuery = (id_autor) => {
+  const { dataUsuarioAuth } = useUsuariosStore();
   const { mostrarPost } = usePostStore();
   const cant_pagina = 10;
   return useInfiniteQuery({
-    queryKey: ["mostrar post publico", { id_usuario }],
+    queryKey: ["mostrar post publico", { id_autor }],
     queryFn: async ({ pageParam = 0 }) => {
       const data = await mostrarPost({
-        id_usuario,
+        id_usuario: dataUsuarioAuth?.id,
+        id_autor,
         desde: pageParam,
         hasta: cant_pagina,
       });
@@ -123,11 +126,10 @@ export const useMostrarPostPublicoQuery = (id_usuario) => {
       return allPages.length * cant_pagina;
     },
     initialPageParam: 0,
-    enabled: !!id_usuario,
+    enabled: !!id_autor && !!dataUsuarioAuth?.id,
   });
 };
 
-// ✅ NUEVO - posts de seguidos
 export const useMostrarPostSeguidosQuery = (ids_seguidos) => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mostrarPost } = usePostStore();
@@ -139,7 +141,12 @@ export const useMostrarPostSeguidosQuery = (ids_seguidos) => {
       if (!ids_seguidos || ids_seguidos.length === 0) return [];
       const results = await Promise.all(
         ids_seguidos.map((id) =>
-          mostrarPost({ id_usuario: id, desde: pageParam, hasta: cant_pagina })
+          mostrarPost({
+            id_usuario: dataUsuarioAuth?.id,
+            id_autor: id,
+            desde: pageParam,
+            hasta: cant_pagina,
+          })
         )
       );
       return results

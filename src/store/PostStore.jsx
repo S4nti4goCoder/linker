@@ -53,10 +53,16 @@ export const usePostStore = create((set) => ({
     await InsertarPost(p, file);
   },
   dataPost: null,
+  // ✅ Ahora acepta id_autor opcional para filtrar por autor en la DB
   mostrarPost: async (p) => {
-    const { data, error } = await supabase
-      .rpc("publicaciones_con_detalles", { _id_usuario: p.id_usuario })
+    let query = supabase
+      .rpc("publicaciones_con_detalles", {
+        _id_usuario: p.id_usuario,
+        _id_autor: p.id_autor ?? null,
+      })
       .range(p.desde, p.desde + p.hasta - 1);
+
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     set({ dataPost: data });
     return data;
@@ -65,7 +71,6 @@ export const usePostStore = create((set) => ({
     const { error } = await supabase.rpc("toggle_like", p);
     if (error) throw new Error(error.message);
   },
-
   editarPost: async (p, file) => {
     if (file) {
       const ruta = "publicaciones/" + p.id;
@@ -85,7 +90,6 @@ export const usePostStore = create((set) => ({
     }
     await EditarPublicacion(p);
   },
-
   eliminarPost: async (id) => {
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);

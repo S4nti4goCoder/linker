@@ -26,7 +26,7 @@ export const ComentarioCard = ({ item }) => {
     <div className="pl-4">
       <div className="flex items-start gap-2 group relative w-full">
         <img
-          src={item?.foto_perfil || "https://placehold.co/36x36"}
+          src={item?.foto_usuario || "https://placehold.co/36x36"}
           onError={(e) => (e.target.src = "https://placehold.co/36x36")}
           className="w-9 h-9 rounded-full object-cover"
         />
@@ -34,13 +34,12 @@ export const ComentarioCard = ({ item }) => {
           <div className="relative bg-gray-100 dark:bg-neutral-800 p-2 rounded-xl text-sm w-fit max-w-[90%] flex gap-2">
             <section>
               <span className="font-semibold block text-xs">
-                {item?.nombre}
+                {item?.nombre_usuario}
               </span>
               <p>{item?.comentario}</p>
             </section>
           </div>
 
-          {/* Botón like flotante sobre la burbuja */}
           {likesData?.count > 0 && (
             <div className="absolute -bottom-2 right-[10%] bg-white dark:bg-neutral-700 rounded-full px-1.5 py-0.5 flex items-center gap-1 shadow text-xs border border-gray-100 dark:border-neutral-600">
               <Icon icon="mdi:heart" className="text-red-500 text-xs" />
@@ -50,7 +49,6 @@ export const ComentarioCard = ({ item }) => {
 
           <div className="flex gap-3 mt-2 text-xs text-gray-500 ml-2 relative">
             <span>{useRelativeTime(item?.fecha)}</span>
-            {/* Like */}
             <button
               onClick={() => toggleLike()}
               className={`font-semibold hover:underline cursor-pointer transition-colors ${

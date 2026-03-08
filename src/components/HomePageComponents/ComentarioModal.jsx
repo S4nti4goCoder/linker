@@ -74,8 +74,8 @@ export const ComentarioModal = () => {
               <p className="text-sm">Sé el primero en comentar</p>
             </div>
           ) : (
-            dataComentarios?.map((item, index) => (
-              <ComentarioCard item={item} key={index} />
+            dataComentarios?.map((item) => (
+              <ComentarioCard item={item} key={item.id} />
             ))
           )}
         </section>

@@ -14,10 +14,12 @@ import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { useSeguidosQuery } from "../stack/UsuariosStack";
 import { Icon } from "@iconify/react";
+import { usePostStore } from "../store/PostStore";
 
 export const HomePage = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
+  const { itemSelect: itemSelectPost } = usePostStore();
   const [tab, setTab] = useState("todos");
 
   useMostrarRespuestaComentariosQuery();
@@ -70,7 +72,7 @@ export const HomePage = () => {
   useSupabaseSubscription({
     channelName: "public:comentarios",
     options: { event: "*", schema: "public", table: "comentarios" },
-    queryKey: ["mostrar comentarios"],
+    queryKey: ["mostrar comentarios", { id_publicacion: itemSelectPost?.id }],
   });
   useSupabaseSubscription({
     channelName: "public:respuestas_comentarios",
@@ -137,8 +139,8 @@ export const HomePage = () => {
                 {isLoadingPost && (
                   <> <SkeletonPost /> <SkeletonPost /> <SkeletonPost /> <SkeletonPost /> </>
                 )}
-                {!isLoadingPost && postsTodos.map((item, index) => (
-                  <PublicacionCard key={`todos-${index}`} item={item} />
+                {!isLoadingPost && postsTodos.map((item) => (
+                  <PublicacionCard key={item.id} item={item} />
                 ))}
                 {isFetchingNextPage && <SpinnerLocal />}
               </>
@@ -160,8 +162,8 @@ export const HomePage = () => {
                     <p className="text-sm">Las personas que sigues aún no han publicado</p>
                   </div>
                 )}
-                {!isLoadingSeguidos && postsSeguidos.map((item, index) => (
-                  <PublicacionCard key={`siguiendo-${index}`} item={item} />
+                {!isLoadingSeguidos && postsSeguidos.map((item) => (
+                  <PublicacionCard key={item.id} item={item} />
                 ))}
                 {isFetchingNextSeguidos && <SpinnerLocal />}
               </>
