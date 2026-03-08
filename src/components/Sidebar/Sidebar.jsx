@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { BtnToggleTheme } from "../ui/buttons/BtnToggleTheme";
 import { BtnLogout } from "../ui/buttons/BtnLogout";
 import { BtnNewPost } from "../ui/buttons/BtnNewPost";
+import { NotificacionesDropdown } from "./NotificacionesDropdown";
 
 const linksActivos = [
   { label: "Inicio", icon: "ic:baseline-home", to: "/" },
@@ -10,7 +11,6 @@ const linksActivos = [
 ];
 
 const linksPróximamente = [
-  { label: "Notificaciones", icon: "ic:baseline-notifications" },
   { label: "Mensajes", icon: "ic:baseline-message" },
   { label: "Colecciones", icon: "ic:baseline-collections-bookmark" },
 ];
@@ -39,8 +39,10 @@ export const Sidebar = () => {
           </NavLink>
         ))}
 
-        {/* Separador */}
         <div className="w-full border-t border-gray-200 dark:border-gray-700 my-1" />
+
+        {/* ✅ Notificaciones activo */}
+        <NotificacionesDropdown />
 
         {linksPróximamente.map((item, index) => (
           <div
