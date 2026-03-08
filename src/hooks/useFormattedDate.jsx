@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-
 export function useFormattedDate() {
   const fechaActual = new Date();
   const offset = fechaActual.getTimezoneOffset() * 60000;
