@@ -13,7 +13,6 @@ export const useInsertarPostMutate = () => {
   const fechaActual = useFormattedDate();
   const { dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationKey: ["insertar post"],
     mutationFn: async (data) => {
@@ -31,12 +30,10 @@ export const useInsertarPostMutate = () => {
       };
       await insertarPost(p, file);
     },
-    onError: (error) => {
-      toast.error("Error al publicar: " + error.message);
-    },
+    onError: (error) => toast.error("Error al publicar: " + error.message),
     onSuccess: () => {
       toast.success("¡Publicado!");
-      setStateForm(false); // ahora sí cierra el modal
+      setStateForm(false);
       setFile(null);
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
     },
@@ -50,9 +47,7 @@ export const useLikePostMutate = () => {
     mutationKey: ["like post"],
     mutationFn: () =>
       likePost({ p_post_id: itemSelect?.id, p_user_id: dataUsuarioAuth?.id }),
-    onError: (error) => {
-      toast.error("Error al dar like: " + error.message);
-    },
+    onError: (error) => toast.error("Error al dar like: " + error.message),
   });
 };
 
@@ -75,5 +70,37 @@ export const useMostrarPostQuery = () => {
       return allPages.length * cant_pagina;
     },
     initialPageParam: 0,
+  });
+};
+
+// ✅ NUEVO
+export const useEditarPostMutate = (onClose) => {
+  const { editarPost } = usePostStore();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["editar post"],
+    mutationFn: (data) =>
+      editarPost({ descripcion: data.descripcion, id: data.id }),
+    onError: (error) => toast.error("Error al editar: " + error.message),
+    onSuccess: () => {
+      toast.success("¡Publicación editada!");
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      if (onClose) onClose();
+    },
+  });
+};
+
+export const useEliminarPostMutate = (onClose) => {
+  const { eliminarPost } = usePostStore();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["eliminar post"],
+    mutationFn: (id) => eliminarPost(id),
+    onError: (error) => toast.error("Error al eliminar: " + error.message),
+    onSuccess: () => {
+      toast.success("¡Publicación eliminada!");
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      if (onClose) onClose();
+    },
   });
 };
