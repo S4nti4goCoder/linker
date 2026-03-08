@@ -53,7 +53,6 @@ export const usePostStore = create((set) => ({
     await InsertarPost(p, file);
   },
   dataPost: null,
-  // ✅ Ahora acepta id_autor opcional para filtrar por autor en la DB
   mostrarPost: async (p) => {
     let query = supabase
       .rpc("publicaciones_con_detalles", {
@@ -65,6 +64,16 @@ export const usePostStore = create((set) => ({
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     set({ dataPost: data });
+    return data;
+  },
+  mostrarPostSeguidos: async (p) => {
+    const { data, error } = await supabase.rpc("publicaciones_seguidos", {
+      _id_usuario: p.id_usuario,
+      _ids_autores: p.ids_autores,
+      _desde: p.desde,
+      _hasta: p.hasta,
+    });
+    if (error) throw new Error(error.message);
     return data;
   },
   likePost: async (p) => {

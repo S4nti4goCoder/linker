@@ -105,7 +105,6 @@ export const useEliminarPostMutate = (onClose) => {
   });
 };
 
-// ✅ Ahora filtra por autor en la DB con _id_autor
 export const useMostrarPostPublicoQuery = (id_autor) => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mostrarPost } = usePostStore();
@@ -132,26 +131,19 @@ export const useMostrarPostPublicoQuery = (id_autor) => {
 
 export const useMostrarPostSeguidosQuery = (ids_seguidos) => {
   const { dataUsuarioAuth } = useUsuariosStore();
-  const { mostrarPost } = usePostStore();
+  const { mostrarPostSeguidos } = usePostStore();
   const cant_pagina = 10;
 
   return useInfiniteQuery({
     queryKey: ["mostrar post seguidos", ids_seguidos],
     queryFn: async ({ pageParam = 0 }) => {
       if (!ids_seguidos || ids_seguidos.length === 0) return [];
-      const results = await Promise.all(
-        ids_seguidos.map((id) =>
-          mostrarPost({
-            id_usuario: dataUsuarioAuth?.id,
-            id_autor: id,
-            desde: pageParam,
-            hasta: cant_pagina,
-          })
-        )
-      );
-      return results
-        .flat()
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      return await mostrarPostSeguidos({
+        id_usuario: dataUsuarioAuth?.id,
+        ids_autores: ids_seguidos,
+        desde: pageParam,
+        hasta: cant_pagina,
+      });
     },
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length < cant_pagina) return undefined;
