@@ -68,7 +68,6 @@ export const useImageSelector = () => {
   };
 };
 
-// ✅ Hook independiente para editar — no toca usePostStore
 export const useImageSelectorEdit = () => {
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState("");
@@ -191,7 +190,6 @@ export const ImageSelector = () => {
   );
 };
 
-// ✅ Componente para el modal de editar — independiente del store
 export const ImageSelectorEdit = ({ onFileSelect, onRemove }) => {
   const {
     fileUrl, fileType, fileInputRef,
@@ -200,11 +198,10 @@ export const ImageSelectorEdit = ({ onFileSelect, onRemove }) => {
   } = useImageSelectorEdit();
 
   const handleChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    if (onFileSelect) onFileSelect(selectedFile);
     await baseHandleChange(e);
-    // Espera al siguiente tick para que el estado se actualice
-    setTimeout(() => {
-      if (e.target.files[0] && onFileSelect) onFileSelect(e.target.files[0]);
-    }, 100);
   };
 
   const handleRemove = () => {
