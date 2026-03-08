@@ -38,9 +38,6 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
         </div>
         <div className="mt-3">
           <h1 className="text-xl font-bold">{usuario?.nombre}</h1>
-          <p className="text-gray-500 text-sm">
-            {usuario?.correo_usuario || ""}
-          </p>
         </div>
       </div>
     </div>
