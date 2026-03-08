@@ -66,9 +66,26 @@ export const usePostStore = create((set) => ({
     if (error) throw new Error(error.message);
   },
 
-  editarPost: async (p) => {
+  editarPost: async (p, file) => {
+    if (file) {
+      const ruta = "publicaciones/" + p.id;
+      const { data, error } = await supabase.storage
+        .from("archivos")
+        .upload(ruta, file, { cacheControl: "0", upsert: true });
+      if (error) throw new Error(error.message);
+      if (data) {
+        const { data: urlimagen } = await supabase.storage
+          .from("archivos")
+          .getPublicUrl(ruta);
+        const ext = file.name?.split(".").pop()?.toLowerCase();
+        const type = ["mp4", "mov", "webm"].includes(ext) ? "video" : "imagen";
+        p.url = urlimagen.publicUrl;
+        p.type = type;
+      }
+    }
     await EditarPublicacion(p);
   },
+
   eliminarPost: async (id) => {
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);

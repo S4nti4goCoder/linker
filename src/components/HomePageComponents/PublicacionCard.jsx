@@ -10,7 +10,9 @@ import {
 import { useComentariosStore } from "../../store/ComentariosStore";
 import { useRelativeTime } from "../../hooks/useRelativeTime";
 import { useUsuariosStore } from "../../store/UsuariosStore";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
+import { ImageSelectorEdit } from "../../hooks/useImageSelector";
 
 export const PublicacionCard = ({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -20,23 +22,40 @@ export const PublicacionCard = ({ item }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [editText, setEditText] = useState(item?.descripcion || "");
+  const [editText, setEditText] = useState("");
+  const [editFile, setEditFile] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showImageSelector, setShowImageSelector] = useState(false);
+  const textareaRef = useRef(null);
 
   const esPropio = Number(item?.id_usuario) === Number(dataUsuarioAuth?.id);
 
-  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(
-    () => setShowConfirm(false),
-  );
-  const { mutate: editar } = useEditarPostMutate(() => setShowEditForm(false));
+  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(() => setShowConfirm(false));
+  const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() => setShowEditForm(false));
+
+  useEffect(() => {
+    if (showEditForm) {
+      setEditText(item?.descripcion || "");
+      setShowImageSelector(false);
+      setShowEmojiPicker(false);
+      setEditFile(null);
+    }
+  }, [showEditForm, item?.descripcion]);
+
+  const addEmoji = (emoji) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newText = editText.substring(0, start) + emoji + editText.substring(end);
+    setEditText(newText);
+  };
 
   return (
     <div className="border-b border-gray-500/50 p-4 relative">
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
-          <img
-            src={item?.foto_usuario}
-            className="w-12 h-12 rounded-full object-cover"
-          />
+          <img src={item?.foto_usuario} className="w-12 h-12 rounded-full object-cover" />
           <span className="font-bold">{item?.nombre_usuario}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -53,35 +72,20 @@ export const PublicacionCard = ({ item }) => {
               </button>
               {showMenu && (
                 <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
-                  />
+                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                   <div className="absolute right-0 top-8 z-20 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-200 dark:border-neutral-700 overflow-hidden w-40">
                     <button
-                      onClick={() => {
-                        setShowEditForm(true);
-                        setShowMenu(false);
-                      }}
+                      onClick={() => { setShowEditForm(true); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer"
                     >
-                      <Icon
-                        icon="mdi:pencil-outline"
-                        className="text-blue-500"
-                      />
+                      <Icon icon="mdi:pencil-outline" className="text-blue-500" />
                       Editar
                     </button>
                     <button
-                      onClick={() => {
-                        setShowConfirm(true);
-                        setShowMenu(false);
-                      }}
+                      onClick={() => { setShowConfirm(true); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer text-red-500"
                     >
-                      <Icon
-                        icon="mdi:trash-can-outline"
-                        className="text-red-500"
-                      />
+                      <Icon icon="mdi:trash-can-outline" className="text-red-500" />
                       Eliminar
                     </button>
                   </div>
@@ -95,13 +99,10 @@ export const PublicacionCard = ({ item }) => {
       {/* Modal confirmar eliminar */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6 relative">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
-                <Icon
-                  icon="mdi:trash-can-outline"
-                  className="text-2xl text-red-500"
-                />
+                <Icon icon="mdi:trash-can-outline" className="text-2xl text-red-500" />
               </div>
               <h2 className="text-lg font-bold">¿Eliminar publicación?</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -130,7 +131,7 @@ export const PublicacionCard = ({ item }) => {
       {/* Modal editar */}
       {showEditForm && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-md p-6 relative">
+          <div className="bg-white dark:bg-neutral-900 text-black dark:text-white rounded-xl w-full max-w-md p-6 relative">
             <button
               onClick={() => setShowEditForm(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -138,26 +139,65 @@ export const PublicacionCard = ({ item }) => {
               <Icon icon="mdi:close" className="text-xl" />
             </button>
             <h2 className="text-lg font-bold mb-4">Editar publicación</h2>
+
             <textarea
+              ref={textareaRef}
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               className="w-full bg-gray-100 dark:bg-neutral-800 rounded-lg p-3 text-sm outline-none resize-none"
               rows={4}
             />
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                onClick={() => setShowEditForm(false)}
-                className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => editar({ descripcion: editText, id: item?.id })}
-                disabled={editText.trim() === ""}
-                className="px-4 py-2 rounded-lg text-sm bg-primary text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Guardar
-              </button>
+
+            {showImageSelector && (
+              <div className="mt-3">
+                <ImageSelectorEdit
+                  onFileSelect={(file) => setEditFile(file)}
+                  onRemove={() => setEditFile(null)}
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  {showEmojiPicker && (
+                    <EmojiPickerSimple
+                      onEmojiClick={addEmoji}
+                      onClose={() => setShowEmojiPicker(false)}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full cursor-pointer"
+                  >
+                    <Icon icon="mdi:emoticon-outline" className="text-xl" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowImageSelector(!showImageSelector)}
+                  className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full cursor-pointer"
+                >
+                  <Icon icon="mdi:image-outline" className="text-xl" />
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowEditForm(false)}
+                  className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => editar({ descripcion: editText, id: item?.id, file: editFile })}
+                  disabled={editText.trim() === "" || isEditing}
+                  className="px-4 py-2 rounded-lg text-sm bg-primary text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isEditing ? "Guardando..." : "Guardar"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -174,16 +214,9 @@ export const PublicacionCard = ({ item }) => {
             ))}
         </div>
         <div className="flex justify-between mt-4">
-          <button
-            onClick={() => {
-              setItemSelect(item);
-              mutate();
-            }}
-          >
+          <button onClick={() => { setItemSelect(item); mutate(); }}>
             <Icon
-              icon={
-                item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"
-              }
+              icon={item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"}
               className={`text-3xl p-1 rounded-full ${
                 item?.like_usuario_actual
                   ? "text-[#0091EA]"
@@ -193,10 +226,7 @@ export const PublicacionCard = ({ item }) => {
           </button>
           <button
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => {
-              setItemSelect(item);
-              setShowModal();
-            }}
+            onClick={() => { setItemSelect(item); setShowModal(); }}
           >
             <Icon
               icon="mdi:comment-outline"
@@ -207,16 +237,11 @@ export const PublicacionCard = ({ item }) => {
         </div>
         <div className="flex gap-4 mt-1">
           {item?.likes > 0 && (
-            <span className="text-xs text-gray-400">
-              {item?.likes} me gusta
-            </span>
+            <span className="text-xs text-gray-400">{item?.likes} me gusta</span>
           )}
           {item?.comentarios_count > 0 && (
             <span
-              onClick={() => {
-                setItemSelect(item);
-                setShowModal();
-              }}
+              onClick={() => { setItemSelect(item); setShowModal(); }}
               className="text-xs text-gray-400 cursor-pointer hover:underline"
             >
               {item?.comentarios_count} comentarios

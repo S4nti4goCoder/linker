@@ -73,14 +73,14 @@ export const useMostrarPostQuery = () => {
   });
 };
 
-// ✅ NUEVO
 export const useEditarPostMutate = (onClose) => {
   const { editarPost } = usePostStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["editar post"],
     mutationFn: (data) =>
-      editarPost({ descripcion: data.descripcion, id: data.id }),
+      // ✅ pasa el file si existe para subir nueva imagen
+      editarPost({ descripcion: data.descripcion, id: data.id }, data.file),
     onError: (error) => toast.error("Error al editar: " + error.message),
     onSuccess: () => {
       toast.success("¡Publicación editada!");
