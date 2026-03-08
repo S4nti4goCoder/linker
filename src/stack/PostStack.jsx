@@ -70,6 +70,7 @@ export const useMostrarPostQuery = () => {
       return allPages.length * cant_pagina;
     },
     initialPageParam: 0,
+    enabled: !!dataUsuarioAuth?.id,
   });
 };
 
@@ -104,7 +105,6 @@ export const useEliminarPostMutate = (onClose) => {
   });
 };
 
-// ✅ NUEVO
 export const useMostrarPostPublicoQuery = (id_usuario) => {
   const { mostrarPost } = usePostStore();
   const cant_pagina = 10;
@@ -124,5 +124,33 @@ export const useMostrarPostPublicoQuery = (id_usuario) => {
     },
     initialPageParam: 0,
     enabled: !!id_usuario,
+  });
+};
+
+// ✅ NUEVO - posts de seguidos
+export const useMostrarPostSeguidosQuery = (ids_seguidos) => {
+  const { dataUsuarioAuth } = useUsuariosStore();
+  const { mostrarPost } = usePostStore();
+  const cant_pagina = 10;
+
+  return useInfiniteQuery({
+    queryKey: ["mostrar post seguidos", ids_seguidos],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!ids_seguidos || ids_seguidos.length === 0) return [];
+      const results = await Promise.all(
+        ids_seguidos.map((id) =>
+          mostrarPost({ id_usuario: id, desde: pageParam, hasta: cant_pagina })
+        )
+      );
+      return results
+        .flat()
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || lastPage.length < cant_pagina) return undefined;
+      return allPages.length * cant_pagina;
+    },
+    initialPageParam: 0,
+    enabled: !!dataUsuarioAuth?.id && !!ids_seguidos,
   });
 };

@@ -14,6 +14,10 @@ import { useState, useEffect, useRef } from "react";
 import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
 import { ImageSelectorEdit } from "../../hooks/useImageSelector";
 import { useNavigate } from "react-router-dom";
+import {
+  useToggleSeguirMutate,
+  useEstadoSeguidorQuery,
+} from "../../stack/UsuariosStack";
 
 export const PublicacionCard = ({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -32,12 +36,10 @@ export const PublicacionCard = ({ item }) => {
 
   const esPropio = Number(item?.id_usuario) === Number(dataUsuarioAuth?.id);
 
-  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(
-    () => setShowConfirm(false),
-  );
-  const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() =>
-    setShowEditForm(false),
-  );
+  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(() => setShowConfirm(false));
+  const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() => setShowEditForm(false));
+  const { mutate: toggleSeguir, isPending: isSiguiendo } = useToggleSeguirMutate(item?.id_usuario);
+  const { data: estadoSeguidor } = useEstadoSeguidorQuery(esPropio ? null : item?.id_usuario);
 
   useEffect(() => {
     if (showEditForm) {
@@ -53,13 +55,12 @@ export const PublicacionCard = ({ item }) => {
     if (!textarea) return;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const newText =
-      editText.substring(0, start) + emoji + editText.substring(end);
+    const newText = editText.substring(0, start) + emoji + editText.substring(end);
     setEditText(newText);
   };
 
   const irAlPerfil = () => {
-    if (Number(item?.id_usuario) === Number(dataUsuarioAuth?.id)) {
+    if (esPropio) {
       navigate("/mi-perfil");
     } else {
       navigate(`/perfil/${item?.id_usuario}`);
@@ -69,20 +70,29 @@ export const PublicacionCard = ({ item }) => {
   return (
     <div className="border-b border-gray-500/50 p-4 relative">
       <div className="flex justify-between">
-        <div
-          className="flex items-center gap-3 cursor-pointer"
-          onClick={irAlPerfil}
-        >
+        <div className="flex items-center gap-3 cursor-pointer" onClick={irAlPerfil}>
           <img
             src={item?.foto_usuario || "https://placehold.co/48x48"}
             onError={(e) => (e.target.src = "https://placehold.co/48x48")}
             className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity"
           />
-          <span className="font-bold hover:underline">
-            {item?.nombre_usuario}
-          </span>
+          <span className="font-bold hover:underline">{item?.nombre_usuario}</span>
         </div>
         <div className="flex items-center gap-2">
+          {/* Botón seguir — solo en posts ajenos */}
+          {!esPropio && (
+            <button
+              onClick={() => toggleSeguir()}
+              disabled={isSiguiendo}
+              className={`text-xs font-semibold px-3 py-1 rounded-full border transition-all cursor-pointer disabled:opacity-50 ${
+                estadoSeguidor?.siguiendo
+                  ? "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-400"
+                  : "border-primary text-primary hover:bg-primary hover:text-white"
+              }`}
+            >
+              {estadoSeguidor?.siguiendo ? "Siguiendo" : "+ Seguir"}
+            </button>
+          )}
           <span className="text-gray-500 text-sm whitespace-nowrap">
             {useRelativeTime(item?.fecha)}
           </span>
@@ -96,35 +106,20 @@ export const PublicacionCard = ({ item }) => {
               </button>
               {showMenu && (
                 <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
-                  />
+                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                   <div className="absolute right-0 top-8 z-20 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-200 dark:border-neutral-700 overflow-hidden w-40">
                     <button
-                      onClick={() => {
-                        setShowEditForm(true);
-                        setShowMenu(false);
-                      }}
+                      onClick={() => { setShowEditForm(true); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer"
                     >
-                      <Icon
-                        icon="mdi:pencil-outline"
-                        className="text-blue-500"
-                      />
+                      <Icon icon="mdi:pencil-outline" className="text-blue-500" />
                       Editar
                     </button>
                     <button
-                      onClick={() => {
-                        setShowConfirm(true);
-                        setShowMenu(false);
-                      }}
+                      onClick={() => { setShowConfirm(true); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer text-red-500"
                     >
-                      <Icon
-                        icon="mdi:trash-can-outline"
-                        className="text-red-500"
-                      />
+                      <Icon icon="mdi:trash-can-outline" className="text-red-500" />
                       Eliminar
                     </button>
                   </div>
@@ -141,15 +136,10 @@ export const PublicacionCard = ({ item }) => {
           <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
-                <Icon
-                  icon="mdi:trash-can-outline"
-                  className="text-2xl text-red-500"
-                />
+                <Icon icon="mdi:trash-can-outline" className="text-2xl text-red-500" />
               </div>
               <h2 className="text-lg font-bold">¿Eliminar publicación?</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Esta acción no se puede deshacer.
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Esta acción no se puede deshacer.</p>
             </div>
             <div className="flex gap-3 mt-6">
               <button
@@ -181,7 +171,6 @@ export const PublicacionCard = ({ item }) => {
               <Icon icon="mdi:close" className="text-xl" />
             </button>
             <h2 className="text-lg font-bold mb-4">Editar publicación</h2>
-
             <textarea
               ref={textareaRef}
               value={editText}
@@ -189,7 +178,6 @@ export const PublicacionCard = ({ item }) => {
               className="w-full bg-gray-100 dark:bg-neutral-800 rounded-lg p-3 text-sm outline-none resize-none"
               rows={4}
             />
-
             {showImageSelector && (
               <div className="mt-3">
                 <ImageSelectorEdit
@@ -198,7 +186,6 @@ export const PublicacionCard = ({ item }) => {
                 />
               </div>
             )}
-
             <div className="flex items-center justify-between mt-4">
               <div className="flex items-center gap-2">
                 <div className="relative">
@@ -224,7 +211,6 @@ export const PublicacionCard = ({ item }) => {
                   <Icon icon="mdi:image-outline" className="text-xl" />
                 </button>
               </div>
-
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowEditForm(false)}
@@ -233,13 +219,7 @@ export const PublicacionCard = ({ item }) => {
                   Cancelar
                 </button>
                 <button
-                  onClick={() =>
-                    editar({
-                      descripcion: editText,
-                      id: item?.id,
-                      file: editFile,
-                    })
-                  }
+                  onClick={() => editar({ descripcion: editText, id: item?.id, file: editFile })}
                   disabled={editText.trim() === "" || isEditing}
                   className="px-4 py-2 rounded-lg text-sm bg-primary text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -262,16 +242,9 @@ export const PublicacionCard = ({ item }) => {
             ))}
         </div>
         <div className="flex justify-between mt-4">
-          <button
-            onClick={() => {
-              setItemSelect(item);
-              mutate();
-            }}
-          >
+          <button onClick={() => { setItemSelect(item); mutate(); }}>
             <Icon
-              icon={
-                item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"
-              }
+              icon={item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"}
               className={`text-3xl p-1 rounded-full ${
                 item?.like_usuario_actual
                   ? "text-[#0091EA]"
@@ -281,10 +254,7 @@ export const PublicacionCard = ({ item }) => {
           </button>
           <button
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => {
-              setItemSelect(item);
-              setShowModal();
-            }}
+            onClick={() => { setItemSelect(item); setShowModal(); }}
           >
             <Icon
               icon="mdi:comment-outline"
@@ -295,16 +265,11 @@ export const PublicacionCard = ({ item }) => {
         </div>
         <div className="flex gap-4 mt-1">
           {item?.likes > 0 && (
-            <span className="text-xs text-gray-400">
-              {item?.likes} me gusta
-            </span>
+            <span className="text-xs text-gray-400">{item?.likes} me gusta</span>
           )}
           {item?.comentarios_count > 0 && (
             <span
-              onClick={() => {
-                setItemSelect(item);
-                setShowModal();
-              }}
+              onClick={() => { setItemSelect(item); setShowModal(); }}
               className="text-xs text-gray-400 cursor-pointer hover:underline"
             >
               {item?.comentarios_count} comentarios

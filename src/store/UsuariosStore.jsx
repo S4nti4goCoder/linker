@@ -74,7 +74,6 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return data;
   },
-  // ✅ NUEVO
   buscarUsuarios: async (query) => {
     const { data, error } = await supabase
       .from(tabla)
@@ -84,5 +83,44 @@ export const useUsuariosStore = create((set) => ({
       .limit(10);
     if (error) throw new Error(error.message);
     return data;
+  },
+  // ✅ NUEVO - seguidores
+  toggleSeguir: async ({ id_seguidor, id_seguido }) => {
+    const { error } = await supabase.rpc("toggle_seguir", {
+      p_seguidor: id_seguidor,
+      p_seguido: id_seguido,
+    });
+    if (error) throw new Error(error.message);
+  },
+  obtenerEstadoSeguidor: async ({ id_seguidor, id_seguido }) => {
+    const { data, error } = await supabase
+      .from("seguidores")
+      .select("id")
+      .eq("id_seguidor", id_seguidor)
+      .eq("id_seguido", id_seguido)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { siguiendo: !!data };
+  },
+  obtenerConteoSeguidores: async (id_usuario) => {
+    const [{ count: seguidores }, { count: siguiendo }] = await Promise.all([
+      supabase
+        .from("seguidores")
+        .select("*", { count: "exact", head: true })
+        .eq("id_seguido", id_usuario),
+      supabase
+        .from("seguidores")
+        .select("*", { count: "exact", head: true })
+        .eq("id_seguidor", id_usuario),
+    ]);
+    return { seguidores, siguiendo };
+  },
+  obtenerSeguidos: async (id_seguidor) => {
+    const { data, error } = await supabase
+      .from("seguidores")
+      .select("id_seguido")
+      .eq("id_seguidor", id_seguidor);
+    if (error) throw new Error(error.message);
+    return data?.map((s) => s.id_seguido) ?? [];
   },
 }));
