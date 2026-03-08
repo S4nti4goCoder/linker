@@ -36,12 +36,9 @@ export const useEditarFotoUserMutate = (onClose) => {
     },
     onSuccess: () => {
       toast.success("¡Datos guardados!");
-      // Sintaxis correcta para TanStack Query v5
       queryClient.invalidateQueries({ queryKey: ["mostrar user auth"] });
-      // Limpiar el file del store
       setFile([]);
       setFileUrl("-");
-      // Cerrar el form si viene del perfil
       if (onClose) onClose();
     },
   });
@@ -52,5 +49,15 @@ export const useContarUsuariosTodosQuery = () => {
   return useQuery({
     queryKey: ["contar usuarios todos"],
     queryFn: contarUsuariosTodos,
+  });
+};
+
+// ✅ NUEVO
+export const useBuscarUsuariosQuery = (query) => {
+  const { buscarUsuarios } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["buscar usuarios", query],
+    queryFn: () => buscarUsuarios(query),
+    enabled: query.trim().length >= 2,
   });
 };

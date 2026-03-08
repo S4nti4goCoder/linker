@@ -65,13 +65,23 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return count;
   },
-  // ✅ NUEVO
   obtenerUsuarioPorId: async (id) => {
     const { data, error } = await supabase
       .from(tabla)
       .select()
       .eq("id", id)
       .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+  // ✅ NUEVO
+  buscarUsuarios: async (query) => {
+    const { data, error } = await supabase
+      .from(tabla)
+      .select("id, nombre, foto_perfil")
+      .ilike("nombre", `%${query}%`)
+      .order("nombre")
+      .limit(10);
     if (error) throw new Error(error.message);
     return data;
   },
