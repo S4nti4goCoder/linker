@@ -10,9 +10,11 @@ export const useImageSelector = () => {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const { setFile: setFilePost } = usePostStore();
+
   const openFileSelector = () => {
     fileInputRef.current?.click();
   };
+
   const handleImageChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
@@ -52,6 +54,7 @@ export const useImageSelector = () => {
       setFiletype("video");
     }
   };
+
   const removeImage = () => {
     setFile(null);
     setFileUrl("");
@@ -60,21 +63,11 @@ export const useImageSelector = () => {
       fileInputRef.current.value = "";
     }
   };
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
+
+  const handleDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+
   const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -83,38 +76,22 @@ export const useImageSelector = () => {
     if (!droppedFile) return;
     await handleImageChange({ target: { files: [droppedFile] } });
   };
+
   return {
-    file,
-    fileUrl,
-    fileType,
-    fileInputRef,
-    handleImageChange,
-    openFileSelector,
-    removeImage,
-    isDragging,
-    handleDragEnter,
-    handleDragLeave,
-    handleDragOver,
-    handleDrop,
+    file, fileUrl, fileType, fileInputRef,
+    handleImageChange, openFileSelector, removeImage,
+    isDragging, handleDragEnter, handleDragLeave, handleDragOver, handleDrop,
   };
 };
 
 export const ImageSelector = () => {
   const { setStateImage } = usePostStore();
   const {
-    file,
-    fileUrl,
-    fileType,
-    fileInputRef,
-    handleImageChange,
-    openFileSelector,
-    removeImage,
-    isDragging,
-    handleDragEnter,
-    handleDragLeave,
-    handleDragOver,
-    handleDrop,
+    fileUrl, fileType, fileInputRef,
+    handleImageChange, openFileSelector, removeImage,
+    isDragging, handleDragEnter, handleDragLeave, handleDragOver, handleDrop,
   } = useImageSelector();
+
   return (
     <section className="relative w-full max-w-md bg-[#242526] rounded-lg shadow-xl overflow-hidden">
       <header className="relative h-12 flex items-center justify-center border-b border-gray-700">
@@ -161,21 +138,15 @@ export const ImageSelector = () => {
               onClick={openFileSelector}
               className="absolute bottom-2 right-2 w-8 h-8 bg-black bg-opacity-60 rounded-full border-none cursor-pointer flex items-center justify-center transition duration-300 opacity-0 group-hover:opacity-100 hover:bg-opacity-80"
             >
-              <Icon
-                icon="lets-icons:edit-fill"
-                className="text-white text-lg"
-              />
+              <Icon icon="lets-icons:edit-fill" className="text-white text-lg" />
             </button>
           </div>
         ) : (
           <>
             <div className="w-16 h-16 rounded-full bg-[#3a3b3c] flex items-center justify-center mb-4">
-              <Icon
-                icon="mdi:video-image"
-                className="text-3xl text-[#e4e6eb]"
-              />
+              <Icon icon="mdi:video-image" className="text-3xl text-[#e4e6eb]" />
             </div>
-            <h3 className="text-white text-lg front-medium mb-1">
+            <h3 className="text-white text-lg font-medium mb-1">
               Agregar fotos/videos
             </h3>
             <p className="text-gray-400 text-sm">o arrastra y suelta</p>
@@ -192,7 +163,7 @@ export const ImageSelector = () => {
         type="file"
         accept="image/*,video/*"
         ref={fileInputRef}
-        onClick={handleImageChange}
+        onChange={handleImageChange} // ✅ fix: era onClick
         className="hidden"
       />
     </section>

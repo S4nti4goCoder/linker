@@ -14,7 +14,7 @@ export const useInsertarRespuestaComentarioMutate = () => {
     limpiarRespuestaActiva,
   } = useRespuestasComentariosStore();
   const { dataUsuarioAuth } = useUsuariosStore();
-  const fechaActual = useFormattedDate;
+  const fechaActual = useFormattedDate(); // ✅ fix: era useFormattedDate sin ()
   return useMutation({
     mutationKey: ["insertar respuesta a comentario"],
     mutationFn: () =>

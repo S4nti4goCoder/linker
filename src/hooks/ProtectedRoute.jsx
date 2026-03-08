@@ -3,19 +3,16 @@ import { useSubcription } from "../store/AuthStore";
 
 export const ProtectedRoute = ({ children, authenticated = true }) => {
   const { user } = useSubcription();
+
   if (authenticated === false) {
-    if (!user) {
-      return children;
-    } else {
-      return <Navigate to={"/"} replace />;
-    }
+    if (!user) return children;
+    return <Navigate to={"/"} replace />;
   }
+
   if (authenticated) {
-    if (user) {
-      return children;
-    } else {
-      return <Navigate to={"/login"} replace />;
-    }
+    if (user) return children;
+    return <Navigate to={"/login"} replace />;
   }
-  return <navigate to="/login" replace />;
+
+  return <Navigate to="/login" replace />; // ✅ fix: era <navigate> en minúscula
 };

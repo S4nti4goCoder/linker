@@ -5,18 +5,14 @@ const tabla = "usuarios";
 
 const editarUsuarios = async (p, fileold, filenew) => {
   const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
+
   if (filenew !== "-" && filenew.size !== undefined) {
     if (fileold != "-") {
-      await editarFileStorage(p.id, filenew);
+      await editarFileStorage(p.id, filenew); // actualizar foto existente
     } else {
       const dataImagen = await subirArchivo(p.id, filenew);
-      const peditar = {
-        foto_perfil: dataImagen.publicUrl,
-        id: p.id,
-      };
+      const peditar = { foto_perfil: dataImagen.publicUrl, id: p.id };
       await editarFotoUser(peditar);
     }
   }
@@ -24,22 +20,15 @@ const editarUsuarios = async (p, fileold, filenew) => {
 
 const editarFotoUser = async (p) => {
   const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 };
 
 const subirArchivo = async (id, file) => {
   const ruta = "usuarios/" + id;
   const { data, error } = await supabase.storage
     .from("archivos")
-    .upload(ruta, file, {
-      cacheControl: "0",
-      upsert: true,
-    });
-  if (error) {
-    throw new Error(error.message);
-  }
+    .upload(ruta, file, { cacheControl: "0", upsert: true });
+  if (error) throw new Error(error.message);
   if (data) {
     const { data: urlimagen } = await supabase.storage
       .from("archivos")
@@ -50,10 +39,9 @@ const subirArchivo = async (id, file) => {
 
 const editarFileStorage = async (id, file) => {
   const ruta = "usuarios/" + id;
-  await supabase.storage.from("imagenes").update(ruta, file, {
-    cacheControl: "0",
-    upsert: true,
-  });
+  await supabase.storage
+    .from("archivos") // ✅ fix: era "imagenes"
+    .update(ruta, file, { cacheControl: "0", upsert: true });
 };
 
 export const useUsuariosStore = create((set) => ({
@@ -64,9 +52,7 @@ export const useUsuariosStore = create((set) => ({
       .select()
       .eq("id_auth", p.id_auth)
       .maybeSingle();
-    if (error) {
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
     set({ dataUsuarioAuth: data });
     return data;
   },
@@ -77,9 +63,7 @@ export const useUsuariosStore = create((set) => ({
     const { count, error } = await supabase
       .from(tabla)
       .select("*", { count: "exact", head: true });
-    if (error) {
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
     return count;
   },
 }));
