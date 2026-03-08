@@ -2,14 +2,14 @@ import { Icon } from "@iconify/react";
 import { useRef } from "react";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
-import { useGlobalStore } from "../store/GlobalStore";
 
-export const ImageSelectorFoto = () => {
-  const { setFile, setFileUrl, fileUrl } = useGlobalStore();
+export const ImageSelectorFoto = ({ onFileChange, fileUrl }) => {
   const fileInputRef = useRef(null);
+
   function openFileSelector() {
     fileInputRef.current.click();
   }
+
   const handleImageChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
@@ -26,21 +26,19 @@ export const ImageSelectorFoto = () => {
       const compressedFile = await imageCompression(selectedFile, options);
       const fileReader = new FileReader();
       fileReader.readAsDataURL(compressedFile);
-      setFile(compressedFile);
       fileReader.onload = () => {
-        setFileUrl(fileReader.result);
+        onFileChange(compressedFile, fileReader.result);
       };
     } catch (error) {
       toast.error("Error al comprimir la imagen:", error);
     }
   };
+
   return (
     <div className="text-center mb-5">
       <div className="relative inline-block">
         <img
-          src={
-            fileUrl !== "-" ? fileUrl : "https://i.ibb.co/39y0kysq/subir.png"
-          }
+          src={fileUrl !== "-" ? fileUrl : "https://i.ibb.co/39y0kysq/subir.png"}
           alt="imagen select"
           className="w-20 h-20 rounded-lg object-cover transition-transform duration-300 hover:scale-105"
         />

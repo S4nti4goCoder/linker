@@ -1,22 +1,29 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { ImageSelectorFoto } from "../../hooks/useImageSelectorFoto";
 import { useEditarFotoUserMutate } from "../../stack/UsuariosStack";
 import { BtnClose } from "../ui/buttons/BtnClose";
 
 export const FormActualizarPerfil = ({ onClose }) => {
+  const [file, setFile] = useState(null);
+  const [fileUrl, setFileUrl] = useState("-");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  // Pasamos onClose al hook para que cierre al terminar
   const { mutate, isPending } = useEditarFotoUserMutate(onClose);
+
+  const handleFileChange = (compressedFile, previewUrl) => {
+    setFile(compressedFile);
+    setFileUrl(previewUrl);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        {/* X solo aparece si se puede cerrar (desde perfil, no onboarding) */}
         {onClose && <BtnClose funcion={onClose} />}
         <h1 className="text-2xl font-bold text-center mb-4">
           Actualización de datos
@@ -25,9 +32,9 @@ export const FormActualizarPerfil = ({ onClose }) => {
           <span className="text-gray-500 dark:text-gray-300">
             Agrega tu foto de perfil
           </span>
-          <ImageSelectorFoto />
+          <ImageSelectorFoto onFileChange={handleFileChange} fileUrl={fileUrl} />
         </section>
-        <form onSubmit={handleSubmit(mutate)}>
+        <form onSubmit={handleSubmit((data) => mutate({ ...data, file }))}>
           <div className="mb-4">
             <input
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00aff0]"

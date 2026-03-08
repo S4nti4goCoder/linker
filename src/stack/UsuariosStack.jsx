@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSubcription } from "../store/AuthStore";
 import { useUsuariosStore } from "../store/UsuariosStore";
-import { useGlobalStore } from "../store/GlobalStore";
 import { toast } from "sonner";
 
 export const useMostrarUsuarioAuthQuery = () => {
@@ -15,7 +14,6 @@ export const useMostrarUsuarioAuthQuery = () => {
 };
 
 export const useEditarFotoUserMutate = (onClose) => {
-  const { file, setFile, setFileUrl } = useGlobalStore();
   const { editarUsuarios, dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
 
@@ -26,14 +24,12 @@ export const useEditarFotoUserMutate = (onClose) => {
         throw new Error("El nombre debe tener al menos 3 caracteres");
       }
       const p = { nombre: data.nombre, id: dataUsuarioAuth?.id };
-      await editarUsuarios(p, dataUsuarioAuth?.foto_perfil, file);
+      await editarUsuarios(p, dataUsuarioAuth?.foto_perfil, data.file ?? null);
     },
     onError: (error) => toast.error("Error al guardar: " + error.message),
     onSuccess: () => {
       toast.success("¡Datos guardados!");
       queryClient.invalidateQueries({ queryKey: ["mostrar user auth"] });
-      setFile([]);
-      setFileUrl("-");
       if (onClose) onClose();
     },
   });
@@ -56,10 +52,8 @@ export const useBuscarUsuariosQuery = (query) => {
   });
 };
 
-// ✅ NUEVO - seguidores
 export const useToggleSeguirMutate = (id_seguido) => {
-  const { toggleSeguir } = useUsuariosStore();
-  const { dataUsuarioAuth } = useUsuariosStore();
+  const { toggleSeguir, dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -79,8 +73,7 @@ export const useToggleSeguirMutate = (id_seguido) => {
 };
 
 export const useEstadoSeguidorQuery = (id_seguido) => {
-  const { obtenerEstadoSeguidor } = useUsuariosStore();
-  const { dataUsuarioAuth } = useUsuariosStore();
+  const { obtenerEstadoSeguidor, dataUsuarioAuth } = useUsuariosStore();
 
   return useQuery({
     queryKey: ["estado seguidor", id_seguido],
