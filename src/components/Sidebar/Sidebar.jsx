@@ -18,8 +18,8 @@ const linksPróximamente = [
 export const Sidebar = () => {
   return (
     <div className="h-screen p-2 bg-white dark:bg-bg-dark transition-all duration-300 flex flex-col">
-      <div className="flex justify-center items-center h-8 w-8 rounded-full bg-blue-100 text-primary font-bold text-xs m-2">
-        LK
+      <div className="flex justify-center items-center h-8 w-8 rounded-full m-2 overflow-hidden">
+        <img src="/favicon.svg" className="w-full h-full" />
       </div>
       <nav className="flex-1 flex flex-col gap-2 items-center">
         {linksActivos.map((item, index) => (
