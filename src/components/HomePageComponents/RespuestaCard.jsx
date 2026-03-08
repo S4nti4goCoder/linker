@@ -9,6 +9,7 @@ export const RespuestaCard = ({ item }) => {
         <div className="relative bg-gray-100 dark:bg-neutral-800 p-2 rounded-xl text-sm w-fit max-w-[90%] flex gap-2 ">
           <img
             src={item?.usuarios?.foto_perfil || "https://placehold.co/40x40"}
+            onError={(e) => (e.target.src = "https://placehold.co/40x40")}
             className="w-9 h-9 rounded-full object-cover"
             alt="avatar"
           />

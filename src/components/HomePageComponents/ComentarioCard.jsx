@@ -3,7 +3,10 @@ import { useComentariosStore } from "../../store/ComentariosStore";
 import { useRespuestasComentariosStore } from "../../store/RespuestasComentariosStore";
 import { InputRespuestaAComentario } from "./InputRespuestaAComentario";
 import { RespuestaCard } from "./RespuestaCard";
-import { useToggleLikeComentarioMutate, useObtenerLikesComentarioQuery } from "../../stack/ComentariosStack";
+import {
+  useToggleLikeComentarioMutate,
+  useObtenerLikesComentarioQuery,
+} from "../../stack/ComentariosStack";
 import { Icon } from "@iconify/react";
 
 export const ComentarioCard = ({ item }) => {
@@ -13,7 +16,8 @@ export const ComentarioCard = ({ item }) => {
     setRespuestaActiva,
     dataRespuestaComentario,
   } = useRespuestasComentariosStore();
-  const { setItemSelect, itemSelect: itemSelectComentario } = useComentariosStore();
+  const { setItemSelect, itemSelect: itemSelectComentario } =
+    useComentariosStore();
 
   const { data: likesData } = useObtenerLikesComentarioQuery(item?.id);
   const { mutate: toggleLike } = useToggleLikeComentarioMutate(item?.id);
@@ -23,6 +27,7 @@ export const ComentarioCard = ({ item }) => {
       <div className="flex items-start gap-2 group relative w-full">
         <img
           src={item?.foto_perfil || "https://placehold.co/36x36"}
+          onError={(e) => (e.target.src = "https://placehold.co/36x36")}
           className="w-9 h-9 rounded-full object-cover"
         />
         <div className="flex-1 relative">

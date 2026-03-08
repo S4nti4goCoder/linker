@@ -27,6 +27,7 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
           <img
             ref={imgRef}
             src={usuario?.foto_perfil || "https://placehold.co/96x96"}
+            onError={(e) => (e.target.src = "https://placehold.co/96x96")}
             crossOrigin="anonymous"
             className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-bg-dark"
           />
