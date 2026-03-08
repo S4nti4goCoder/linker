@@ -8,7 +8,7 @@ import {
   useEditarPostMutate,
 } from "../../stack/PostStack";
 import { useComentariosStore } from "../../store/ComentariosStore";
-import { useRelativeTime } from "../../hooks/useRelativeTime";
+import { getRelativeTime } from "../../hooks/useRelativeTime";
 import { useUsuariosStore } from "../../store/UsuariosStore";
 import { useState, useEffect, useRef } from "react";
 import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
@@ -94,7 +94,7 @@ export const PublicacionCard = ({ item }) => {
             </button>
           )}
           <span className="text-gray-500 text-sm whitespace-nowrap">
-            {useRelativeTime(item?.fecha)}
+            {getRelativeTime(item?.fecha)}
           </span>
           {esPropio && (
             <div className="relative">

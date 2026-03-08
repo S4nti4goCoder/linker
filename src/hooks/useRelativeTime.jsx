@@ -27,6 +27,6 @@ dayjs.updateLocale("es", {
   },
 });
 
-export function useRelativeTime(date) {
+export function getRelativeTime(date) {
   return dayjs.utc(date).local().fromNow();
 }

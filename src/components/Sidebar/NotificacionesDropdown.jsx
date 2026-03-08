@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import { useNotificacionesStore } from "../../store/NotificacionesStore";
 import { useUsuariosStore } from "../../store/UsuariosStore";
 import { supabase } from "../../supabase/supabase.config";
-import { useRelativeTime } from "../../hooks/useRelativeTime";
+import { getRelativeTime } from "../../hooks/useRelativeTime";
 
 const iconoTipo = {
   like: { icon: "mdi:heart", color: "text-red-500 bg-red-100 dark:bg-red-500/20" },
@@ -27,7 +27,7 @@ const NotificacionItem = ({ notif }) => {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{notif.mensaje}</p>
-        <span className="text-xs text-gray-400">{useRelativeTime(notif.fecha)}</span>
+        <span className="text-xs text-gray-400">{getRelativeTime(notif.fecha)}</span>
       </div>
       {!notif.leida && (
         <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />

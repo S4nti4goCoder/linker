@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useRelativeTime } from "../../hooks/useRelativeTime";
+import { getRelativeTime } from "../../hooks/useRelativeTime";
 
 export const RespuestaCard = ({ item }) => {
   return (
@@ -27,7 +27,7 @@ export const RespuestaCard = ({ item }) => {
           </div>
         </div>
         <div className="flex gap-3 mt-1 text-xs text-gray-500 ml-2 relative">
-          <span>{useRelativeTime(item.fecha)} </span>
+          <span>{getRelativeTime(item.fecha)} </span>
         </div>
       </div>
     </div>

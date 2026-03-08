@@ -1,4 +1,4 @@
-import { useRelativeTime } from "../../hooks/useRelativeTime";
+import { getRelativeTime } from "../../hooks/useRelativeTime";
 import { useComentariosStore } from "../../store/ComentariosStore";
 import { useRespuestasComentariosStore } from "../../store/RespuestasComentariosStore";
 import { InputRespuestaAComentario } from "./InputRespuestaAComentario";
@@ -48,7 +48,7 @@ export const ComentarioCard = ({ item }) => {
           )}
 
           <div className="flex gap-3 mt-2 text-xs text-gray-500 ml-2 relative">
-            <span>{useRelativeTime(item?.fecha)}</span>
+            <span>{getRelativeTime(item?.fecha)}</span>
             <button
               onClick={() => toggleLike()}
               className={`font-semibold hover:underline cursor-pointer transition-colors ${

@@ -12,6 +12,7 @@ import {
   useToggleSeguirMutate,
   useEstadoSeguidorQuery,
   useConteoSeguidoresQuery,
+  useObtenerUsuarioPorIdQuery,
 } from "../stack/UsuariosStack";
 
 const PerfilPublicoHeader = ({ usuario, id }) => {
@@ -46,7 +47,11 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
             }`}
           >
             <Icon
-              icon={estadoSeguidor?.siguiendo ? "mdi:account-check" : "mdi:account-plus"}
+              icon={
+                estadoSeguidor?.siguiendo
+                  ? "mdi:account-check"
+                  : "mdi:account-plus"
+              }
               width={16}
             />
             {estadoSeguidor?.siguiendo ? "Siguiendo" : "Seguir"}
@@ -55,8 +60,18 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
         <div className="mt-3">
           <h1 className="text-xl font-bold">{usuario?.nombre}</h1>
           <div className="flex gap-4 mt-1 text-sm text-gray-500">
-            <span><strong className="text-black dark:text-white">{conteo?.seguidores ?? 0}</strong> seguidores</span>
-            <span><strong className="text-black dark:text-white">{conteo?.siguiendo ?? 0}</strong> siguiendo</span>
+            <span>
+              <strong className="text-black dark:text-white">
+                {conteo?.seguidores ?? 0}
+              </strong>{" "}
+              seguidores
+            </span>
+            <span>
+              <strong className="text-black dark:text-white">
+                {conteo?.siguiendo ?? 0}
+              </strong>{" "}
+              siguiendo
+            </span>
           </div>
         </div>
       </div>
@@ -66,7 +81,8 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
 
 const PerfilPublicoStats = ({ posts }) => {
   const totalPosts = posts?.length ?? 0;
-  const totalLikes = posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
+  const totalLikes =
+    posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
   return (
     <div className="flex border-b border-gray-200 dark:border-gray-600">
       <div className="flex-1 py-3 text-center">
@@ -83,19 +99,11 @@ const PerfilPublicoStats = ({ posts }) => {
 
 export const PerfilPublicoPage = () => {
   const { id } = useParams();
-  const { obtenerUsuarioPorId } = useUsuariosStore();
   const { showModal } = useComentariosStore();
-  const [usuario, setUsuario] = useState(null);
-  const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    obtenerUsuarioPorId(Number(id))
-      .then((data) => setUsuario(data))
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: usuario, isLoading: loading } = useObtenerUsuarioPorIdQuery(
+    Number(id),
+  );
 
   const {
     data: dataPost,
@@ -121,10 +129,7 @@ export const PerfilPublicoPage = () => {
     return () => el.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const posts =
-    dataPost?.pages
-      ?.flatMap((p) => p)
-      ?.filter((post) => Number(post?.id_usuario) === Number(id)) ?? [];
+  const posts = dataPost?.pages?.flatMap((p) => p) ?? [];
 
   if (loading) return <SpinnerLocal />;
 
@@ -146,9 +151,7 @@ export const PerfilPublicoPage = () => {
               <p className="text-sm">Este usuario no tiene publicaciones</p>
             </div>
           ) : (
-            posts.map((item, index) => (
-              <PublicacionCard key={index} item={item} />
-            ))
+            posts.map((item) => <PublicacionCard key={item.id} item={item} />)
           )}
           {isFetchingNextPage && <SpinnerLocal />}
         </div>

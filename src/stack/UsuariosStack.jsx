@@ -110,3 +110,12 @@ export const useSeguidosQuery = (id_seguidor) => {
     enabled: !!id_seguidor,
   });
 };
+
+export const useObtenerUsuarioPorIdQuery = (id) => {
+  const { obtenerUsuarioPorId } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["usuario por id", id],
+    queryFn: () => obtenerUsuarioPorId(id),
+    enabled: !!id,
+  });
+};
