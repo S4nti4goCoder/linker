@@ -13,12 +13,14 @@ import { useUsuariosStore } from "../../store/UsuariosStore";
 import { useState, useEffect, useRef } from "react";
 import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
 import { ImageSelectorEdit } from "../../hooks/useImageSelector";
+import { useNavigate } from "react-router-dom";
 
 export const PublicacionCard = ({ item }) => {
   const { setItemSelect } = usePostStore();
   const { mutate } = useLikePostMutate();
   const { setShowModal } = useComentariosStore();
   const { dataUsuarioAuth } = useUsuariosStore();
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -51,12 +53,26 @@ export const PublicacionCard = ({ item }) => {
     setEditText(newText);
   };
 
+  const irAlPerfil = () => {
+    if (Number(item?.id_usuario) === Number(dataUsuarioAuth?.id)) {
+      navigate("/mi-perfil");
+    } else {
+      navigate(`/perfil/${item?.id_usuario}`);
+    }
+  };
+
   return (
     <div className="border-b border-gray-500/50 p-4 relative">
       <div className="flex justify-between">
-        <div className="flex items-center gap-3">
-          <img src={item?.foto_usuario} className="w-12 h-12 rounded-full object-cover" />
-          <span className="font-bold">{item?.nombre_usuario}</span>
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={irAlPerfil}
+        >
+          <img
+            src={item?.foto_usuario}
+            className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity"
+          />
+          <span className="font-bold hover:underline">{item?.nombre_usuario}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-gray-500 text-sm whitespace-nowrap">

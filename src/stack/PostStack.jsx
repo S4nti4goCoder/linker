@@ -79,7 +79,6 @@ export const useEditarPostMutate = (onClose) => {
   return useMutation({
     mutationKey: ["editar post"],
     mutationFn: (data) =>
-      // ✅ pasa el file si existe para subir nueva imagen
       editarPost({ descripcion: data.descripcion, id: data.id }, data.file),
     onError: (error) => toast.error("Error al editar: " + error.message),
     onSuccess: () => {
@@ -102,5 +101,28 @@ export const useEliminarPostMutate = (onClose) => {
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
       if (onClose) onClose();
     },
+  });
+};
+
+// ✅ NUEVO
+export const useMostrarPostPublicoQuery = (id_usuario) => {
+  const { mostrarPost } = usePostStore();
+  const cant_pagina = 10;
+  return useInfiniteQuery({
+    queryKey: ["mostrar post publico", { id_usuario }],
+    queryFn: async ({ pageParam = 0 }) => {
+      const data = await mostrarPost({
+        id_usuario,
+        desde: pageParam,
+        hasta: cant_pagina,
+      });
+      return data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || lastPage.length < cant_pagina) return undefined;
+      return allPages.length * cant_pagina;
+    },
+    initialPageParam: 0,
+    enabled: !!id_usuario,
   });
 };

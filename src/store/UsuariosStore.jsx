@@ -6,10 +6,9 @@ const tabla = "usuarios";
 const editarUsuarios = async (p, fileold, filenew) => {
   const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
   if (error) throw new Error(error.message);
-
   if (filenew !== "-" && filenew.size !== undefined) {
     if (fileold != "-") {
-      await editarFileStorage(p.id, filenew); // actualizar foto existente
+      await editarFileStorage(p.id, filenew);
     } else {
       const dataImagen = await subirArchivo(p.id, filenew);
       const peditar = { foto_perfil: dataImagen.publicUrl, id: p.id };
@@ -40,7 +39,7 @@ const subirArchivo = async (id, file) => {
 const editarFileStorage = async (id, file) => {
   const ruta = "usuarios/" + id;
   await supabase.storage
-    .from("archivos") // ✅ fix: era "imagenes"
+    .from("archivos")
     .update(ruta, file, { cacheControl: "0", upsert: true });
 };
 
@@ -65,5 +64,15 @@ export const useUsuariosStore = create((set) => ({
       .select("*", { count: "exact", head: true });
     if (error) throw new Error(error.message);
     return count;
+  },
+  // ✅ NUEVO
+  obtenerUsuarioPorId: async (id) => {
+    const { data, error } = await supabase
+      .from(tabla)
+      .select()
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
   },
 }));
