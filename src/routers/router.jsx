@@ -6,6 +6,7 @@ import { ProtectedRoute } from "../hooks/ProtectedRoute";
 import { MiPerfilPage } from "../pages/MiPerfilPage";
 import { PerfilPublicoPage } from "../pages/PerfilPublicoPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { MensajesPage } from "../pages/MensajesPage";
 
 export function MyRoutes() {
   return (
@@ -30,9 +31,9 @@ export function MyRoutes() {
           <Route index element={<HomePage />} />
           <Route path="/mi-perfil" element={<MiPerfilPage />} />
           <Route path="/perfil/:id" element={<PerfilPublicoPage />} />
+          <Route path="/mensajes" element={<MensajesPage />} />
         </Route>
 
-        {/* ✅ 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
