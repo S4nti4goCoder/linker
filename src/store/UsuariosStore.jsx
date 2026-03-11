@@ -3,27 +3,15 @@ import { supabase } from "../supabase/supabase.config";
 
 const tabla = "usuarios";
 
-const editarUsuarios = async (p, fileold, filenew) => {
-  const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
-  if (error) throw new Error(error.message);
-  if (filenew !== "-" && filenew.size !== undefined) {
-    if (fileold != "-") {
-      await editarFileStorage(p.id, filenew);
-    } else {
-      const dataImagen = await subirArchivo(p.id, filenew);
-      const peditar = { foto_perfil: dataImagen.publicUrl, id: p.id };
-      await editarFotoUser(peditar);
-    }
-  }
+// Utilidad compartida: construye ruta con extensión
+const construirRuta = (carpeta, id, filename) => {
+  const ext = filename?.split(".").pop()?.toLowerCase();
+  return `${carpeta}/${id}.${ext}`;
 };
 
-const editarFotoUser = async (p) => {
-  const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
-  if (error) throw new Error(error.message);
-};
-
-const subirArchivo = async (id, file) => {
-  const ruta = "usuarios/" + id;
+// Sube o reemplaza la foto de perfil en Storage y retorna la URL pública
+const subirOReemplazarFotoPerfil = async (id, file) => {
+  const ruta = construirRuta("usuarios", id, file.name);
   const { data, error } = await supabase.storage
     .from("archivos")
     .upload(ruta, file, { cacheControl: "0", upsert: true });
@@ -32,15 +20,23 @@ const subirArchivo = async (id, file) => {
     const { data: urlimagen } = await supabase.storage
       .from("archivos")
       .getPublicUrl(ruta);
-    return urlimagen;
+    return urlimagen.publicUrl;
   }
 };
 
-const editarFileStorage = async (id, file) => {
-  const ruta = "usuarios/" + id;
-  await supabase.storage
-    .from("archivos")
-    .update(ruta, file, { cacheControl: "0", upsert: true });
+const editarUsuarios = async (p, fileold, filenew) => {
+  const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
+  if (error) throw new Error(error.message);
+
+  // Si hay un archivo nuevo (no es el placeholder "-" y tiene contenido real)
+  if (filenew !== "-" && filenew?.size !== undefined) {
+    const publicUrl = await subirOReemplazarFotoPerfil(p.id, filenew);
+    const { error: errorFoto } = await supabase
+      .from(tabla)
+      .update({ foto_perfil: publicUrl })
+      .eq("id", p.id);
+    if (errorFoto) throw new Error(errorFoto.message);
+  }
 };
 
 export const useUsuariosStore = create((set) => ({
@@ -84,7 +80,6 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return data;
   },
-  // ✅ NUEVO - seguidores
   toggleSeguir: async ({ id_seguidor, id_seguido }) => {
     const { error } = await supabase.rpc("toggle_seguir", {
       p_seguidor: id_seguidor,

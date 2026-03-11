@@ -3,6 +3,32 @@ import { supabase } from "../supabase/supabase.config";
 
 const tabla = "publicaciones";
 
+// Utilidad: infiere el tipo de medio a partir del nombre del archivo
+const inferirTipo = (filename) => {
+  const ext = filename?.split(".").pop()?.toLowerCase();
+  return ["mp4", "mov", "webm"].includes(ext) ? "video" : "imagen";
+};
+
+// Utilidad: construye la ruta con extensión correcta
+const construirRuta = (carpeta, id, filename) => {
+  const ext = filename?.split(".").pop()?.toLowerCase();
+  return `${carpeta}/${id}.${ext}`;
+};
+
+const subirArchivo = async (carpeta, id, file) => {
+  const ruta = construirRuta(carpeta, id, file.name);
+  const { data, error } = await supabase.storage
+    .from("archivos")
+    .upload(ruta, file, { cacheControl: "0", upsert: true });
+  if (error) throw new Error(error.message);
+  if (data) {
+    const { data: urlimagen } = await supabase.storage
+      .from("archivos")
+      .getPublicUrl(ruta);
+    return { publicUrl: urlimagen.publicUrl, type: inferirTipo(file.name) };
+  }
+};
+
 const InsertarPost = async (p, file) => {
   const { data, error } = await supabase
     .from(tabla)
@@ -12,8 +38,12 @@ const InsertarPost = async (p, file) => {
   if (error) throw new Error(error.message);
   if (file) {
     const nuevo_id = data?.id;
-    const urlImagen = await subirArchivo(nuevo_id, file);
-    const pUrl = { url: urlImagen.publicUrl, id: nuevo_id };
+    const resultado = await subirArchivo("publicaciones", nuevo_id, file);
+    const pUrl = {
+      url: resultado.publicUrl,
+      type: resultado.type,
+      id: nuevo_id,
+    };
     await EditarPublicacion(pUrl);
   }
 };
@@ -21,20 +51,6 @@ const InsertarPost = async (p, file) => {
 const EditarPublicacion = async (p) => {
   const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
   if (error) throw new Error(error.message);
-};
-
-const subirArchivo = async (id, file) => {
-  const ruta = "publicaciones/" + id;
-  const { data, error } = await supabase.storage
-    .from("archivos")
-    .upload(ruta, file, { cacheControl: "0", upsert: true });
-  if (error) throw new Error(error.message);
-  if (data) {
-    const { data: urlimagen } = await supabase.storage
-      .from("archivos")
-      .getPublicUrl(ruta);
-    return urlimagen;
-  }
 };
 
 export const usePostStore = create((set) => ({
@@ -60,7 +76,6 @@ export const usePostStore = create((set) => ({
         _id_autor: p.id_autor ?? null,
       })
       .range(p.desde, p.desde + p.hasta - 1);
-
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     set({ dataPost: data });
@@ -82,20 +97,9 @@ export const usePostStore = create((set) => ({
   },
   editarPost: async (p, file) => {
     if (file) {
-      const ruta = "publicaciones/" + p.id;
-      const { data, error } = await supabase.storage
-        .from("archivos")
-        .upload(ruta, file, { cacheControl: "0", upsert: true });
-      if (error) throw new Error(error.message);
-      if (data) {
-        const { data: urlimagen } = await supabase.storage
-          .from("archivos")
-          .getPublicUrl(ruta);
-        const ext = file.name?.split(".").pop()?.toLowerCase();
-        const type = ["mp4", "mov", "webm"].includes(ext) ? "video" : "imagen";
-        p.url = urlimagen.publicUrl;
-        p.type = type;
-      }
+      const resultado = await subirArchivo("publicaciones", p.id, file);
+      p.url = resultado.publicUrl;
+      p.type = resultado.type;
     }
     await EditarPublicacion(p);
   },
