@@ -13,6 +13,45 @@ export const useMostrarUsuarioAuthQuery = () => {
   });
 };
 
+export const useEditarPerfilMutate = (onClose) => {
+  const { editarUsuarios, subirBanner, dataUsuarioAuth } = useUsuariosStore();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["editar perfil"],
+    mutationFn: async ({ nombre, bio, instagram, twitter, website, fileFoto, fileBanner }) => {
+      if (!nombre || nombre.trim().length < 3) {
+        throw new Error("El nombre debe tener al menos 3 caracteres");
+      }
+
+      let p = {
+        id: dataUsuarioAuth?.id,
+        nombre: nombre.trim(),
+        bio: bio?.trim() ?? "",
+        instagram: instagram?.trim() ?? "",
+        twitter: twitter?.trim() ?? "",
+        website: website?.trim() ?? "",
+      };
+
+      // Subir banner si hay nuevo
+      if (fileBanner && fileBanner.size !== undefined) {
+        const bannerUrl = await subirBanner(dataUsuarioAuth?.id, fileBanner);
+        p = { ...p, banner: bannerUrl };
+      }
+
+      await editarUsuarios(p, fileFoto ?? null);
+    },
+    onError: (error) => toast.error("Error al guardar: " + error.message),
+    onSuccess: () => {
+      toast.success("¡Perfil actualizado!");
+      queryClient.invalidateQueries({ queryKey: ["mostrar user auth"] });
+      queryClient.invalidateQueries({ queryKey: ["usuario por id", dataUsuarioAuth?.id] });
+      if (onClose) onClose();
+    },
+  });
+};
+
+// Mantener compatibilidad con onboarding si lo usas
 export const useEditarFotoUserMutate = (onClose) => {
   const { editarUsuarios, dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
@@ -24,7 +63,7 @@ export const useEditarFotoUserMutate = (onClose) => {
         throw new Error("El nombre debe tener al menos 3 caracteres");
       }
       const p = { nombre: data.nombre, id: dataUsuarioAuth?.id };
-      await editarUsuarios(p, dataUsuarioAuth?.foto_perfil, data.file ?? null);
+      await editarUsuarios(p, data.file ?? null);
     },
     onError: (error) => toast.error("Error al guardar: " + error.message),
     onSuccess: () => {
@@ -74,7 +113,6 @@ export const useToggleSeguirMutate = (id_seguido) => {
 
 export const useEstadoSeguidorQuery = (id_seguido) => {
   const { obtenerEstadoSeguidor, dataUsuarioAuth } = useUsuariosStore();
-
   return useQuery({
     queryKey: ["estado seguidor", id_seguido],
     queryFn: () =>

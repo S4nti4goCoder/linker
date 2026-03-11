@@ -3,44 +3,22 @@ import { supabase } from "../supabase/supabase.config";
 
 const tabla = "usuarios";
 
-// Utilidad compartida: construye ruta con extensión
-const construirRuta = (carpeta, id, filename) => {
-  const ext = filename?.split(".").pop()?.toLowerCase();
-  return `${carpeta}/${id}.${ext}`;
-};
-
-// Sube o reemplaza la foto de perfil en Storage y retorna la URL pública
 const subirOReemplazarFotoPerfil = async (id, file) => {
-  const ruta = construirRuta("usuarios", id, file.name);
-  const { data, error } = await supabase.storage
+  const ext = file.name?.split(".").pop()?.toLowerCase() || "jpg";
+  const ruta = `usuarios/${id}.${ext}`;
+  const { error } = await supabase.storage
     .from("archivos")
     .upload(ruta, file, { cacheControl: "0", upsert: true });
   if (error) throw new Error(error.message);
-  if (data) {
-    const { data: urlimagen } = await supabase.storage
-      .from("archivos")
-      .getPublicUrl(ruta);
-    return urlimagen.publicUrl;
-  }
-};
-
-const editarUsuarios = async (p, fileold, filenew) => {
-  const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
-  if (error) throw new Error(error.message);
-
-  // Si hay un archivo nuevo (no es el placeholder "-" y tiene contenido real)
-  if (filenew !== "-" && filenew?.size !== undefined) {
-    const publicUrl = await subirOReemplazarFotoPerfil(p.id, filenew);
-    const { error: errorFoto } = await supabase
-      .from(tabla)
-      .update({ foto_perfil: publicUrl })
-      .eq("id", p.id);
-    if (errorFoto) throw new Error(errorFoto.message);
-  }
+  const { data: urlData } = supabase.storage
+    .from("archivos")
+    .getPublicUrl(ruta);
+  return urlData.publicUrl;
 };
 
 export const useUsuariosStore = create((set) => ({
   dataUsuarioAuth: null,
+
   mostrarUsuarioAuth: async (p) => {
     const { data, error } = await supabase
       .from(tabla)
@@ -51,9 +29,31 @@ export const useUsuariosStore = create((set) => ({
     set({ dataUsuarioAuth: data });
     return data;
   },
-  editarUsuarios: async (p, fileold, filenew) => {
-    await editarUsuarios(p, fileold, filenew);
+
+  editarUsuarios: async (p, file) => {
+    // Si hay nueva foto de perfil, subirla primero
+    if (file && file.size !== undefined) {
+      const publicUrl = await subirOReemplazarFotoPerfil(p.id, file);
+      p = { ...p, foto_perfil: publicUrl };
+    }
+    const { error } = await supabase.from(tabla).update(p).eq("id", p.id);
+    if (error) throw new Error(error.message);
   },
+
+  // Subir banner
+  subirBanner: async (id, file) => {
+    const ext = file.name?.split(".").pop()?.toLowerCase() || "jpg";
+    const ruta = `banners/${id}.${ext}`;
+    const { error } = await supabase.storage
+      .from("archivos")
+      .upload(ruta, file, { cacheControl: "0", upsert: true });
+    if (error) throw new Error(error.message);
+    const { data: urlData } = supabase.storage
+      .from("archivos")
+      .getPublicUrl(ruta);
+    return urlData.publicUrl;
+  },
+
   contarUsuariosTodos: async () => {
     const { count, error } = await supabase
       .from(tabla)
@@ -61,6 +61,7 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return count;
   },
+
   obtenerUsuarioPorId: async (id) => {
     const { data, error } = await supabase
       .from(tabla)
@@ -70,6 +71,7 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return data;
   },
+
   buscarUsuarios: async (query) => {
     const { data, error } = await supabase
       .from(tabla)
@@ -80,6 +82,7 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return data;
   },
+
   toggleSeguir: async ({ id_seguidor, id_seguido }) => {
     const { error } = await supabase.rpc("toggle_seguir", {
       p_seguidor: id_seguidor,
@@ -87,6 +90,7 @@ export const useUsuariosStore = create((set) => ({
     });
     if (error) throw new Error(error.message);
   },
+
   obtenerEstadoSeguidor: async ({ id_seguidor, id_seguido }) => {
     const { data, error } = await supabase
       .from("seguidores")
@@ -97,6 +101,7 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
     return { siguiendo: !!data };
   },
+
   obtenerConteoSeguidores: async (id_usuario) => {
     const [{ count: seguidores }, { count: siguiendo }] = await Promise.all([
       supabase
@@ -110,6 +115,7 @@ export const useUsuariosStore = create((set) => ({
     ]);
     return { seguidores, siguiendo };
   },
+
   obtenerSeguidos: async (id_seguidor) => {
     const { data, error } = await supabase
       .from("seguidores")

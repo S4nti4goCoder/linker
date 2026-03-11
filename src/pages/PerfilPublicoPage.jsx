@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { useUsuariosStore } from "../store/UsuariosStore";
 import { useMostrarPostPublicoQuery } from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
@@ -20,14 +19,14 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
   const navigate = useNavigate();
   const imgRef = useRef(null);
   const bgColor = useImageExtractColor(imgRef, usuario?.foto_perfil);
-
-  const { mutate: toggleSeguir, isPending: isSiguiendo } = useToggleSeguirMutate(Number(id));
+  const { mutate: toggleSeguir, isPending: isSiguiendo } =
+    useToggleSeguirMutate(Number(id));
   const { data: estadoSeguidor } = useEstadoSeguidorQuery(Number(id));
   const { data: conteo } = useConteoSeguidoresQuery(Number(id));
-  const { mutate: abrirConversacion, isPending: abriendo } = useAbrirConversacionMutate();
+  const { mutate: abrirConversacion, isPending: abriendo } =
+    useAbrirConversacionMutate();
 
-  // El botón "Mensaje" solo aparece si YO sigo al otro usuario.
-  // La función RPC ya valida la mutualidad y lanza error si no se cumple.
+  const tieneBanner = usuario?.banner && usuario.banner !== "-";
   const yoLoSigo = estadoSeguidor?.siguiendo;
 
   const handleMensaje = () => {
@@ -37,24 +36,32 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
   };
 
   return (
-    <div className="relative">
+    <div>
+      {/* Banner */}
       <div
-        className="h-32 w-full transition-colors duration-500"
-        style={{ backgroundColor: bgColor || "#0466c8" }}
-      />
-      <div className="px-4 pb-4 border-b border-gray-200 dark:border-gray-600">
+        className="h-36 w-full transition-colors duration-500 relative overflow-hidden"
+        style={!tieneBanner ? { backgroundColor: bgColor || "#0466c8" } : {}}
+      >
+        {tieneBanner && (
+          <img
+            src={usuario.banner}
+            className="w-full h-full object-cover"
+            onError={(e) => (e.target.style.display = "none")}
+          />
+        )}
+      </div>
+
+      {/* Contenido del perfil */}
+      <div className="px-4 pb-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-bg-dark relative z-10">
         <div className="flex justify-between items-end -mt-12">
           <img
             ref={imgRef}
             src={usuario?.foto_perfil || "https://placehold.co/96x96"}
             onError={(e) => (e.target.src = "https://placehold.co/96x96")}
             crossOrigin="anonymous"
-            className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-bg-dark"
+            className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-bg-dark relative z-10"
           />
-
-          {/* Botones de acción */}
           <div className="flex items-center gap-2">
-            {/* Botón Mensaje — visible solo si yo lo sigo */}
             {yoLoSigo && (
               <button
                 onClick={handleMensaje}
@@ -65,8 +72,6 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
                 <span className="hidden sm:block">Mensaje</span>
               </button>
             )}
-
-            {/* Botón Seguir / Siguiendo */}
             <button
               onClick={() => toggleSeguir()}
               disabled={isSiguiendo}
@@ -77,7 +82,11 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
               }`}
             >
               <Icon
-                icon={estadoSeguidor?.siguiendo ? "mdi:account-check" : "mdi:account-plus"}
+                icon={
+                  estadoSeguidor?.siguiendo
+                    ? "mdi:account-check"
+                    : "mdi:account-plus"
+                }
                 width={16}
               />
               {estadoSeguidor?.siguiendo ? "Siguiendo" : "Seguir"}
@@ -85,9 +94,52 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 space-y-2">
           <h1 className="text-xl font-bold">{usuario?.nombre}</h1>
-          <div className="flex gap-4 mt-1 text-sm text-gray-500">
+
+          {usuario?.bio && (
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {usuario.bio}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+            {usuario?.instagram && (
+              <a
+                href={`https://instagram.com/${usuario.instagram}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-pink-500 transition-colors"
+              >
+                <Icon icon="mdi:instagram" className="text-pink-500" />@
+                {usuario.instagram}
+              </a>
+            )}
+            {usuario?.twitter && (
+              <a
+                href={`https://twitter.com/${usuario.twitter}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-sky-400 transition-colors"
+              >
+                <Icon icon="mdi:twitter" className="text-sky-400" />@
+                {usuario.twitter}
+              </a>
+            )}
+            {usuario?.website && (
+              <a
+                href={usuario.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-400 transition-colors"
+              >
+                <Icon icon="mdi:web" className="text-blue-400" />
+                {usuario.website.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+          </div>
+
+          <div className="flex gap-4 text-sm text-gray-500">
             <span>
               <strong className="text-black dark:text-white">
                 {conteo?.seguidores ?? 0}
@@ -109,7 +161,8 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
 
 const PerfilPublicoStats = ({ posts }) => {
   const totalPosts = posts?.length ?? 0;
-  const totalLikes = posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
+  const totalLikes =
+    posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
 
   return (
     <div className="flex border-b border-gray-200 dark:border-gray-600">
@@ -130,7 +183,9 @@ export const PerfilPublicoPage = () => {
   const { showModal } = useComentariosStore();
   const scrollRef = useRef(null);
 
-  const { data: usuario, isLoading: loading } = useObtenerUsuarioPorIdQuery(Number(id));
+  const { data: usuario, isLoading: loading } = useObtenerUsuarioPorIdQuery(
+    Number(id),
+  );
 
   const {
     data: dataPost,
