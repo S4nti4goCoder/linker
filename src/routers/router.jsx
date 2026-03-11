@@ -7,6 +7,7 @@ import { MiPerfilPage } from "../pages/MiPerfilPage";
 import { PerfilPublicoPage } from "../pages/PerfilPublicoPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { MensajesPage } from "../pages/MensajesPage";
+import { ColeccionesPage } from "../pages/ColeccionesPage";
 
 export function MyRoutes() {
   return (
@@ -32,6 +33,7 @@ export function MyRoutes() {
           <Route path="/mi-perfil" element={<MiPerfilPage />} />
           <Route path="/perfil/:id" element={<PerfilPublicoPage />} />
           <Route path="/mensajes" element={<MensajesPage />} />
+          <Route path="/colecciones" element={<ColeccionesPage />} />{" "}
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

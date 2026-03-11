@@ -18,6 +18,10 @@ import {
   useToggleSeguirMutate,
   useEstadoSeguidorQuery,
 } from "../../stack/UsuariosStack";
+import {
+  useVerificarGuardadoQuery,
+  useToggleGuardadoMutate,
+} from "../../stack/ColeccionesStack";
 
 export const PublicacionCard = ({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -40,6 +44,8 @@ export const PublicacionCard = ({ item }) => {
   const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() => setShowEditForm(false));
   const { mutate: toggleSeguir, isPending: isSiguiendo } = useToggleSeguirMutate(item?.id_usuario);
   const { data: estadoSeguidor } = useEstadoSeguidorQuery(esPropio ? null : item?.id_usuario);
+  const { data: guardado } = useVerificarGuardadoQuery(item?.id);
+  const { mutate: toggleGuardado } = useToggleGuardadoMutate(item?.id);
 
   useEffect(() => {
     if (showEditForm) {
@@ -241,6 +247,8 @@ export const PublicacionCard = ({ item }) => {
               <PostVideoFrame src={item?.url} />
             ))}
         </div>
+
+        {/* Acciones: like, comentar, guardar */}
         <div className="flex justify-between mt-4">
           <button onClick={() => { setItemSelect(item); mutate(); }}>
             <Icon
@@ -262,7 +270,24 @@ export const PublicacionCard = ({ item }) => {
             />
             <span className="text-xs md:text-sm text-gray-400">Comentar</span>
           </button>
+
+          {/* Botón guardar — nuevo */}
+          <button
+            onClick={() => toggleGuardado()}
+            title={guardado ? "Quitar de guardados" : "Guardar publicación"}
+            className="cursor-pointer"
+          >
+            <Icon
+              icon={guardado ? "mdi:bookmark" : "mdi:bookmark-outline"}
+              className={`text-3xl p-1 rounded-full transition-colors ${
+                guardado
+                  ? "text-primary"
+                  : "text-gray-400 hover:bg-primary/10"
+              }`}
+            />
+          </button>
         </div>
+
         <div className="flex gap-4 mt-1">
           {item?.likes > 0 && (
             <span className="text-xs text-gray-400">{item?.likes} me gusta</span>
