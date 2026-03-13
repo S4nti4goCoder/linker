@@ -37,13 +37,19 @@ export const useInsertarPostMutate = () => {
 };
 
 export const useLikePostMutate = () => {
-  const { likePost, itemSelect } = usePostStore();
+  const { likePost } = usePostStore();
   const { dataUsuarioAuth } = useUsuariosStore();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["like post"],
-    mutationFn: () =>
-      likePost({ p_post_id: itemSelect?.id, p_user_id: dataUsuarioAuth?.id }),
+    mutationFn: (item) =>
+      likePost({ p_post_id: item?.id, p_user_id: dataUsuarioAuth?.id }),
     onError: (error) => toast.error("Error al dar like: " + error.message),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
+    },
   });
 };
 
@@ -81,6 +87,7 @@ export const useEditarPostMutate = (onClose) => {
     onSuccess: () => {
       toast.success("¡Publicación editada!");
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
       if (onClose) onClose();
     },
   });
@@ -96,6 +103,7 @@ export const useEliminarPostMutate = (onClose) => {
     onSuccess: () => {
       toast.success("¡Publicación eliminada!");
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
       if (onClose) onClose();
     },
   });

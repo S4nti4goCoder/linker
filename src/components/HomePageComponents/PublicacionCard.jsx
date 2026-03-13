@@ -40,10 +40,17 @@ export const PublicacionCard = ({ item }) => {
 
   const esPropio = Number(item?.id_usuario) === Number(dataUsuarioAuth?.id);
 
-  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(() => setShowConfirm(false));
-  const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() => setShowEditForm(false));
-  const { mutate: toggleSeguir, isPending: isSiguiendo } = useToggleSeguirMutate(item?.id_usuario);
-  const { data: estadoSeguidor } = useEstadoSeguidorQuery(esPropio ? null : item?.id_usuario);
+  const { mutate: eliminar, isPending: isEliminating } = useEliminarPostMutate(
+    () => setShowConfirm(false),
+  );
+  const { mutate: editar, isPending: isEditing } = useEditarPostMutate(() =>
+    setShowEditForm(false),
+  );
+  const { mutate: toggleSeguir, isPending: isSiguiendo } =
+    useToggleSeguirMutate(item?.id_usuario);
+  const { data: estadoSeguidor } = useEstadoSeguidorQuery(
+    esPropio ? null : item?.id_usuario,
+  );
   const { data: guardado } = useVerificarGuardadoQuery(item?.id);
   const { mutate: toggleGuardado } = useToggleGuardadoMutate(item?.id);
 
@@ -61,7 +68,8 @@ export const PublicacionCard = ({ item }) => {
     if (!textarea) return;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const newText = editText.substring(0, start) + emoji + editText.substring(end);
+    const newText =
+      editText.substring(0, start) + emoji + editText.substring(end);
     setEditText(newText);
   };
 
@@ -76,16 +84,20 @@ export const PublicacionCard = ({ item }) => {
   return (
     <div className="border-b border-gray-500/50 p-4 relative">
       <div className="flex justify-between">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={irAlPerfil}>
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={irAlPerfil}
+        >
           <img
             src={item?.foto_usuario || "https://placehold.co/48x48"}
             onError={(e) => (e.target.src = "https://placehold.co/48x48")}
             className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity"
           />
-          <span className="font-bold hover:underline">{item?.nombre_usuario}</span>
+          <span className="font-bold hover:underline">
+            {item?.nombre_usuario}
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          {/* Botón seguir — solo en posts ajenos */}
           {!esPropio && (
             <button
               onClick={() => toggleSeguir()}
@@ -112,20 +124,35 @@ export const PublicacionCard = ({ item }) => {
               </button>
               {showMenu && (
                 <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowMenu(false)}
+                  />
                   <div className="absolute right-0 top-8 z-20 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-200 dark:border-neutral-700 overflow-hidden w-40">
                     <button
-                      onClick={() => { setShowEditForm(true); setShowMenu(false); }}
+                      onClick={() => {
+                        setShowEditForm(true);
+                        setShowMenu(false);
+                      }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer"
                     >
-                      <Icon icon="mdi:pencil-outline" className="text-blue-500" />
+                      <Icon
+                        icon="mdi:pencil-outline"
+                        className="text-blue-500"
+                      />
                       Editar
                     </button>
                     <button
-                      onClick={() => { setShowConfirm(true); setShowMenu(false); }}
+                      onClick={() => {
+                        setShowConfirm(true);
+                        setShowMenu(false);
+                      }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer text-red-500"
                     >
-                      <Icon icon="mdi:trash-can-outline" className="text-red-500" />
+                      <Icon
+                        icon="mdi:trash-can-outline"
+                        className="text-red-500"
+                      />
                       Eliminar
                     </button>
                   </div>
@@ -142,10 +169,15 @@ export const PublicacionCard = ({ item }) => {
           <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
-                <Icon icon="mdi:trash-can-outline" className="text-2xl text-red-500" />
+                <Icon
+                  icon="mdi:trash-can-outline"
+                  className="text-2xl text-red-500"
+                />
               </div>
               <h2 className="text-lg font-bold">¿Eliminar publicación?</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Esta acción no se puede deshacer.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Esta acción no se puede deshacer.
+              </p>
             </div>
             <div className="flex gap-3 mt-6">
               <button
@@ -225,7 +257,13 @@ export const PublicacionCard = ({ item }) => {
                   Cancelar
                 </button>
                 <button
-                  onClick={() => editar({ descripcion: editText, id: item?.id, file: editFile })}
+                  onClick={() =>
+                    editar({
+                      descripcion: editText,
+                      id: item?.id,
+                      file: editFile,
+                    })
+                  }
                   disabled={editText.trim() === "" || isEditing}
                   className="px-4 py-2 rounded-lg text-sm bg-primary text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -250,9 +288,11 @@ export const PublicacionCard = ({ item }) => {
 
         {/* Acciones: like, comentar, guardar */}
         <div className="flex justify-between mt-4">
-          <button onClick={() => { setItemSelect(item); mutate(); }}>
+          <button onClick={() => mutate(item)}>
             <Icon
-              icon={item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"}
+              icon={
+                item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"
+              }
               className={`text-3xl p-1 rounded-full ${
                 item?.like_usuario_actual
                   ? "text-[#0091EA]"
@@ -262,7 +302,10 @@ export const PublicacionCard = ({ item }) => {
           </button>
           <button
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => { setItemSelect(item); setShowModal(); }}
+            onClick={() => {
+              setItemSelect(item);
+              setShowModal();
+            }}
           >
             <Icon
               icon="mdi:comment-outline"
@@ -271,7 +314,6 @@ export const PublicacionCard = ({ item }) => {
             <span className="text-xs md:text-sm text-gray-400">Comentar</span>
           </button>
 
-          {/* Botón guardar — nuevo */}
           <button
             onClick={() => toggleGuardado()}
             title={guardado ? "Quitar de guardados" : "Guardar publicación"}
@@ -280,9 +322,7 @@ export const PublicacionCard = ({ item }) => {
             <Icon
               icon={guardado ? "mdi:bookmark" : "mdi:bookmark-outline"}
               className={`text-3xl p-1 rounded-full transition-colors ${
-                guardado
-                  ? "text-primary"
-                  : "text-gray-400 hover:bg-primary/10"
+                guardado ? "text-primary" : "text-gray-400 hover:bg-primary/10"
               }`}
             />
           </button>
@@ -290,11 +330,16 @@ export const PublicacionCard = ({ item }) => {
 
         <div className="flex gap-4 mt-1">
           {item?.likes > 0 && (
-            <span className="text-xs text-gray-400">{item?.likes} me gusta</span>
+            <span className="text-xs text-gray-400">
+              {item?.likes} me gusta
+            </span>
           )}
           {item?.comentarios_count > 0 && (
             <span
-              onClick={() => { setItemSelect(item); setShowModal(); }}
+              onClick={() => {
+                setItemSelect(item);
+                setShowModal();
+              }}
               className="text-xs text-gray-400 cursor-pointer hover:underline"
             >
               {item?.comentarios_count} comentarios
