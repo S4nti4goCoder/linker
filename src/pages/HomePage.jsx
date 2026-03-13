@@ -11,14 +11,12 @@ import { SkeletonPost } from "../components/ui/spinners/SkeletonPost";
 import { useSupabaseSubscription } from "../hooks/useSupabaseSubscription";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { useComentariosStore } from "../store/ComentariosStore";
-import { useMostrarRespuestaComentariosQuery } from "../stack/RespuestasComentariosStack";
 import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { useSeguidosQuery } from "../stack/UsuariosStack";
 import { Icon } from "@iconify/react";
 import { usePostStore } from "../store/PostStore";
 
-// Opciones estables fuera del componente para evitar recreación en cada render
 const SUBS = [
   {
     channelName: "public:publicaciones",
@@ -47,8 +45,6 @@ export const HomePage = () => {
   const { showModal } = useComentariosStore();
   const { itemSelect: itemSelectPost } = usePostStore();
   const [tab, setTab] = useState("todos");
-
-  useMostrarRespuestaComentariosQuery();
 
   const {
     data: dataPost,
@@ -98,7 +94,6 @@ export const HomePage = () => {
     tab,
   ]);
 
-  // Suscripciones estables (options fuera del componente)
   SUBS.forEach(({ channelName, table, queryKey }) => {
     useSupabaseSubscription({
       channelName,
@@ -107,7 +102,6 @@ export const HomePage = () => {
     });
   });
 
-  // Esta suscripción depende de datos dinámicos — se estabiliza con useMemo
   const comentariosQueryKey = useMemo(
     () => ["mostrar comentarios", { id_publicacion: itemSelectPost?.id }],
     [itemSelectPost?.id],
