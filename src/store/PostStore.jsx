@@ -3,13 +3,11 @@ import { supabase } from "../supabase/supabase.config";
 
 const tabla = "publicaciones";
 
-// Utilidad: infiere el tipo de medio a partir del nombre del archivo
 const inferirTipo = (filename) => {
   const ext = filename?.split(".").pop()?.toLowerCase();
   return ["mp4", "mov", "webm"].includes(ext) ? "video" : "imagen";
 };
 
-// Utilidad: construye la ruta con extensión correcta
 const construirRuta = (carpeta, id, filename) => {
   const ext = filename?.split(".").pop()?.toLowerCase();
   return `${carpeta}/${id}.${ext}`;
@@ -37,14 +35,12 @@ const InsertarPost = async (p, file) => {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (file) {
-    const nuevo_id = data?.id;
-    const resultado = await subirArchivo("publicaciones", nuevo_id, file);
-    const pUrl = {
+    const resultado = await subirArchivo("publicaciones", data.id, file);
+    await EditarPublicacion({
       url: resultado.publicUrl,
       type: resultado.type,
-      id: nuevo_id,
-    };
-    await EditarPublicacion(pUrl);
+      id: data.id,
+    });
   }
 };
 
@@ -65,22 +61,22 @@ export const usePostStore = create((set) => ({
     set((state) => ({
       stateForm: val !== undefined ? val : !state.stateForm,
     })),
+
   insertarPost: async (p, file) => {
     await InsertarPost(p, file);
   },
-  dataPost: null,
+
   mostrarPost: async (p) => {
-    let query = supabase
+    const { data, error } = await supabase
       .rpc("publicaciones_con_detalles", {
         _id_usuario: p.id_usuario,
         _id_autor: p.id_autor ?? null,
       })
       .range(p.desde, p.desde + p.hasta - 1);
-    const { data, error } = await query;
     if (error) throw new Error(error.message);
-    set({ dataPost: data });
-    return data;
+    return data; // ← sin set({ dataPost }) — era estado muerto
   },
+
   mostrarPostSeguidos: async (p) => {
     const { data, error } = await supabase.rpc("publicaciones_seguidos", {
       _id_usuario: p.id_usuario,
@@ -91,18 +87,20 @@ export const usePostStore = create((set) => ({
     if (error) throw new Error(error.message);
     return data;
   },
+
   likePost: async (p) => {
     const { error } = await supabase.rpc("toggle_like", p);
     if (error) throw new Error(error.message);
   },
+
   editarPost: async (p, file) => {
     if (file) {
       const resultado = await subirArchivo("publicaciones", p.id, file);
-      p.url = resultado.publicUrl;
-      p.type = resultado.type;
+      p = { ...p, url: resultado.publicUrl, type: resultado.type };
     }
     await EditarPublicacion(p);
   },
+
   eliminarPost: async (id) => {
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);

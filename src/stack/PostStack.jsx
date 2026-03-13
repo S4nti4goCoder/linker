@@ -13,20 +13,16 @@ export const useInsertarPostMutate = () => {
   const fechaActual = useFormattedDate();
   const { dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["insertar post"],
     mutationFn: async (data) => {
-      let type = "imagen";
-      if (file && file.name) {
-        const ext = file.name.split(".").pop()?.toLowerCase();
-        if (ext === "mp4" || ext === "mov" || ext === "webm") type = "video";
-      }
       const p = {
         descripcion: data.descripcion,
         url: "-",
         fecha: fechaActual,
         id_usuario: dataUsuarioAuth?.id,
-        type: type,
+        type: "imagen",
       };
       await insertarPost(p, file);
     },

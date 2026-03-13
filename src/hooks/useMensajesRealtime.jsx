@@ -9,33 +9,32 @@ export const useMensajesRealtime = () => {
   const { data: conversaciones = [] } = useListarConversacionesQuery();
   const queryClient = useQueryClient();
 
+  // Se usa un Set de IDs como string para comparación estable
+  const convIdsKey = conversaciones.map((c) => c.id).join(",");
+
   useEffect(() => {
     if (!dataUsuarioAuth?.id || conversaciones.length === 0) return;
 
-    const misConvIds = conversaciones.map((c) => c.id);
+    const misConvIds = new Set(conversaciones.map((c) => c.id));
 
     const channel = supabase
       .channel(`mensajes-realtime-${dataUsuarioAuth.id}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "mensajes",
-        },
+        { event: "INSERT", schema: "public", table: "mensajes" },
         (payload) => {
           if (
-            misConvIds.includes(payload.new.id_conversacion) &&
+            misConvIds.has(payload.new.id_conversacion) &&
             payload.new.id_emisor !== dataUsuarioAuth.id
           ) {
             queryClient.invalidateQueries({
               queryKey: ["conversaciones", dataUsuarioAuth.id],
             });
           }
-        }
+        },
       )
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, [dataUsuarioAuth?.id, conversaciones.length]);
+  }, [dataUsuarioAuth?.id, convIdsKey]);
 };

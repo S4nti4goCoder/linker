@@ -5,6 +5,7 @@ import { useThemeStore } from "./store/ThemeStore";
 import { useEffect } from "react";
 import { FormPost } from "./components/Forms/FormPost";
 import { usePostStore } from "./store/PostStore";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster position="top-left" richColors />
       {stateForm && <FormPost />}
       <MyRoutes />
       <ReactQueryDevtools initialIsOpen={false} />
