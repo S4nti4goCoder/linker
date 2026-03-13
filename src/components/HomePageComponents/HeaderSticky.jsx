@@ -1,5 +1,8 @@
 import { Icon } from "@iconify/react";
-import { useContarUsuariosTodosQuery, useBuscarUsuariosQuery } from "../../stack/UsuariosStack";
+import {
+  useContarUsuariosTodosQuery,
+  useBuscarUsuariosQuery,
+} from "../../stack/UsuariosStack";
 import { useUsuariosStore } from "../../store/UsuariosStore";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,13 +41,22 @@ const BusquedaUsuarios = () => {
         <input
           type="text"
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
           onFocus={() => setOpen(true)}
           placeholder="Buscar usuarios..."
           className="bg-transparent outline-none text-sm w-full placeholder-gray-400"
         />
         {query && (
-          <button onClick={() => { setQuery(""); setOpen(false); }} className="cursor-pointer">
+          <button
+            onClick={() => {
+              setQuery("");
+              setOpen(false);
+            }}
+            className="cursor-pointer"
+          >
             <Icon icon="mdi:close" className="text-gray-400 text-sm" />
           </button>
         )}
@@ -54,7 +66,10 @@ const BusquedaUsuarios = () => {
         <div className="absolute right-0 top-10 w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-700 z-50 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Icon icon="mdi:loading" className="animate-spin text-2xl text-gray-400" />
+              <Icon
+                icon="mdi:loading"
+                className="animate-spin text-2xl text-gray-400"
+              />
             </div>
           ) : resultados?.length === 0 ? (
             <div className="flex flex-col items-center py-6 gap-2 text-gray-400">
@@ -71,6 +86,9 @@ const BusquedaUsuarios = () => {
                 >
                   <img
                     src={usuario.foto_perfil || "https://placehold.co/40x40"}
+                    onError={(e) =>
+                      (e.target.src = "https://placehold.co/40x40")
+                    }
                     className="w-10 h-10 rounded-full object-cover shrink-0"
                   />
                   <div className="text-left">
@@ -104,9 +122,10 @@ export const HeaderSticky = () => {
           </span>
           <img
             src={dataUsuarioAuth?.foto_perfil || "https://placehold.co/32x32"}
+            onError={(e) => (e.target.src = "https://placehold.co/32x32")}
             className="w-8 h-8 rounded-full object-cover"
           />
-          <Icon icon="mdi:dots-vertical" className="text-2xl text-gray-400" />
+          {/* ícono mdi:dots-vertical eliminado — no tenía función */}
         </div>
       </div>
     </div>

@@ -30,7 +30,8 @@ export const InputRespuestaAComentario = () => {
         <section className="flex w-full gap-4">
           <img
             className="w-10 h-10 rounded-full object-cover"
-            src={dataUsuarioAuth?.foto_perfil}
+            src={dataUsuarioAuth?.foto_perfil || "https://placehold.co/40x40"}
+            onError={(e) => (e.target.src = "https://placehold.co/40x40")}
             alt="avatar"
           />
           <input

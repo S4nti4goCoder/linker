@@ -9,20 +9,18 @@ export const useRespuestasComentariosStore = create((set) => ({
   respuestaActivaParaComentarioId: null,
   setRespuestaActiva: (p) => set({ respuestaActivaParaComentarioId: p }),
   limpiarRespuestaActiva: () => set({ respuestaActivaParaComentarioId: null }),
+
   insertarRespuestaComentarios: async (p) => {
     const { error } = await supabase.from(tabla).insert(p);
     if (error) throw new Error(error.message);
   },
-  dataRespuestaComentario: null,
+
   mostrarRespuestaAComentario: async (p) => {
     const { data, error } = await supabase
       .from(tabla)
-      .select(`*,usuarios(*)`)
+      .select(`*, usuarios(*)`)
       .eq("id_comentario", p.id_comentario);
-    if (error) {
-      throw new Error(error.message);
-    }
-    set({ dataRespuestaComentario: data });
-    return data;
+    if (error) throw new Error(error.message);
+    return data; // ← sin set(), TanStack Query maneja el estado
   },
 }));

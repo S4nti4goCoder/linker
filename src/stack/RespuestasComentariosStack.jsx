@@ -1,9 +1,8 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRespuestasComentariosStore } from "../store/RespuestasComentariosStore";
 import { useFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
-import { useComentariosStore } from "../store/ComentariosStore";
 
 export const useInsertarRespuestaComentarioMutate = () => {
   const {
@@ -14,7 +13,9 @@ export const useInsertarRespuestaComentarioMutate = () => {
     limpiarRespuestaActiva,
   } = useRespuestasComentariosStore();
   const { dataUsuarioAuth } = useUsuariosStore();
-  const fechaActual = useFormattedDate(); // ✅ fix: era useFormattedDate sin ()
+  const fechaActual = useFormattedDate();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["insertar respuesta a comentario"],
     mutationFn: () =>
@@ -31,20 +32,22 @@ export const useInsertarRespuestaComentarioMutate = () => {
       toast.success("Respuesta enviada");
       setRespuesta("");
       limpiarRespuestaActiva();
+      // Invalida la query de respuestas del comentario específico
+      queryClient.invalidateQueries({
+        queryKey: ["mostrar respuesta comentario", { id_comentario: respuestaActivaParaComentarioId }],
+      });
     },
   });
 };
 
-export const useMostrarRespuestaComentariosQuery = () => {
+// ← Ahora recibe id_comentario como parámetro directo
+export const useMostrarRespuestaComentariosQuery = (id_comentario) => {
   const { mostrarRespuestaAComentario } = useRespuestasComentariosStore();
-  const { itemSelect } = useComentariosStore();
+
   return useQuery({
-    queryKey: [
-      "mostrar respuesta comentario",
-      { id_comentario: itemSelect?.id },
-    ],
-    queryFn: () =>
-      mostrarRespuestaAComentario({ id_comentario: itemSelect?.id }),
-    enabled: !!itemSelect,
+    queryKey: ["mostrar respuesta comentario", { id_comentario }],
+    queryFn: () => mostrarRespuestaAComentario({ id_comentario }),
+    enabled: !!id_comentario,
+    staleTime: 0,
   });
 };

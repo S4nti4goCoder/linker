@@ -49,11 +49,14 @@ export const FormPost = () => {
           <section className="flex items-center gap-1">
             <img
               className="w-10 h-10 rounded-full mr-3 object-cover"
-              src={dataUsuarioAuth?.foto_perfil}
+              src={dataUsuarioAuth?.foto_perfil || "https://placehold.co/40x40"}
+              onError={(e) => (e.target.src = "https://placehold.co/40x40")}
             />
             <span className="font-medium">{dataUsuarioAuth?.nombre}</span>
           </section>
-          <form onSubmit={handleSubmit(() => mutate({ descripcion: postText }))}>
+          <form
+            onSubmit={handleSubmit(() => mutate({ descripcion: postText }))}
+          >
             <div className="relative">
               <textarea
                 ref={textareaRef}

@@ -52,7 +52,8 @@ export const ComentarioModal = () => {
           <div className="flex items-start gap-3">
             <img
               className="w-10 h-10 rounded-full object-cover shrink-0"
-              src={item?.foto_usuario}
+              src={item?.foto_usuario || "https://placehold.co/40x40"}
+              onError={(e) => (e.target.src = "https://placehold.co/40x40")}
             />
             <div className="flex-1 min-w-0">
               <span className="font-semibold text-sm block truncate">
@@ -84,7 +85,8 @@ export const ComentarioModal = () => {
           <div className="flex items-center gap-3">
             <img
               className="w-9 h-9 rounded-full object-cover shrink-0"
-              src={dataUsuarioAuth?.foto_perfil}
+              src={dataUsuarioAuth?.foto_perfil || "https://placehold.co/36x36"}
+              onError={(e) => (e.target.src = "https://placehold.co/36x36")}
               alt="avatar"
             />
             <div className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-neutral-800 rounded-full px-4 py-2">

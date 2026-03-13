@@ -7,6 +7,7 @@ import {
   useToggleLikeComentarioMutate,
   useObtenerLikesComentarioQuery,
 } from "../../stack/ComentariosStack";
+import { useMostrarRespuestaComentariosQuery } from "../../stack/RespuestasComentariosStack";
 import { Icon } from "@iconify/react";
 
 export const ComentarioCard = ({ item }) => {
@@ -14,13 +15,18 @@ export const ComentarioCard = ({ item }) => {
     respuestaActivaParaComentarioId,
     limpiarRespuestaActiva,
     setRespuestaActiva,
-    dataRespuestaComentario,
   } = useRespuestasComentariosStore();
+
   const { setItemSelect, itemSelect: itemSelectComentario } =
     useComentariosStore();
 
   const { data: likesData } = useObtenerLikesComentarioQuery(item?.id);
   const { mutate: toggleLike } = useToggleLikeComentarioMutate(item?.id);
+
+  // ← Cada ComentarioCard tiene su propia query de respuestas
+  const { data: respuestas = [] } = useMostrarRespuestaComentariosQuery(
+    itemSelectComentario?.id === item?.id ? item?.id : null
+  );
 
   return (
     <div className="pl-4">
@@ -81,10 +87,12 @@ export const ComentarioCard = ({ item }) => {
                 : `Ver las ${item?.respuestas_count} respuestas`}
             </button>
           )}
+
           {itemSelectComentario?.id === item?.id &&
-            dataRespuestaComentario?.map((item, index) => (
-              <RespuestaCard key={index} item={item} />
+            respuestas.map((r, index) => (
+              <RespuestaCard key={index} item={r} />
             ))}
+
           {respuestaActivaParaComentarioId === item?.id && (
             <div>
               <div className="w-4 h-4 border-l-2 border-b-2 border-gray-300 dark:border-gray-600 rounded-bl-lg absolute bottom-18 -ml-[29px]" />
