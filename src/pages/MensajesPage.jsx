@@ -12,9 +12,6 @@ import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 import { supabase } from "../supabase/supabase.config";
 import { useQueryClient } from "@tanstack/react-query";
 
-// ─────────────────────────────────────────────────────────
-// ConversacionItem
-// ─────────────────────────────────────────────────────────
 const ConversacionItem = ({ conv, activa, onClick }) => (
   <button
     onClick={onClick}
@@ -36,16 +33,16 @@ const ConversacionItem = ({ conv, activa, onClick }) => (
     </div>
     <div className="flex-1 min-w-0">
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-sm truncate">{conv.otro_nombre}</span>
+        <span className="font-semibold text-sm truncate">
+          {conv.otro_nombre}
+        </span>
         <span className="text-xs text-gray-400 shrink-0 ml-2">
           {conv.ultima_fecha ? getRelativeTime(conv.ultima_fecha) : ""}
         </span>
       </div>
       <p
         className={`text-xs truncate mt-0.5 ${
-          conv.no_leidos > 0
-            ? "text-primary font-semibold"
-            : "text-gray-400"
+          conv.no_leidos > 0 ? "text-primary font-semibold" : "text-gray-400"
         }`}
       >
         {conv.ultimo_mensaje || "Inicia la conversación"}
@@ -54,9 +51,6 @@ const ConversacionItem = ({ conv, activa, onClick }) => (
   </button>
 );
 
-// ─────────────────────────────────────────────────────────
-// BurbujaMensaje
-// ─────────────────────────────────────────────────────────
 const BurbujaMensaje = ({ mensaje, esPropio }) => (
   <div className={`flex ${esPropio ? "justify-end" : "justify-start"} mb-1`}>
     <div
@@ -86,32 +80,26 @@ const BurbujaMensaje = ({ mensaje, esPropio }) => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────
-// VistaChatActivo
-// otroUsuario se deriva desde la query — no depende de estado local
-// ─────────────────────────────────────────────────────────
 const VistaChatActivo = ({ id_conversacion, onVolver }) => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { marcarMensajesLeidos } = useMensajesStore();
   const { data: conversaciones = [] } = useListarConversacionesQuery();
-  const { data: mensajes = [], isLoading } = useObtenerMensajesQuery(id_conversacion);
+  const { data: mensajes = [], isLoading } =
+    useObtenerMensajesQuery(id_conversacion);
   const { mutate: enviar, isPending } = useEnviarMensajeMutate(id_conversacion);
   const [texto, setTexto] = useState("");
   const bottomRef = useRef(null);
   const queryClient = useQueryClient();
 
-  // Deriva el otro usuario desde la lista de conversaciones ya cargada
   const conv = conversaciones.find((c) => c.id === id_conversacion);
   const otroUsuario = conv
     ? { nombre: conv.otro_nombre, foto_perfil: conv.otro_foto }
     : null;
 
-  // Scroll al último mensaje
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [mensajes]);
 
-  // Marcar como leídos al abrir
   useEffect(() => {
     if (!id_conversacion || !dataUsuarioAuth?.id) return;
     marcarMensajesLeidos({
@@ -124,7 +112,6 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
     });
   }, [id_conversacion, dataUsuarioAuth?.id]);
 
-  // Realtime: escuchar nuevos mensajes en esta conversación
   useEffect(() => {
     if (!id_conversacion) return;
 
@@ -145,14 +132,13 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
           queryClient.invalidateQueries({
             queryKey: ["conversaciones", dataUsuarioAuth?.id],
           });
-          // Marcar como leídos automáticamente si el chat está abierto
           if (dataUsuarioAuth?.id) {
             marcarMensajesLeidos({
               id_conversacion,
               id_receptor: dataUsuarioAuth.id,
             });
           }
-        }
+        },
       )
       .subscribe();
 
@@ -174,7 +160,6 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header del chat */}
       <header className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
         <button
           onClick={onVolver}
@@ -195,7 +180,6 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         </div>
       </header>
 
-      {/* Área de mensajes */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {isLoading ? (
           <SpinnerLocal />
@@ -218,7 +202,6 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         )}
       </div>
 
-      {/* Input enviar mensaje */}
       <footer className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
         <div className="flex items-end gap-2 bg-gray-100 dark:bg-neutral-800 rounded-2xl px-4 py-2">
           <textarea
@@ -245,13 +228,18 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────
-// MensajesPage
-// ─────────────────────────────────────────────────────────
 export const MensajesPage = () => {
   const { conversacionActiva, setConversacionActiva } = useMensajesStore();
-  const { data: conversaciones = [], isLoading } = useListarConversacionesQuery();
+  const { data: conversaciones = [], isLoading } =
+    useListarConversacionesQuery();
   const [mostrarChat, setMostrarChat] = useState(false);
+
+  // ← Fix: limpiar conversación activa al salir de la página
+  useEffect(() => {
+    return () => {
+      setConversacionActiva(null);
+    };
+  }, []);
 
   const abrirConversacion = (conv) => {
     setConversacionActiva(conv.id);
@@ -264,7 +252,6 @@ export const MensajesPage = () => {
 
   return (
     <main className="flex h-screen overflow-hidden border-x border-gray-200 dark:border-gray-600">
-      {/* Panel izquierdo: lista de conversaciones */}
       <aside
         className={`w-full sm:w-80 shrink-0 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full ${
           mostrarChat ? "hidden sm:flex" : "flex"
@@ -301,7 +288,6 @@ export const MensajesPage = () => {
         </div>
       </aside>
 
-      {/* Panel derecho: chat activo */}
       <section
         className={`flex-1 h-full ${
           mostrarChat ? "flex flex-col" : "hidden sm:flex sm:flex-col"
@@ -310,9 +296,7 @@ export const MensajesPage = () => {
         {!conversacionActiva ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
             <Icon icon="mdi:message-text-outline" className="text-6xl" />
-            <p className="text-sm">
-              Selecciona una conversación para comenzar
-            </p>
+            <p className="text-sm">Selecciona una conversación para comenzar</p>
           </div>
         ) : (
           <VistaChatActivo
