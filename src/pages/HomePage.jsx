@@ -94,12 +94,25 @@ export const HomePage = () => {
     tab,
   ]);
 
-  SUBS.forEach(({ channelName, table, queryKey }) => {
-    useSupabaseSubscription({
-      channelName,
-      options: { event: "*", schema: "public", table },
-      queryKey,
-    });
+  useSupabaseSubscription({
+    channelName: SUBS[0].channelName,
+    options: { event: "*", schema: "public", table: SUBS[0].table },
+    queryKey: SUBS[0].queryKey,
+  });
+  useSupabaseSubscription({
+    channelName: SUBS[1].channelName,
+    options: { event: "*", schema: "public", table: SUBS[1].table },
+    queryKey: SUBS[1].queryKey,
+  });
+  useSupabaseSubscription({
+    channelName: SUBS[2].channelName,
+    options: { event: "*", schema: "public", table: SUBS[2].table },
+    queryKey: SUBS[2].queryKey,
+  });
+  useSupabaseSubscription({
+    channelName: SUBS[3].channelName,
+    options: { event: "*", schema: "public", table: SUBS[3].table },
+    queryKey: SUBS[3].queryKey,
   });
 
   const comentariosQueryKey = useMemo(
