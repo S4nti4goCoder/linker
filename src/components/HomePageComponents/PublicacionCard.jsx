@@ -10,14 +10,14 @@ import {
 import { useComentariosStore } from "../../store/ComentariosStore";
 import { getRelativeTime } from "../../hooks/useRelativeTime";
 import { useUsuariosStore } from "../../store/UsuariosStore";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
 import { ImageSelectorEdit } from "../../hooks/useImageSelector";
 import { useNavigate } from "react-router-dom";
 import { useToggleSeguirMutate } from "../../stack/UsuariosStack";
 import { useToggleGuardadoMutate } from "../../stack/ColeccionesStack";
 
-export const PublicacionCard = ({ item }) => {
+export const PublicacionCard = memo(({ item }) => {
   const { setItemSelect } = usePostStore();
   const { mutate } = useLikePostMutate();
   const { setShowModal } = useComentariosStore();
@@ -339,4 +339,4 @@ export const PublicacionCard = ({ item }) => {
       </div>
     </div>
   );
-};
+});

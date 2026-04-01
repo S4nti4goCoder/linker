@@ -65,25 +65,26 @@ export const HomePage = () => {
     isLoading: isLoadingSeguidos,
   } = useMostrarPostSeguidosQuery(idsSeguidos);
 
+  const sentinelRef = useRef(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    const el = scrollRef.current;
+    const el = sentinelRef.current;
     if (!el) return;
-    const handleScroll = () => {
-      const cerca = el.scrollTop + el.clientHeight >= el.scrollHeight - 200;
-      if (tab === "todos" && cerca && hasNextPage && !isFetchingNextPage)
-        fetchNextPage();
-      if (
-        tab === "siguiendo" &&
-        cerca &&
-        hasNextSeguidos &&
-        !isFetchingNextSeguidos
-      )
-        fetchNextSeguidos();
-    };
-    el.addEventListener("scroll", handleScroll);
-    return () => el.removeEventListener("scroll", handleScroll);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        if (tab === "todos" && hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+        if (tab === "siguiendo" && hasNextSeguidos && !isFetchingNextSeguidos)
+          fetchNextSeguidos();
+      },
+      { root: scrollRef.current, rootMargin: "200px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [
     fetchNextPage,
     hasNextPage,
@@ -220,6 +221,9 @@ export const HomePage = () => {
                 {isFetchingNextSeguidos && <SpinnerLocal />}
               </>
             )}
+
+            {/* Sentinel para IntersectionObserver */}
+            <div ref={sentinelRef} className="h-1" />
           </div>
         </article>
       </section>

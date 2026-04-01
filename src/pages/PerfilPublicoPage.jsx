@@ -182,6 +182,7 @@ export const PerfilPublicoPage = () => {
   const { id } = useParams();
   const { showModal } = useComentariosStore();
   const scrollRef = useRef(null);
+  const sentinelRef = useRef(null);
 
   const { data: usuario, isLoading: loading } = useObtenerUsuarioPorIdQuery(
     Number(id),
@@ -196,19 +197,17 @@ export const PerfilPublicoPage = () => {
   } = useMostrarPostPublicoQuery(Number(id));
 
   useEffect(() => {
-    const el = scrollRef.current;
+    const el = sentinelRef.current;
     if (!el) return;
-    const handleScroll = () => {
-      if (
-        el.scrollTop + el.clientHeight >= el.scrollHeight - 200 &&
-        hasNextPage &&
-        !isFetchingNextPage
-      ) {
-        fetchNextPage();
-      }
-    };
-    el.addEventListener("scroll", handleScroll);
-    return () => el.removeEventListener("scroll", handleScroll);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+      },
+      { root: scrollRef.current, rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const posts = dataPost?.pages?.flatMap((p) => p) ?? [];
@@ -236,6 +235,7 @@ export const PerfilPublicoPage = () => {
             posts.map((item) => <PublicacionCard key={item.id} item={item} />)
           )}
           {isFetchingNextPage && <SpinnerLocal />}
+          <div ref={sentinelRef} className="h-1" />
         </div>
       </div>
     </main>
