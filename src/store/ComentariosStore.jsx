@@ -5,7 +5,8 @@ const tabla = "comentarios";
 
 export const useComentariosStore = create((set) => ({
   showModal: false,
-  setShowModal: () => set((state) => ({ showModal: !state.showModal })),
+  setShowModal: (val) =>
+    set((state) => ({ showModal: val !== undefined ? val : !state.showModal })),
   itemSelect: null,
   setItemSelect: (p) => {
     set({ itemSelect: p });

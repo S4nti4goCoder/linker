@@ -8,7 +8,7 @@ const subirOReemplazarFotoPerfil = async (id, file) => {
   const ruta = `usuarios/${id}.${ext}`;
   const { error } = await supabase.storage
     .from("archivos")
-    .upload(ruta, file, { cacheControl: "0", upsert: true });
+    .upload(ruta, file, { cacheControl: "3600", upsert: true });
   if (error) throw new Error(error.message);
   const { data: urlData } = supabase.storage
     .from("archivos")
@@ -46,7 +46,7 @@ export const useUsuariosStore = create((set) => ({
     const ruta = `banners/${id}.${ext}`;
     const { error } = await supabase.storage
       .from("archivos")
-      .upload(ruta, file, { cacheControl: "0", upsert: true });
+      .upload(ruta, file, { cacheControl: "3600", upsert: true });
     if (error) throw new Error(error.message);
     const { data: urlData } = supabase.storage
       .from("archivos")

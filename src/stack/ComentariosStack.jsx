@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useComentariosStore } from "../store/ComentariosStore";
 import { usePostStore } from "../store/PostStore";
 
-export const useInsertarComentarioMutate = ({ comentario, setComentario }) => {
+export const useInsertarComentarioMutate = ({ setComentario }) => {
   const { insertarComentario } = useComentariosStore();
   const { dataUsuarioAuth } = useUsuariosStore();
   const { itemSelect } = usePostStore();
@@ -14,7 +14,7 @@ export const useInsertarComentarioMutate = ({ comentario, setComentario }) => {
 
   return useMutation({
     mutationKey: ["insertar comentario"],
-    mutationFn: () =>
+    mutationFn: (comentario) =>
       insertarComentario({
         comentario,
         fecha: fechaActual,

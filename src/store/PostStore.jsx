@@ -17,7 +17,7 @@ const subirArchivo = async (carpeta, id, file) => {
   const ruta = construirRuta(carpeta, id, file.name);
   const { data, error } = await supabase.storage
     .from("archivos")
-    .upload(ruta, file, { cacheControl: "0", upsert: true });
+    .upload(ruta, file, { cacheControl: "3600", upsert: true });
   if (error) throw new Error(error.message);
   if (data) {
     const { data: urlimagen } = await supabase.storage

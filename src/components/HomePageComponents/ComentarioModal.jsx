@@ -22,8 +22,7 @@ export const ComentarioModal = () => {
     useMostrarComentariosQuery();
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mutate: comentarioMutate } = useInsertarComentarioMutate({
-    comentario: comentario,
-    setComentario: setComentario,
+    setComentario,
   });
 
   const addEmoji = (emoji) => {
@@ -97,7 +96,7 @@ export const ComentarioModal = () => {
                 onChange={(e) => setComentario(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && comentario.trim() !== "") {
-                    comentarioMutate();
+                    comentarioMutate(comentario);
                   }
                 }}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
@@ -119,7 +118,7 @@ export const ComentarioModal = () => {
             </div>
             <button
               disabled={comentario.trim() === ""}
-              onClick={comentarioMutate}
+              onClick={() => comentarioMutate(comentario)}
               className={`p-2 rounded-full transition-all ${
                 comentario.trim() === ""
                   ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
