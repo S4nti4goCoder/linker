@@ -34,12 +34,9 @@ export const useToggleGuardadoMutate = (id_post) => {
         id_post,
       }),
     onSuccess: (guardado) => {
-      // Actualiza el estado local sin refetch
-      queryClient.setQueryData(
-        ["guardado", id_post, dataUsuarioAuth?.id],
-        guardado,
-      );
-      // Invalida la lista de guardados
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post seguidos"] });
       queryClient.invalidateQueries({
         queryKey: ["guardados", dataUsuarioAuth?.id],
       });

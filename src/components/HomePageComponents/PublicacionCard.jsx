@@ -14,14 +14,8 @@ import { useState, useEffect, useRef } from "react";
 import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
 import { ImageSelectorEdit } from "../../hooks/useImageSelector";
 import { useNavigate } from "react-router-dom";
-import {
-  useToggleSeguirMutate,
-  useEstadoSeguidorQuery,
-} from "../../stack/UsuariosStack";
-import {
-  useVerificarGuardadoQuery,
-  useToggleGuardadoMutate,
-} from "../../stack/ColeccionesStack";
+import { useToggleSeguirMutate } from "../../stack/UsuariosStack";
+import { useToggleGuardadoMutate } from "../../stack/ColeccionesStack";
 
 export const PublicacionCard = ({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -48,10 +42,6 @@ export const PublicacionCard = ({ item }) => {
   );
   const { mutate: toggleSeguir, isPending: isSiguiendo } =
     useToggleSeguirMutate(item?.id_usuario);
-  const { data: estadoSeguidor } = useEstadoSeguidorQuery(
-    esPropio ? null : item?.id_usuario,
-  );
-  const { data: guardado } = useVerificarGuardadoQuery(item?.id);
   const { mutate: toggleGuardado } = useToggleGuardadoMutate(item?.id);
 
   useEffect(() => {
@@ -103,12 +93,12 @@ export const PublicacionCard = ({ item }) => {
               onClick={() => toggleSeguir()}
               disabled={isSiguiendo}
               className={`text-xs font-semibold px-3 py-1 rounded-full border transition-all cursor-pointer disabled:opacity-50 ${
-                estadoSeguidor?.siguiendo
+                item?.siguiendo_autor
                   ? "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-400"
                   : "border-primary text-primary hover:bg-primary hover:text-white"
               }`}
             >
-              {estadoSeguidor?.siguiendo ? "Siguiendo" : "+ Seguir"}
+              {item?.siguiendo_autor ? "Siguiendo" : "+ Seguir"}
             </button>
           )}
           <span className="text-gray-500 text-sm whitespace-nowrap">
@@ -316,13 +306,13 @@ export const PublicacionCard = ({ item }) => {
 
           <button
             onClick={() => toggleGuardado()}
-            title={guardado ? "Quitar de guardados" : "Guardar publicación"}
+            title={item?.guardado ? "Quitar de guardados" : "Guardar publicación"}
             className="cursor-pointer"
           >
             <Icon
-              icon={guardado ? "mdi:bookmark" : "mdi:bookmark-outline"}
+              icon={item?.guardado ? "mdi:bookmark" : "mdi:bookmark-outline"}
               className={`text-3xl p-1 rounded-full transition-colors ${
-                guardado ? "text-primary" : "text-gray-400 hover:bg-primary/10"
+                item?.guardado ? "text-primary" : "text-gray-400 hover:bg-primary/10"
               }`}
             />
           </button>

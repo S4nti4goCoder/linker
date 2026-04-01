@@ -106,6 +106,9 @@ export const useToggleSeguirMutate = (id_seguido) => {
       queryClient.invalidateQueries({ queryKey: ["estado seguidor", id_seguido] });
       queryClient.invalidateQueries({ queryKey: ["conteo seguidores", id_seguido] });
       queryClient.invalidateQueries({ queryKey: ["seguidos", dataUsuarioAuth?.id] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post seguidos"] });
     },
     onError: (error) => toast.error("Error: " + error.message),
   });
