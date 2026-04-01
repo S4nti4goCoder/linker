@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRespuestasComentariosStore } from "../store/RespuestasComentariosStore";
-import { useFormattedDate } from "../hooks/useFormattedDate";
+import { getFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
 
@@ -13,7 +13,6 @@ export const useInsertarRespuestaComentarioMutate = () => {
     limpiarRespuestaActiva,
   } = useRespuestasComentariosStore();
   const { dataUsuarioAuth } = useUsuariosStore();
-  const fechaActual = useFormattedDate();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -22,7 +21,7 @@ export const useInsertarRespuestaComentarioMutate = () => {
       insertarRespuestaComentarios({
         id_comentario: respuestaActivaParaComentarioId,
         comentario: respuesta,
-        fecha: fechaActual,
+        fecha: getFormattedDate(),
         id_usuario: dataUsuarioAuth?.id,
       }),
     onError: (error) => {

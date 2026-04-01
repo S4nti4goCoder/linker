@@ -9,12 +9,18 @@ import { useNavigate } from "react-router-dom";
 
 const BusquedaUsuarios = () => {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
   const { dataUsuarioAuth } = useUsuariosStore();
 
-  const { data: resultados, isLoading } = useBuscarUsuariosQuery(query);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const { data: resultados, isLoading } = useBuscarUsuariosQuery(debouncedQuery);
 
   useEffect(() => {
     const handler = (e) => {

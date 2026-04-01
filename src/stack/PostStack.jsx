@@ -4,13 +4,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { usePostStore } from "../store/PostStore";
-import { useFormattedDate } from "../hooks/useFormattedDate";
+import { getFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
 
 export const useInsertarPostMutate = () => {
   const { insertarPost, file, setStateForm, setFile } = usePostStore();
-  const fechaActual = useFormattedDate();
   const { dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
 
@@ -20,7 +19,7 @@ export const useInsertarPostMutate = () => {
       const p = {
         descripcion: data.descripcion,
         url: "-",
-        fecha: fechaActual,
+        fecha: getFormattedDate(),
         id_usuario: dataUsuarioAuth?.id,
         type: "imagen",
       };

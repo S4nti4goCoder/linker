@@ -1,3 +1,3 @@
-export function useFormattedDate() {
+export function getFormattedDate() {
   return new Date().toISOString();
 }
