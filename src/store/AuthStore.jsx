@@ -39,12 +39,15 @@ export const useAuthStore = create((set) => ({
 }));
 
 export const useSubcription = create((set) => {
-  const store = { user: null };
+  const store = { user: null, loading: true };
+
   supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session?.user) set({ user: session.user });
+    set({ user: session?.user ?? null, loading: false });
   });
+
   supabase.auth.onAuthStateChange((_event, session) => {
-    set({ user: session?.user ?? null });
+    set({ user: session?.user ?? null, loading: false });
   });
+
   return store;
 });

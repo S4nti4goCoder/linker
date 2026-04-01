@@ -2,7 +2,9 @@ import { Navigate } from "react-router-dom";
 import { useSubcription } from "../store/AuthStore";
 
 export const ProtectedRoute = ({ children, authenticated = true }) => {
-  const { user } = useSubcription();
+  const { user, loading } = useSubcription();
+
+  if (loading) return null;
 
   if (authenticated === false) {
     if (!user) return children;
@@ -14,5 +16,5 @@ export const ProtectedRoute = ({ children, authenticated = true }) => {
     return <Navigate to={"/login"} replace />;
   }
 
-  return <Navigate to="/login" replace />; // ✅ fix: era <navigate> en minúscula
+  return <Navigate to="/login" replace />;
 };
