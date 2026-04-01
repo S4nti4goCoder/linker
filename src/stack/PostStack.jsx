@@ -49,6 +49,8 @@ export const useLikePostMutate = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
       queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
+      queryClient.invalidateQueries({ queryKey: ["mostrar post seguidos"] });
+      queryClient.invalidateQueries({ queryKey: ["guardados"] });
     },
   });
 };
