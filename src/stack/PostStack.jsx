@@ -40,12 +40,81 @@ export const useLikePostMutate = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const queryClient = useQueryClient();
 
+  const updatePostInPages = (oldData, postId, liked) => {
+    if (!oldData?.pages) return oldData;
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) =>
+        page.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                like_usuario_actual: liked,
+                likes: post.likes + (liked ? 1 : -1),
+              }
+            : post
+        )
+      ),
+    };
+  };
+
   return useMutation({
     mutationKey: ["like post"],
     mutationFn: (item) =>
       likePost({ p_post_id: item?.id, p_user_id: dataUsuarioAuth?.id }),
-    onError: (error) => toast.error("Error al dar like: " + error.message),
-    onSuccess: () => {
+    onMutate: async (item) => {
+      const liked = !item.like_usuario_actual;
+      const queryKeys = [
+        ["mostrar post"],
+        ["mostrar post publico"],
+        ["mostrar post seguidos"],
+      ];
+
+      // Cancelar refetches en curso
+      await Promise.all(
+        queryKeys.map((key) => queryClient.cancelQueries({ queryKey: key }))
+      );
+
+      // Guardar estado anterior
+      const previous = {};
+      queryKeys.forEach((key) => {
+        queryClient.setQueriesData({ queryKey: key }, (old) => {
+          if (old?.pages) {
+            previous[JSON.stringify(key)] = old;
+            return updatePostInPages(old, item.id, liked);
+          }
+          return old;
+        });
+      });
+
+      // Optimistic update en guardados (estructura plana)
+      const guardadosKey = ["guardados"];
+      queryClient.setQueriesData({ queryKey: guardadosKey }, (old) => {
+        if (!Array.isArray(old)) return old;
+        previous["guardados"] = old;
+        return old.map((post) =>
+          post.id === item.id
+            ? { ...post, like_usuario_actual: liked, likes: post.likes + (liked ? 1 : -1) }
+            : post
+        );
+      });
+
+      return { previous };
+    },
+    onError: (error, item, context) => {
+      // Revertir al estado anterior si falla
+      if (context?.previous) {
+        Object.entries(context.previous).forEach(([key, data]) => {
+          if (key === "guardados") {
+            queryClient.setQueriesData({ queryKey: ["guardados"] }, () => data);
+          } else {
+            queryClient.setQueriesData({ queryKey: JSON.parse(key) }, () => data);
+          }
+        });
+      }
+      toast.error("Error al dar like: " + error.message);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["mostrar post"] });
       queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
       queryClient.invalidateQueries({ queryKey: ["mostrar post seguidos"] });
