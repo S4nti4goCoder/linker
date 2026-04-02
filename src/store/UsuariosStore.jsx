@@ -103,7 +103,7 @@ export const useUsuariosStore = create((set) => ({
   },
 
   obtenerConteoSeguidores: async (id_usuario) => {
-    const [{ count: seguidores }, { count: siguiendo }] = await Promise.all([
+    const [resSeguidores, resSiguiendo] = await Promise.all([
       supabase
         .from("seguidores")
         .select("*", { count: "exact", head: true })
@@ -113,7 +113,9 @@ export const useUsuariosStore = create((set) => ({
         .select("*", { count: "exact", head: true })
         .eq("id_seguidor", id_usuario),
     ]);
-    return { seguidores, siguiendo };
+    if (resSeguidores.error) throw new Error(resSeguidores.error.message);
+    if (resSiguiendo.error) throw new Error(resSiguiendo.error.message);
+    return { seguidores: resSeguidores.count, siguiendo: resSiguiendo.count };
   },
 
   obtenerSeguidos: async (id_seguidor) => {

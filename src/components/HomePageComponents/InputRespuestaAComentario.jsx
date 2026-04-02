@@ -7,11 +7,20 @@ import { EmojiPickerSimple } from "../ui/EmojiPickerSimple";
 
 export const InputRespuestaAComentario = () => {
   const [comentario, setComentario] = useState("");
-  const { setRespuesta } = useRespuestasComentariosStore();
+  const { respuestaActivaParaComentarioId } = useRespuestasComentariosStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textComentarioRef = useRef(null);
   const { dataUsuarioAuth } = useUsuariosStore();
   const { mutate: comentarioMutate } = useInsertarRespuestaComentarioMutate();
+
+  const enviarRespuesta = () => {
+    if (comentario.trim() === "" || !respuestaActivaParaComentarioId) return;
+    comentarioMutate({
+      id_comentario: respuestaActivaParaComentarioId,
+      comentario,
+    });
+    setComentario("");
+  };
 
   const addEmoji = (emoji) => {
     const textarea = textComentarioRef.current;
@@ -21,7 +30,6 @@ export const InputRespuestaAComentario = () => {
     const newText =
       comentario.substring(0, start) + emoji + comentario.substring(end);
     setComentario(newText);
-    setRespuesta(newText);
   };
 
   return (
@@ -38,10 +46,7 @@ export const InputRespuestaAComentario = () => {
             ref={textComentarioRef}
             placeholder="Escribe un comentario..."
             value={comentario}
-            onChange={(e) => {
-              setRespuesta(e.target.value);
-              setComentario(e.target.value);
-            }}
+            onChange={(e) => setComentario(e.target.value)}
             className="flex-1 bg-gray-100 dark:bg-neutral-800 text-sm rounded-2xl px-4 py-2 focus:outline-none resize-none"
           />
           <div className="relative">
@@ -66,7 +71,7 @@ export const InputRespuestaAComentario = () => {
                 ? "cursor-not-allowed text-gray-500"
                 : "cursor-pointer text-[#00AEF0] hover:bg-blue-600/10"
             }`}
-            onClick={comentarioMutate}
+            onClick={enviarRespuesta}
           >
             <Icon icon="iconamoon:send-fill" width="20" height="20" />
             Responder

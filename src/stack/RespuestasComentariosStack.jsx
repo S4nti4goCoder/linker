@@ -7,8 +7,6 @@ import { toast } from "sonner";
 export const useInsertarRespuestaComentarioMutate = () => {
   const {
     insertarRespuestaComentarios,
-    respuestaActivaParaComentarioId,
-    respuesta,
     setRespuesta,
     limpiarRespuestaActiva,
   } = useRespuestasComentariosStore();
@@ -17,23 +15,22 @@ export const useInsertarRespuestaComentarioMutate = () => {
 
   return useMutation({
     mutationKey: ["insertar respuesta a comentario"],
-    mutationFn: () =>
+    mutationFn: ({ id_comentario, comentario }) =>
       insertarRespuestaComentarios({
-        id_comentario: respuestaActivaParaComentarioId,
-        comentario: respuesta,
+        id_comentario,
+        comentario,
         fecha: getFormattedDate(),
         id_usuario: dataUsuarioAuth?.id,
       }),
     onError: (error) => {
       toast.error("Error al insertar respuesta: " + error.message);
     },
-    onSuccess: () => {
+    onSuccess: (_, { id_comentario }) => {
       toast.success("Respuesta enviada");
       setRespuesta("");
       limpiarRespuestaActiva();
-      // Invalida la query de respuestas del comentario específico
       queryClient.invalidateQueries({
-        queryKey: ["mostrar respuesta comentario", { id_comentario: respuestaActivaParaComentarioId }],
+        queryKey: ["mostrar respuesta comentario", { id_comentario }],
       });
     },
   });
