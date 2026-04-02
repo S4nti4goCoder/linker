@@ -22,6 +22,7 @@ const ConversacionItem = ({ conv, activa, onClick }) => (
       <img
         src={conv.otro_foto || "https://placehold.co/44x44"}
         onError={(e) => (e.target.src = "https://placehold.co/44x44")}
+        alt={`Foto de ${conv.otro_nombre}`}
         className="w-11 h-11 rounded-full object-cover"
       />
       {conv.no_leidos > 0 && (
@@ -136,6 +137,7 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         <img
           src={otroUsuario?.foto_perfil || "https://placehold.co/40x40"}
           onError={(e) => (e.target.src = "https://placehold.co/40x40")}
+          alt={`Foto de ${otroUsuario?.nombre}`}
           className="w-10 h-10 rounded-full object-cover"
         />
         <div>

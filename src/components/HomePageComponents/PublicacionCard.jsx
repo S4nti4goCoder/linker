@@ -81,6 +81,7 @@ export const PublicacionCard = memo(({ item }) => {
           <img
             src={item?.foto_usuario || "https://placehold.co/48x48"}
             onError={(e) => (e.target.src = "https://placehold.co/48x48")}
+            alt={`Foto de ${item?.nombre_usuario}`}
             className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity"
           />
           <span className="font-bold hover:underline">
@@ -108,6 +109,7 @@ export const PublicacionCard = memo(({ item }) => {
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
+                aria-label="Opciones de publicación"
                 className="cursor-pointer p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 <Icon icon="mdi:dots-horizontal" className="text-gray-500" />
@@ -155,7 +157,7 @@ export const PublicacionCard = memo(({ item }) => {
 
       {/* Modal confirmar eliminar */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Confirmar eliminación">
           <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
@@ -190,7 +192,7 @@ export const PublicacionCard = memo(({ item }) => {
 
       {/* Modal editar */}
       {showEditForm && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Editar publicación">
           <div className="bg-white dark:bg-neutral-900 text-black dark:text-white rounded-xl w-full max-w-md p-6 relative">
             <button
               onClick={() => setShowEditForm(false)}
@@ -278,7 +280,7 @@ export const PublicacionCard = memo(({ item }) => {
 
         {/* Acciones: like, comentar, guardar */}
         <div className="flex justify-between mt-4">
-          <button onClick={() => mutate(item)}>
+          <button onClick={() => mutate(item)} aria-label={item?.like_usuario_actual ? "Quitar me gusta" : "Me gusta"}>
             <Icon
               icon={
                 item?.like_usuario_actual ? "mdi:heart" : "mdi:heart-outline"

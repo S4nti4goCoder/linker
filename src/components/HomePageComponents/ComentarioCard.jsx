@@ -34,6 +34,7 @@ export const ComentarioCard = ({ item }) => {
         <img
           src={item?.foto_usuario || "https://placehold.co/36x36"}
           onError={(e) => (e.target.src = "https://placehold.co/36x36")}
+          alt={`Foto de ${item?.nombre_usuario}`}
           className="w-9 h-9 rounded-full object-cover"
         />
         <div className="flex-1 relative">

@@ -95,6 +95,7 @@ const BusquedaUsuarios = () => {
                     onError={(e) =>
                       (e.target.src = "https://placehold.co/40x40")
                     }
+                    alt={`Foto de ${usuario.nombre}`}
                     className="w-10 h-10 rounded-full object-cover shrink-0"
                   />
                   <div className="text-left">
@@ -129,6 +130,7 @@ export const HeaderSticky = () => {
           <img
             src={dataUsuarioAuth?.foto_perfil || "https://placehold.co/32x32"}
             onError={(e) => (e.target.src = "https://placehold.co/32x32")}
+            alt="Tu foto de perfil"
             className="w-8 h-8 rounded-full object-cover"
           />
           {/* ícono mdi:dots-vertical eliminado — no tenía función */}

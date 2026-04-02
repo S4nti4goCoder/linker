@@ -37,6 +37,9 @@ export const ComentarioModal = () => {
 
   return (
     <main
+      role="dialog"
+      aria-modal="true"
+      aria-label="Comentarios"
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center"
       onClick={(e) => e.target === e.currentTarget && setShowModal()}
     >
@@ -53,6 +56,7 @@ export const ComentarioModal = () => {
               className="w-10 h-10 rounded-full object-cover shrink-0"
               src={item?.foto_usuario || "https://placehold.co/40x40"}
               onError={(e) => (e.target.src = "https://placehold.co/40x40")}
+              alt={`Foto de ${item?.nombre_usuario}`}
             />
             <div className="flex-1 min-w-0">
               <span className="font-semibold text-sm block truncate">
