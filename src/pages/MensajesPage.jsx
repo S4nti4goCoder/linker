@@ -219,7 +219,7 @@ export const MensajesPage = () => {
   };
 
   return (
-    <main className="flex h-screen overflow-hidden border-x border-gray-200 dark:border-gray-600">
+    <div className="flex h-full overflow-hidden">
       <aside
         className={`w-full sm:w-80 shrink-0 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full ${
           mostrarChat ? "hidden sm:flex" : "flex"
@@ -273,6 +273,6 @@ export const MensajesPage = () => {
           />
         )}
       </section>
-    </main>
+    </div>
   );
 };

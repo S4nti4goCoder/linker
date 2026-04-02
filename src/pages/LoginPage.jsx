@@ -122,7 +122,7 @@ const LoginForm = ({ onGoSignup, onGoReset }) => {
           <div className="w-full border-t border-gray-200 dark:border-neutral-700" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white dark:bg-[#1a1d21] px-4 text-gray-400">o</span>
+          <span className="bg-white dark:bg-bg-dark px-4 text-gray-400">o</span>
         </div>
       </div>
 
@@ -275,7 +275,7 @@ export const LoginPage = () => {
   const [view, setView] = useState("login");
 
   return (
-    <main className="flex h-screen w-full bg-white dark:bg-[#1a1d21] text-black dark:text-white">
+    <main className="flex h-screen w-full bg-white dark:bg-bg-dark text-black dark:text-white">
       <Toaster />
 
       {/* Panel izquierdo */}

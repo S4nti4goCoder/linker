@@ -140,94 +140,90 @@ export const HomePage = () => {
   const postsSeguidos = dataPostSeguidos?.pages?.flatMap((p) => p) ?? [];
 
   return (
-    <main className="flex min-h-screen bg-white dark:bg-bg-dark max-w-[1200px] mx-auto">
+    <div className="flex flex-col h-full overflow-hidden">
       {dataUsuarioAuth?.foto_perfil === "-" && <FormActualizarPerfil />}
-      <section className="flex flex-col w-full h-screen">
-        <article className="flex flex-col h-screen overflow-hidden border border-gray-200 border-t-0 border-b-0 dark:border-gray-600">
-          <HeaderSticky />
+      <HeaderSticky />
 
-          <div className="flex border-b border-gray-200 dark:border-gray-600 shrink-0">
-            <button
-              onClick={() => setTab("todos")}
-              className={`flex-1 py-3 text-sm font-semibold transition-colors cursor-pointer ${
-                tab === "todos"
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              }`}
-            >
-              Para ti
-            </button>
-            <button
-              onClick={() => setTab("siguiendo")}
-              className={`flex-1 py-3 text-sm font-semibold transition-colors cursor-pointer ${
-                tab === "siguiendo"
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              }`}
-            >
-              Siguiendo
-            </button>
-          </div>
+      <div className="flex border-b border-gray-200 dark:border-gray-600 shrink-0">
+        <button
+          onClick={() => setTab("todos")}
+          className={`flex-1 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+            tab === "todos"
+              ? "text-primary border-b-2 border-primary"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          }`}
+        >
+          Para ti
+        </button>
+        <button
+          onClick={() => setTab("siguiendo")}
+          className={`flex-1 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+            tab === "siguiendo"
+              ? "text-primary border-b-2 border-primary"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          }`}
+        >
+          Siguiendo
+        </button>
+      </div>
 
-          <div ref={scrollRef} className="overflow-y-auto">
-            <InputPublicar />
+      <div ref={scrollRef} className="overflow-y-auto flex-1">
+        <InputPublicar />
 
-            {tab === "todos" && (
+        {tab === "todos" && (
+          <>
+            {isLoadingPost && (
               <>
-                {isLoadingPost && (
-                  <>
-                    <SkeletonPost />
-                    <SkeletonPost />
-                    <SkeletonPost />
-                    <SkeletonPost />
-                  </>
-                )}
-                {!isLoadingPost &&
-                  postsTodos.map((item) => (
-                    <PublicacionCard key={item.id} item={item} />
-                  ))}
-                {isFetchingNextPage && <SpinnerLocal />}
+                <SkeletonPost />
+                <SkeletonPost />
+                <SkeletonPost />
+                <SkeletonPost />
               </>
             )}
+            {!isLoadingPost &&
+              postsTodos.map((item) => (
+                <PublicacionCard key={item.id} item={item} />
+              ))}
+            {isFetchingNextPage && <SpinnerLocal />}
+          </>
+        )}
 
-            {tab === "siguiendo" && (
-              <>
-                {isLoadingSeguidos && <SkeletonPost />}
-                {!isLoadingSeguidos && idsSeguidos.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
-                    <Icon
-                      icon="mdi:account-multiple-outline"
-                      className="text-5xl"
-                    />
-                    <p className="text-sm">
-                      Sigue a alguien para ver sus publicaciones
-                    </p>
-                  </div>
-                )}
-                {!isLoadingSeguidos &&
-                  idsSeguidos.length > 0 &&
-                  postsSeguidos.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
-                      <Icon icon="mdi:post-outline" className="text-5xl" />
-                      <p className="text-sm">
-                        Las personas que sigues aún no han publicado
-                      </p>
-                    </div>
-                  )}
-                {!isLoadingSeguidos &&
-                  postsSeguidos.map((item) => (
-                    <PublicacionCard key={item.id} item={item} />
-                  ))}
-                {isFetchingNextSeguidos && <SpinnerLocal />}
-              </>
+        {tab === "siguiendo" && (
+          <>
+            {isLoadingSeguidos && <SkeletonPost />}
+            {!isLoadingSeguidos && idsSeguidos.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+                <Icon
+                  icon="mdi:account-multiple-outline"
+                  className="text-5xl"
+                />
+                <p className="text-sm">
+                  Sigue a alguien para ver sus publicaciones
+                </p>
+              </div>
             )}
+            {!isLoadingSeguidos &&
+              idsSeguidos.length > 0 &&
+              postsSeguidos.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+                  <Icon icon="mdi:post-outline" className="text-5xl" />
+                  <p className="text-sm">
+                    Las personas que sigues aún no han publicado
+                  </p>
+                </div>
+              )}
+            {!isLoadingSeguidos &&
+              postsSeguidos.map((item) => (
+                <PublicacionCard key={item.id} item={item} />
+              ))}
+            {isFetchingNextSeguidos && <SpinnerLocal />}
+          </>
+        )}
 
-            {/* Sentinel para IntersectionObserver */}
-            <div ref={sentinelRef} className="h-1" />
-          </div>
-        </article>
-      </section>
+        <div ref={sentinelRef} className="h-1" />
+      </div>
+
       {showModal && <ComentarioModal />}
-    </main>
+    </div>
   );
 };

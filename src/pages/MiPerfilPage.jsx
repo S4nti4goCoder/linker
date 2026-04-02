@@ -168,7 +168,7 @@ export const MiPerfilPage = () => {
   const misPost = dataPost?.pages?.flatMap((p) => p) ?? [];
 
   return (
-    <main className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       {showEditForm && (
         <FormActualizarPerfil onClose={() => setShowEditForm(false)} />
       )}
@@ -176,7 +176,7 @@ export const MiPerfilPage = () => {
 
       <div
         ref={scrollRef}
-        className="overflow-y-auto h-full border-x border-gray-200 dark:border-gray-600"
+        className="overflow-y-auto h-full"
       >
         <ProfileHeader
           usuario={dataUsuarioAuth}
@@ -198,6 +198,6 @@ export const MiPerfilPage = () => {
           <div ref={sentinelRef} className="h-1" />
         </div>
       </div>
-    </main>
+    </div>
   );
 };

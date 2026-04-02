@@ -215,11 +215,11 @@ export const PerfilPublicoPage = () => {
   if (loading) return <SpinnerLocal />;
 
   return (
-    <main className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       {showModal && <ComentarioModal />}
       <div
         ref={scrollRef}
-        className="overflow-y-auto h-full border-x border-gray-200 dark:border-gray-600"
+        className="overflow-y-auto h-full"
       >
         <PerfilPublicoHeader usuario={usuario} id={id} />
         <PerfilPublicoStats posts={posts} />
@@ -238,6 +238,6 @@ export const PerfilPublicoPage = () => {
           <div ref={sentinelRef} className="h-1" />
         </div>
       </div>
-    </main>
+    </div>
   );
 };
