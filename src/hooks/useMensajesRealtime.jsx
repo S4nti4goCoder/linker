@@ -10,13 +10,12 @@ import { useNavigate } from "react-router-dom";
 export const useMensajesRealtime = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { data: conversaciones = [] } = useListarConversacionesQuery();
-  const { conversacionActiva } = useMensajesStore();
+  const { conversacionActiva, marcarMensajesLeidos } = useMensajesStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const convIdsKey = conversaciones.map((c) => c.id).join(",");
 
-  // Ref para leer siempre el valor actual dentro del closure del canal
   const conversacionActivaRef = useRef(conversacionActiva);
   useEffect(() => {
     conversacionActivaRef.current = conversacionActiva;
@@ -42,13 +41,24 @@ export const useMensajesRealtime = () => {
           )
             return;
 
-          // Siempre invalidar para actualizar badge y lista
+          // Siempre invalidar lista de conversaciones
           queryClient.invalidateQueries({
             queryKey: ["conversaciones", dataUsuarioAuth.id],
           });
 
-          // Leer la ref — siempre tiene el valor actual sin importar cuándo se creó el closure
-          if (conversacionActivaRef.current !== id_conversacion) {
+          const activa = conversacionActivaRef.current;
+
+          if (activa === id_conversacion) {
+            // Estoy viendo esta conversación → refrescar mensajes y marcar leídos
+            queryClient.invalidateQueries({
+              queryKey: ["mensajes", id_conversacion],
+            });
+            marcarMensajesLeidos({
+              id_conversacion,
+              id_receptor: dataUsuarioAuth.id,
+            });
+          } else {
+            // No estoy en esta conversación → mostrar toast
             const conv = convMap.get(id_conversacion);
             toast.custom(
               (t) => (
@@ -84,5 +94,5 @@ export const useMensajesRealtime = () => {
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, [dataUsuarioAuth?.id, convIdsKey]); // ← conversacionActiva NO va aquí, se lee por ref
+  }, [dataUsuarioAuth?.id, convIdsKey]);
 };

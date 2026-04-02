@@ -332,7 +332,7 @@ export const PublicacionCard = memo(({ item }) => {
               }}
               className="text-xs text-gray-400 cursor-pointer hover:underline"
             >
-              {item?.comentarios_count} comentarios
+              {item?.comentarios_count} {item?.comentarios_count === 1 ? "comentario" : "comentarios"}
             </span>
           )}
         </div>

@@ -9,7 +9,6 @@ import {
 } from "../stack/MensajesStack";
 import { getRelativeTime } from "../hooks/useRelativeTime";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
-import { supabase } from "../supabase/supabase.config";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ConversacionItem = ({ conv, activa, onClick }) => (
@@ -110,39 +109,6 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         queryKey: ["conversaciones", dataUsuarioAuth.id],
       });
     });
-  }, [id_conversacion, dataUsuarioAuth?.id]);
-
-  useEffect(() => {
-    if (!id_conversacion) return;
-
-    const channel = supabase
-      .channel(`mensajes-chat-${id_conversacion}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "mensajes",
-          filter: `id_conversacion=eq.${id_conversacion}`,
-        },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ["mensajes", id_conversacion],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["conversaciones", dataUsuarioAuth?.id],
-          });
-          if (dataUsuarioAuth?.id) {
-            marcarMensajesLeidos({
-              id_conversacion,
-              id_receptor: dataUsuarioAuth.id,
-            });
-          }
-        },
-      )
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
   }, [id_conversacion, dataUsuarioAuth?.id]);
 
   const handleEnviar = () => {
