@@ -35,7 +35,7 @@ export const MainLayout = () => {
   }
 
   return (
-    <main className="flex justify-center h-screen overflow-hidden bg-white dark:bg-bg-dark text-black dark:text-white transition-colors duration-300">
+    <main className="flex justify-center h-screen overflow-hidden bg-white dark:bg-bg-dark text-black dark:text-white transition-colors duration-300 pt-12 md:pt-0">
       <section className="flex w-full max-w-[1300px] h-full">
         <Sidebar />
         <section className="flex-1 overflow-y-auto h-full border-x border-gray-200 dark:border-gray-600">
