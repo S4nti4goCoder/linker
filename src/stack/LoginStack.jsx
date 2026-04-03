@@ -14,7 +14,7 @@ export const useLoginMutate = () => {
         return toast.error("Correo o contraseña incorrectos");
       if (msg.includes("Email not confirmed"))
         return toast.error("Debes confirmar tu correo antes de ingresar");
-      toast.error("Error al iniciar sesión: " + msg);
+      toast.error("Error al iniciar sesión. Intenta de nuevo.");
     },
     onSuccess: () => toast.success("¡Bienvenido de nuevo!"),
   });
@@ -32,7 +32,7 @@ export const useSignupMutate = () => {
         return toast.error("Este correo ya tiene una cuenta. Inicia sesión.");
       if (msg.includes("Password should be at least"))
         return toast.error("La contraseña debe tener al menos 6 caracteres");
-      toast.error("Error al registrarse: " + msg);
+      toast.error("Error al registrarse. Intenta de nuevo.");
     },
     onSuccess: () =>
       toast.success("¡Cuenta creada exitosamente! Ya puedes ingresar."),
@@ -48,7 +48,6 @@ export const useResetPasswordMutate = () => {
       toast.error(
         "No pudimos enviar el correo. Verifica la dirección e intenta de nuevo.",
       );
-      console.error(error);
     },
     onSuccess: () =>
       toast.success("¡Correo enviado! Revisa tu bandeja de entrada (y spam)."),

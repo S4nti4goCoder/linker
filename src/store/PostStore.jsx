@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
+import { getValidatedExt } from "../utils/validation";
 
 const tabla = "publicaciones";
 
@@ -9,7 +10,7 @@ const inferirTipo = (filename) => {
 };
 
 const construirRuta = (carpeta, id, filename) => {
-  const ext = filename?.split(".").pop()?.toLowerCase();
+  const ext = getValidatedExt(filename);
   return `${carpeta}/${id}.${ext}`;
 };
 

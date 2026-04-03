@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
+import { getValidatedExt } from "../utils/validation";
 
 const tabla = "usuarios";
 
 const subirOReemplazarFotoPerfil = async (id, file) => {
-  const ext = file.name?.split(".").pop()?.toLowerCase() || "jpg";
+  const ext = getValidatedExt(file.name);
   const ruta = `usuarios/${id}.${ext}`;
   const { error } = await supabase.storage
     .from("archivos")
@@ -42,7 +43,7 @@ export const useUsuariosStore = create((set) => ({
 
   // Subir banner
   subirBanner: async (id, file) => {
-    const ext = file.name?.split(".").pop()?.toLowerCase() || "jpg";
+    const ext = getValidatedExt(file.name);
     const ruta = `banners/${id}.${ext}`;
     const { error } = await supabase.storage
       .from("archivos")

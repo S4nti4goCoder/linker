@@ -9,6 +9,7 @@ import { ComentarioModal } from "../components/HomePageComponents/ComentarioModa
 import { useComentariosStore } from "../store/ComentariosStore";
 import { useImageExtractColor } from "../hooks/useImageExtractColor";
 import { Icon } from "@iconify/react";
+import { isValidUrl, isValidUsername } from "../utils/validation";
 import {
   useToggleSeguirMutate,
   useEstadoSeguidorQuery,
@@ -111,7 +112,7 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
           )}
 
           <div className="flex flex-wrap gap-3">
-            {usuario?.instagram && (
+            {usuario?.instagram && isValidUsername(usuario.instagram) && (
               <a
                 href={`https://instagram.com/${usuario.instagram}`}
                 target="_blank"
@@ -122,7 +123,7 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
                 {usuario.instagram}
               </a>
             )}
-            {usuario?.twitter && (
+            {usuario?.twitter && isValidUsername(usuario.twitter) && (
               <a
                 href={`https://twitter.com/${usuario.twitter}`}
                 target="_blank"
@@ -133,7 +134,7 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
                 {usuario.twitter}
               </a>
             )}
-            {usuario?.website && (
+            {usuario?.website && isValidUrl(usuario.website) && (
               <a
                 href={usuario.website}
                 target="_blank"

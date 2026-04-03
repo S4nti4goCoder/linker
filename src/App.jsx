@@ -34,7 +34,7 @@ function App() {
       <Toaster position="top-left" richColors />
       {stateForm && <FormPost />}
       <MyRoutes />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 }

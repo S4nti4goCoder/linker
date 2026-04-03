@@ -13,6 +13,7 @@ import { useImageExtractColor } from "../hooks/useImageExtractColor";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { useComentariosStore } from "../store/ComentariosStore";
 import { useConteoSeguidoresQuery } from "../stack/UsuariosStack";
+import { isValidUrl, isValidUsername } from "../utils/validation";
 
 const ProfileHeader = ({ usuario, onEditClick }) => {
   const imgRef = useRef(null);
@@ -65,7 +66,7 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
           )}
 
           <div className="flex flex-wrap gap-3">
-            {usuario?.instagram && (
+            {usuario?.instagram && isValidUsername(usuario.instagram) && (
               <a
                 href={`https://instagram.com/${usuario.instagram}`}
                 target="_blank"
@@ -76,7 +77,7 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
                 {usuario.instagram}
               </a>
             )}
-            {usuario?.twitter && (
+            {usuario?.twitter && isValidUsername(usuario.twitter) && (
               <a
                 href={`https://twitter.com/${usuario.twitter}`}
                 target="_blank"
@@ -87,7 +88,7 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
                 {usuario.twitter}
               </a>
             )}
-            {usuario?.website && (
+            {usuario?.website && isValidUrl(usuario.website) && (
               <a
                 href={usuario.website}
                 target="_blank"

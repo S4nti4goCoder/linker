@@ -151,9 +151,17 @@ export const FormActualizarPerfil = ({ onClose }) => {
                 <input
                   className="flex-1 bg-transparent text-sm outline-none placeholder-gray-400"
                   placeholder="usuario de Instagram"
-                  {...register("instagram")}
+                  {...register("instagram", {
+                    pattern: {
+                      value: /^[a-zA-Z0-9_.]{0,30}$/,
+                      message: "Usuario inválido",
+                    },
+                  })}
                 />
               </div>
+              {errors.instagram && (
+                <p className="text-red-500 text-xs -mt-2">{errors.instagram.message}</p>
+              )}
               <div className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-800 rounded-xl px-4 py-2.5">
                 <Icon
                   icon="mdi:twitter"
@@ -162,9 +170,17 @@ export const FormActualizarPerfil = ({ onClose }) => {
                 <input
                   className="flex-1 bg-transparent text-sm outline-none placeholder-gray-400"
                   placeholder="usuario de Twitter/X"
-                  {...register("twitter")}
+                  {...register("twitter", {
+                    pattern: {
+                      value: /^[a-zA-Z0-9_.]{0,30}$/,
+                      message: "Usuario inválido",
+                    },
+                  })}
                 />
               </div>
+              {errors.twitter && (
+                <p className="text-red-500 text-xs -mt-2">{errors.twitter.message}</p>
+              )}
               <div className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-800 rounded-xl px-4 py-2.5">
                 <Icon
                   icon="mdi:web"
@@ -173,9 +189,22 @@ export const FormActualizarPerfil = ({ onClose }) => {
                 <input
                   className="flex-1 bg-transparent text-sm outline-none placeholder-gray-400"
                   placeholder="https://tusitio.com"
-                  {...register("website")}
+                  {...register("website", {
+                    validate: (value) => {
+                      if (!value) return true;
+                      try {
+                        const url = new URL(value);
+                        return ["http:", "https:"].includes(url.protocol) || "La URL debe ser http o https";
+                      } catch {
+                        return "URL inválida";
+                      }
+                    },
+                  })}
                 />
               </div>
+              {errors.website && (
+                <p className="text-red-500 text-xs -mt-2">{errors.website.message}</p>
+              )}
             </div>
 
             <button
