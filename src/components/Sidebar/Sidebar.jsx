@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import logo from "../../assets/logo.png";
 import { NavLink } from "react-router-dom";
 import { BtnToggleTheme } from "../ui/buttons/BtnToggleTheme";
 import { BtnLogout } from "../ui/buttons/BtnLogout";
@@ -26,8 +27,9 @@ export const Sidebar = () => {
 
   return (
     <div className="h-screen w-[200px] shrink-0 p-2 bg-white dark:bg-bg-dark transition-all duration-300 flex flex-col">
-      <div className="flex justify-center items-center h-8 w-8 rounded-full m-2 overflow-hidden">
-        <img src="/favicon.svg" alt="LinKer" className="w-full h-full" />
+      <div className="flex items-center gap-2 px-2 py-3">
+        <img src={logo} alt="LinKer logo" className="h-8 w-8 shrink-0" />
+        <span className="hidden sm:block text-xl font-bold tracking-tight">LinKer</span>
       </div>
       <nav aria-label="Navegación principal" className="flex-1 flex flex-col gap-2 items-center">
         {linksActivos.map((item, index) => (
