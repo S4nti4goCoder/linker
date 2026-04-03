@@ -93,13 +93,18 @@ export const PublicacionCard = memo(({ item }) => {
             <button
               onClick={() => toggleSeguir()}
               disabled={isSiguiendo}
-              className={`text-xs font-semibold px-3 py-1 rounded-full border transition-all cursor-pointer disabled:opacity-50 ${
+              className={`group text-xs font-semibold px-3 py-1 rounded-full border transition-all cursor-pointer disabled:opacity-50 ${
                 item?.siguiendo_autor
                   ? "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-400"
                   : "border-primary text-primary hover:bg-primary hover:text-white"
               }`}
             >
-              {item?.siguiendo_autor ? "Siguiendo" : "+ Seguir"}
+              {item?.siguiendo_autor ? (
+                <>
+                  <span className="group-hover:hidden">Siguiendo</span>
+                  <span className="hidden group-hover:inline">Dejar de seguir</span>
+                </>
+              ) : "+ Seguir"}
             </button>
           )}
           <span className="text-gray-500 text-sm whitespace-nowrap">
