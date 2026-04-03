@@ -54,7 +54,7 @@ export const FormActualizarPerfil = ({ onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-neutral-700 sticky top-0 bg-white dark:bg-neutral-900 z-10">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-gray-200 dark:border-neutral-700 sticky top-0 bg-white dark:bg-neutral-900 z-10">
           <h1 className="text-lg font-bold">Editar perfil</h1>
           <BtnClose funcion={onClose} />
         </div>
@@ -83,7 +83,7 @@ export const FormActualizarPerfil = ({ onClose }) => {
             </label>
           </div>
 
-          <div className="px-5 pb-5">
+          <div className="px-4 sm:px-5 pb-4 sm:pb-5">
             {/* Foto de perfil */}
             <div className="relative -mt-10 mb-4 w-fit">
               <img

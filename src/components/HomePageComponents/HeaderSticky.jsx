@@ -42,7 +42,7 @@ const BusquedaUsuarios = () => {
 
   return (
     <div className="relative" ref={ref}>
-      <div className="flex items-center gap-2 bg-gray-100 dark:bg-neutral-800 rounded-full px-3 py-1.5 w-48 sm:w-64">
+      <div className="flex items-center gap-2 bg-gray-100 dark:bg-neutral-800 rounded-full px-2 sm:px-3 py-1.5 w-32 sm:w-48 md:w-64">
         <Icon icon="mdi:magnify" className="text-gray-400 text-lg shrink-0" />
         <input
           type="text"
@@ -69,7 +69,7 @@ const BusquedaUsuarios = () => {
       </div>
 
       {open && query.trim().length >= 2 && (
-        <div className="absolute right-0 top-10 w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-700 z-50 overflow-hidden">
+        <div className="absolute left-0 sm:right-0 sm:left-auto top-10 w-64 sm:w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-700 z-50 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <Icon
@@ -120,8 +120,8 @@ export const HeaderSticky = () => {
 
   return (
     <div className="sticky top-0 z-10 bg-white dark:bg-bg-dark border-b border-gray-200 dark:border-gray-600 px-4 py-3">
-      <div className="flex justify-between items-center gap-3">
-        <h1 className="text-xl font-bold shrink-0">INICIO</h1>
+      <div className="flex justify-between items-center gap-2 sm:gap-3">
+        <h1 className="text-lg sm:text-xl font-bold shrink-0">INICIO</h1>
         <BusquedaUsuarios />
         <div className="flex items-center gap-3 shrink-0">
           <span className="font-semibold text-gray-500/80 text-sm hidden sm:block">

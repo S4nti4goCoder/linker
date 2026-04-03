@@ -43,7 +43,7 @@ export const ComentarioModal = () => {
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center"
       onClick={(e) => e.target === e.currentTarget && setShowModal()}
     >
-      <section className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full sm:max-w-2xl max-h-[90vh] shadow-xl flex flex-col">
+      <section className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full sm:max-w-2xl max-h-[85vh] sm:max-h-[90vh] shadow-xl flex flex-col">
         <header className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="relative flex items-center justify-center mb-3">
             <span className="font-bold text-base">Comentarios</span>

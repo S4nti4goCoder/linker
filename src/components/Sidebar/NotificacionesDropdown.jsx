@@ -97,7 +97,7 @@ export const NotificacionesDropdown = () => {
       </button>
 
       {open && (
-        <div className="absolute left-0 sm:left-full sm:top-0 bottom-full sm:bottom-auto sm:ml-2 mb-2 sm:mb-0 w-80 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-700 z-50 overflow-hidden">
+        <div className="absolute left-0 sm:left-full sm:top-0 bottom-full sm:bottom-auto sm:ml-2 mb-2 sm:mb-0 w-72 sm:w-80 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-700 z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-neutral-700">
             <h3 className="font-bold text-sm">Notificaciones</h3>
             {noLeidas > 0 && (

@@ -20,7 +20,7 @@ export const InputPublicar = () => {
           ¿Qué estás pensando, {dataUsuarioAuth?.nombre?.split(" ")[0]}?
         </button>
       </div>
-      <div className="flex gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 ml-13">
+      <div className="flex gap-2 sm:gap-4 md:gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 ml-10 sm:ml-13">
         <button
           onClick={() => setStateForm(true)}
           className="flex items-center gap-2 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-neutral-800 px-3 py-1.5 rounded-lg transition-all cursor-pointer text-sm font-medium"

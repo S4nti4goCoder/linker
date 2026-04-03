@@ -101,8 +101,8 @@ export const PublicacionCard = memo(({ item }) => {
             >
               {item?.siguiendo_autor ? (
                 <>
-                  <span className="group-hover:hidden">Siguiendo</span>
-                  <span className="hidden group-hover:inline">Dejar de seguir</span>
+                  <span className="group-hover:hidden whitespace-nowrap">Siguiendo</span>
+                  <span className="hidden group-hover:inline whitespace-nowrap">Dejar de seguir</span>
                 </>
               ) : "+ Seguir"}
             </button>
@@ -163,7 +163,7 @@ export const PublicacionCard = memo(({ item }) => {
       {/* Modal confirmar eliminar */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Confirmar eliminación">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-4 sm:p-6">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
                 <Icon
@@ -198,7 +198,7 @@ export const PublicacionCard = memo(({ item }) => {
       {/* Modal editar */}
       {showEditForm && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Editar publicación">
-          <div className="bg-white dark:bg-neutral-900 text-black dark:text-white rounded-xl w-full max-w-md p-6 relative">
+          <div className="bg-white dark:bg-neutral-900 text-black dark:text-white rounded-xl w-full max-w-md p-4 sm:p-6 relative">
             <button
               onClick={() => setShowEditForm(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
