@@ -1,9 +1,11 @@
 import { useUsuariosStore } from "../store/UsuariosStore";
-import { useMostrarPostPublicoQuery } from "../stack/PostStack";
+import {
+  useMostrarPostPublicoQuery,
+  useMostrarPostsLikedQuery,
+} from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
-import { SkeletonProfile } from "../components/ui/spinners/SkeletonProfile";
 import { SkeletonPost } from "../components/ui/spinners/SkeletonPost";
 import { Icon } from "@iconify/react";
 import { useRef, useState, useEffect } from "react";
@@ -118,29 +120,11 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
   );
 };
 
-const ProfileStats = ({ posts }) => {
-  const totalPosts = posts?.length ?? 0;
-  const totalLikes =
-    posts?.reduce((acc, post) => acc + (post?.likes || 0), 0) ?? 0;
-
-  return (
-    <div className="flex border-b border-gray-200 dark:border-gray-600">
-      <div className="flex-1 py-3 text-center">
-        <span className="block text-lg font-bold">{totalPosts}</span>
-        <span className="text-xs text-gray-500">Publicaciones</span>
-      </div>
-      <div className="flex-1 py-3 text-center border-l border-gray-200 dark:border-gray-600">
-        <span className="block text-lg font-bold">{totalLikes}</span>
-        <span className="text-xs text-gray-500">Me gusta recibidos</span>
-      </div>
-    </div>
-  );
-};
-
 export const MiPerfilPage = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
   const [showEditForm, setShowEditForm] = useState(false);
+  const [tab, setTab] = useState("posts");
 
   const {
     data: dataPost,
@@ -150,6 +134,9 @@ export const MiPerfilPage = () => {
     isLoading,
   } = useMostrarPostPublicoQuery(dataUsuarioAuth?.id);
 
+  const { data: likedPosts = [], isLoading: isLoadingLiked } =
+    useMostrarPostsLikedQuery(dataUsuarioAuth?.id);
+
   const scrollRef = useRef(null);
   const sentinelRef = useRef(null);
 
@@ -158,14 +145,14 @@ export const MiPerfilPage = () => {
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage)
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage && tab === "posts")
           fetchNextPage();
       },
       { root: scrollRef.current, rootMargin: "200px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, tab]);
 
   const misPost = dataPost?.pages?.flatMap((p) => p) ?? [];
 
@@ -184,24 +171,72 @@ export const MiPerfilPage = () => {
           usuario={dataUsuarioAuth}
           onEditClick={() => setShowEditForm(true)}
         />
-        <ProfileStats posts={misPost} />
-        <div>
-          {isLoading ? (
-            <>
-              <SkeletonPost />
-              <SkeletonPost />
-            </>
-          ) : misPost.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-              <Icon icon="mdi:post-outline" className="text-5xl mb-3" />
-              <p className="text-sm">Aún no tienes publicaciones</p>
-            </div>
-          ) : (
-            misPost.map((item) => <PublicacionCard key={item.id} item={item} />)
-          )}
-          {isFetchingNextPage && <SpinnerLocal />}
-          <div ref={sentinelRef} className="h-1" />
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 bg-white dark:bg-bg-dark">
+          <button
+            onClick={() => setTab("posts")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+              tab === "posts"
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            }`}
+          >
+            <Icon icon="mdi:grid" width={18} />
+            Publicaciones
+          </button>
+          <button
+            onClick={() => setTab("likes")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+              tab === "likes"
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            }`}
+          >
+            <Icon icon="mdi:heart-outline" width={18} />
+            Me gusta
+          </button>
         </div>
+
+        {/* Tab: Publicaciones */}
+        {tab === "posts" && (
+          <div>
+            {isLoading ? (
+              <>
+                <SkeletonPost />
+                <SkeletonPost />
+              </>
+            ) : misPost.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <Icon icon="mdi:post-outline" className="text-5xl mb-3" />
+                <p className="text-sm">Aún no tienes publicaciones</p>
+              </div>
+            ) : (
+              misPost.map((item) => <PublicacionCard key={item.id} item={item} />)
+            )}
+            {isFetchingNextPage && <SpinnerLocal />}
+            <div ref={sentinelRef} className="h-1" />
+          </div>
+        )}
+
+        {/* Tab: Me gusta */}
+        {tab === "likes" && (
+          <div>
+            {isLoadingLiked ? (
+              <>
+                <SkeletonPost />
+                <SkeletonPost />
+              </>
+            ) : likedPosts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <Icon icon="mdi:heart-outline" className="text-5xl mb-3" />
+                <p className="text-sm">Aún no te ha gustado ninguna publicación</p>
+              </div>
+            ) : (
+              likedPosts.map((item) => <PublicacionCard key={item.id} item={item} />)
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

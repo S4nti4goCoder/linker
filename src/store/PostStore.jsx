@@ -105,4 +105,12 @@ export const usePostStore = create((set) => ({
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);
   },
+
+  mostrarPostsLiked: async (id_usuario) => {
+    const { data, error } = await supabase.rpc("publicaciones_liked", {
+      _id_usuario: id_usuario,
+    });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
 }));

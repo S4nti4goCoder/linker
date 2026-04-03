@@ -1,6 +1,7 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { usePostStore } from "../store/PostStore";
@@ -119,6 +120,7 @@ export const useLikePostMutate = () => {
       queryClient.invalidateQueries({ queryKey: ["mostrar post publico"] });
       queryClient.invalidateQueries({ queryKey: ["mostrar post seguidos"] });
       queryClient.invalidateQueries({ queryKey: ["guardados"] });
+      queryClient.invalidateQueries({ queryKey: ["posts liked"] });
     },
   });
 };
@@ -225,5 +227,14 @@ export const useMostrarPostSeguidosQuery = (ids_seguidos) => {
     },
     initialPageParam: 0,
     enabled: !!dataUsuarioAuth?.id && !!ids_seguidos,
+  });
+};
+
+export const useMostrarPostsLikedQuery = (id_usuario) => {
+  const { mostrarPostsLiked } = usePostStore();
+  return useQuery({
+    queryKey: ["posts liked", id_usuario],
+    queryFn: () => mostrarPostsLiked(id_usuario),
+    enabled: !!id_usuario,
   });
 };
