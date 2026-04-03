@@ -1,43 +1,47 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { HomePage } from "../pages/HomePage";
-import { MainLayout } from "../layouts/MainLayout";
-import { LoginPage } from "../pages/LoginPage";
 import { ProtectedRoute } from "../hooks/ProtectedRoute";
-import { MiPerfilPage } from "../pages/MiPerfilPage";
-import { PerfilPublicoPage } from "../pages/PerfilPublicoPage";
-import { NotFoundPage } from "../pages/NotFoundPage";
-import { MensajesPage } from "../pages/MensajesPage";
-import { ColeccionesPage } from "../pages/ColeccionesPage";
+import { MainLayout } from "../layouts/MainLayout";
+
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+const HomePage = lazy(() => import("../pages/HomePage"));
+const MiPerfilPage = lazy(() => import("../pages/MiPerfilPage"));
+const PerfilPublicoPage = lazy(() => import("../pages/PerfilPublicoPage"));
+const MensajesPage = lazy(() => import("../pages/MensajesPage"));
+const ColeccionesPage = lazy(() => import("../pages/ColeccionesPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 
 export function MyRoutes() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/login"
-          element={
-            <ProtectedRoute authenticated={false}>
-              <LoginPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute authenticated={true}>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<HomePage />} />
-          <Route path="/mi-perfil" element={<MiPerfilPage />} />
-          <Route path="/perfil/:id" element={<PerfilPublicoPage />} />
-          <Route path="/mensajes" element={<MensajesPage />} />
-          <Route path="/colecciones" element={<ColeccionesPage />} />{" "}
-        </Route>
+      <Suspense>
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute authenticated={false}>
+                <LoginPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute authenticated={true}>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<HomePage />} />
+            <Route path="/mi-perfil" element={<MiPerfilPage />} />
+            <Route path="/perfil/:id" element={<PerfilPublicoPage />} />
+            <Route path="/mensajes" element={<MensajesPage />} />
+            <Route path="/colecciones" element={<ColeccionesPage />} />
+          </Route>
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

@@ -186,7 +186,7 @@ const PerfilPublicoStats = ({ posts }) => {
   );
 };
 
-export const PerfilPublicoPage = () => {
+const PerfilPublicoPage = () => {
   const { id } = useParams();
   const { showModal } = useComentariosStore();
   const scrollRef = useRef(null);
@@ -252,3 +252,5 @@ export const PerfilPublicoPage = () => {
     </div>
   );
 };
+
+export default PerfilPublicoPage;

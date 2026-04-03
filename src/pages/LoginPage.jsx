@@ -271,7 +271,7 @@ const ResetForm = ({ onGoLogin }) => {
   );
 };
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const [view, setView] = useState("login");
 
   return (
@@ -351,3 +351,5 @@ export const LoginPage = () => {
     </main>
   );
 };
+
+export default LoginPage;

@@ -197,7 +197,7 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
   );
 };
 
-export const MensajesPage = () => {
+const MensajesPage = () => {
   const { conversacionActiva, setConversacionActiva } = useMensajesStore();
   const { data: conversaciones = [], isLoading } =
     useListarConversacionesQuery();
@@ -277,3 +277,5 @@ export const MensajesPage = () => {
     </div>
   );
 };
+
+export default MensajesPage;

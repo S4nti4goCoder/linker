@@ -5,7 +5,7 @@ import { useComentariosStore } from "../store/ComentariosStore";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 
-export const ColeccionesPage = () => {
+const ColeccionesPage = () => {
   const { data: posts = [], isLoading } = useListarGuardadosQuery();
   const { showModal } = useComentariosStore();
 
@@ -50,3 +50,5 @@ export const ColeccionesPage = () => {
     </div>
   );
 };
+
+export default ColeccionesPage;

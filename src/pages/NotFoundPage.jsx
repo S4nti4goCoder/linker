@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
-export const NotFoundPage = () => {
+const NotFoundPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -35,3 +35,5 @@ export const NotFoundPage = () => {
     </main>
   );
 };
+
+export default NotFoundPage;

@@ -121,7 +121,7 @@ const ProfileHeader = ({ usuario, onEditClick }) => {
   );
 };
 
-export const MiPerfilPage = () => {
+const MiPerfilPage = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
   const [showEditForm, setShowEditForm] = useState(false);
@@ -242,3 +242,5 @@ export const MiPerfilPage = () => {
     </div>
   );
 };
+
+export default MiPerfilPage;

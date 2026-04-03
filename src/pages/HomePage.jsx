@@ -40,7 +40,7 @@ const SUBS = [
   },
 ];
 
-export const HomePage = () => {
+const HomePage = () => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { showModal } = useComentariosStore();
   const { itemSelect: itemSelectPost } = usePostStore();
@@ -227,3 +227,5 @@ export const HomePage = () => {
     </div>
   );
 };
+
+export default HomePage;
