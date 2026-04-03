@@ -21,6 +21,7 @@ export const MainLayout = () => {
         <section className="flex-1 overflow-y-auto h-full border-x border-gray-200 dark:border-gray-600">
           <Outlet />
         </section>
+        <div className="w-[200px] shrink-0 hidden lg:block" />
       </section>
     </main>
   );
