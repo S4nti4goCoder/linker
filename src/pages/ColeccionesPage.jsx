@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 import { useListarGuardadosQuery } from "../stack/ColeccionesStack";
-import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
+import { SkeletonCollection } from "../components/ui/spinners/SkeletonCollection";
 import { useComentariosStore } from "../store/ComentariosStore";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
@@ -32,7 +32,7 @@ export const ColeccionesPage = () => {
         </div>
 
         {isLoading ? (
-          <SpinnerLocal />
+          <SkeletonCollection />
         ) : posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-400">
             <Icon icon="mdi:bookmark-outline" className="text-6xl" />

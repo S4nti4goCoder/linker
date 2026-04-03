@@ -3,6 +3,8 @@ import { useMostrarPostPublicoQuery } from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { FormActualizarPerfil } from "../components/Forms/FormActualizarPerfil";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
+import { SkeletonProfile } from "../components/ui/spinners/SkeletonProfile";
+import { SkeletonPost } from "../components/ui/spinners/SkeletonPost";
 import { Icon } from "@iconify/react";
 import { useRef, useState, useEffect } from "react";
 import { useImageExtractColor } from "../hooks/useImageExtractColor";
@@ -185,7 +187,10 @@ export const MiPerfilPage = () => {
         <ProfileStats posts={misPost} />
         <div>
           {isLoading ? (
-            <SpinnerLocal />
+            <>
+              <SkeletonPost />
+              <SkeletonPost />
+            </>
           ) : misPost.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400">
               <Icon icon="mdi:post-outline" className="text-5xl mb-3" />

@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import { useMostrarPostPublicoQuery } from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
+import { SkeletonProfile } from "../components/ui/spinners/SkeletonProfile";
+import { SkeletonPost } from "../components/ui/spinners/SkeletonPost";
 import { ComentarioModal } from "../components/HomePageComponents/ComentarioModal";
 import { useComentariosStore } from "../store/ComentariosStore";
 import { useImageExtractColor } from "../hooks/useImageExtractColor";
@@ -217,7 +219,7 @@ export const PerfilPublicoPage = () => {
 
   const posts = dataPost?.pages?.flatMap((p) => p) ?? [];
 
-  if (loading) return <SpinnerLocal />;
+  if (loading) return <SkeletonProfile />;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -230,7 +232,10 @@ export const PerfilPublicoPage = () => {
         <PerfilPublicoStats posts={posts} />
         <div>
           {isLoadingPosts ? (
-            <SpinnerLocal />
+            <>
+              <SkeletonPost />
+              <SkeletonPost />
+            </>
           ) : posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400">
               <Icon icon="mdi:post-outline" className="text-5xl mb-3" />

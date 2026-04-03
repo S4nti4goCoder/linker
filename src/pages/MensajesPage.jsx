@@ -9,6 +9,7 @@ import {
 } from "../stack/MensajesStack";
 import { getRelativeTime } from "../hooks/useRelativeTime";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
+import { SkeletonMessage } from "../components/ui/spinners/SkeletonMessage";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ConversacionItem = ({ conv, activa, onClick }) => (
@@ -234,7 +235,7 @@ export const MensajesPage = () => {
 
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <SpinnerLocal />
+            <SkeletonMessage />
           ) : conversaciones.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400 px-6 text-center">
               <Icon icon="mdi:message-off-outline" className="text-5xl" />
