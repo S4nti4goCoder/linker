@@ -60,8 +60,10 @@ export const Sidebar = () => {
         <NotificacionesDropdown />
       </nav>
 
-      <BtnToggleTheme />
-      <BtnLogout />
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-1 flex flex-col gap-1">
+        <BtnToggleTheme />
+        <BtnLogout />
+      </div>
       <BtnNewPost />
     </div>
   );
