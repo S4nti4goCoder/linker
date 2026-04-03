@@ -2,16 +2,36 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { useMostrarUsuarioAuthQuery } from "../stack/UsuariosStack";
 import { useMensajesRealtime } from "../hooks/useMensajesRealtime";
+import logo from "../assets/logo.png";
+
+const SplashScreen = () => (
+  <div className="flex flex-col items-center justify-center h-screen bg-white dark:bg-bg-dark">
+    <img src={logo} alt="LinKer" className="h-16 w-16 animate-pulse" />
+    <span className="mt-4 text-xl font-bold text-gray-800 dark:text-white tracking-tight">
+      LinKer
+    </span>
+    <div className="mt-6 flex gap-1.5">
+      <span className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
+      <span className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+      <span className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+    </div>
+  </div>
+);
 
 export const MainLayout = () => {
   const { isLoading, error } = useMostrarUsuarioAuthQuery();
   useMensajesRealtime();
 
   if (isLoading) {
-    return <span>Cargando data...</span>;
+    return <SplashScreen />;
   }
   if (error) {
-    return <span>Error al cargar usuarios... {error.message}</span>;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-white dark:bg-bg-dark text-gray-500 gap-3">
+        <img src={logo} alt="LinKer" className="h-14 w-14 opacity-50" />
+        <p className="text-sm">Error al cargar: {error.message}</p>
+      </div>
+    );
   }
 
   return (
