@@ -37,22 +37,29 @@ export const Sidebar = () => {
             key={index}
             to={item.to}
             className={({ isActive }) =>
-              `flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-center sm:justify-start ${
+              `relative flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full justify-center sm:justify-start ${
                 isActive
-                  ? "text-blue-600 dark:text-white"
+                  ? "text-primary bg-primary/5 dark:bg-primary/10 dark:text-white"
                   : "text-gray-600 dark:text-gray-400"
               }`
             }
           >
-            <div className="relative">
-              <Icon icon={item.icon} width={24} height={24} />
-              {item.to === "/mensajes" && totalNoLeidos > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {totalNoLeidos > 9 ? "9+" : totalNoLeidos}
-                </span>
-              )}
-            </div>
-            <span className="hidden sm:block text-sm">{item.label}</span>
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full" />
+                )}
+                <div className="relative">
+                  <Icon icon={item.icon} width={24} height={24} />
+                  {item.to === "/mensajes" && totalNoLeidos > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {totalNoLeidos > 9 ? "9+" : totalNoLeidos}
+                    </span>
+                  )}
+                </div>
+                <span className="hidden sm:block text-sm">{item.label}</span>
+              </>
+            )}
           </NavLink>
         ))}
 
