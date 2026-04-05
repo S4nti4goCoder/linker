@@ -145,6 +145,24 @@ export const useSeguidosQuery = (id_seguidor) => {
   });
 };
 
+export const useListarSeguidoresQuery = (id_usuario) => {
+  const { listarSeguidores } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["seguidores lista", id_usuario],
+    queryFn: () => listarSeguidores(id_usuario),
+    enabled: !!id_usuario,
+  });
+};
+
+export const useListarSiguiendoQuery = (id_usuario) => {
+  const { listarSiguiendo } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["siguiendo lista", id_usuario],
+    queryFn: () => listarSiguiendo(id_usuario),
+    enabled: !!id_usuario,
+  });
+};
+
 export const useUltimoAccesoQuery = (id) => {
   const { obtenerUltimoAcceso } = useUsuariosStore();
   return useQuery({

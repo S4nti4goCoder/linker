@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMostrarPostPublicoQuery } from "../stack/PostStack";
 import { PublicacionCard } from "../components/HomePageComponents/PublicacionCard";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
@@ -12,6 +12,7 @@ import { Icon } from "@iconify/react";
 import { isValidUrl, isValidUsername } from "../utils/validation";
 import { isCreator, CREATOR_GITHUB_URL } from "../utils/creator";
 import { CreatorBadge } from "../components/ui/CreatorBadge";
+import { SeguidoresModal } from "../components/SeguidoresModal";
 import {
   useToggleSeguirMutate,
   useEstadoSeguidorQuery,
@@ -33,6 +34,7 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
 
   const tieneBanner = usuario?.banner && usuario.banner !== "-";
   const yoLoSigo = estadoSeguidor?.siguiendo;
+  const [seguidoresModal, setSeguidoresModal] = useState(null);
 
   const handleMensaje = () => {
     abrirConversacion(Number(id), {
@@ -176,19 +178,27 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
           </div>
 
           <div className="flex gap-4 text-sm text-gray-500">
-            <span>
+            <button onClick={() => setSeguidoresModal("seguidores")} className="hover:underline cursor-pointer">
               <strong className="text-black dark:text-white">
                 {conteo?.seguidores ?? 0}
               </strong>{" "}
               seguidores
-            </span>
-            <span>
+            </button>
+            <button onClick={() => setSeguidoresModal("siguiendo")} className="hover:underline cursor-pointer">
               <strong className="text-black dark:text-white">
                 {conteo?.siguiendo ?? 0}
               </strong>{" "}
               siguiendo
-            </span>
+            </button>
           </div>
+
+          {seguidoresModal && (
+            <SeguidoresModal
+              id_usuario={Number(id)}
+              tab={seguidoresModal}
+              onClose={() => setSeguidoresModal(null)}
+            />
+          )}
 
           {isCreator(Number(id)) && (
             <div className="mt-3 border border-primary/20 bg-primary/5 dark:bg-primary/10 rounded-xl p-4 space-y-2">

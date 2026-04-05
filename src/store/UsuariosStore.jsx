@@ -129,6 +129,22 @@ export const useUsuariosStore = create((set) => ({
     return { seguidores: resSeguidores.count, siguiendo: resSiguiendo.count };
   },
 
+  listarSeguidores: async (id_usuario) => {
+    const { data, error } = await supabase.rpc("listar_seguidores", {
+      _id_usuario: id_usuario,
+    });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+
+  listarSiguiendo: async (id_usuario) => {
+    const { data, error } = await supabase.rpc("listar_siguiendo", {
+      _id_usuario: id_usuario,
+    });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+
   obtenerSeguidos: async (id_seguidor) => {
     const { data, error } = await supabase
       .from("seguidores")
