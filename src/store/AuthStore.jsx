@@ -33,6 +33,16 @@ export const useAuthStore = create((set) => ({
     if (error) throw new Error(error.message);
   },
 
+  loginConGoogle: async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) throw new Error(error.message);
+  },
+
   cerrarSesion: async () => {
     await supabase.auth.signOut();
   },

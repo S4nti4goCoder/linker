@@ -6,8 +6,23 @@ import {
   useSignupMutate,
   useResetPasswordMutate,
 } from "../stack/LoginStack";
+import { useAuthStore } from "../store/AuthStore";
 import { Toaster } from "sonner";
 import { useForm } from "react-hook-form";
+
+const GoogleButton = () => {
+  const { loginConGoogle } = useAuthStore();
+  return (
+    <button
+      type="button"
+      onClick={loginConGoogle}
+      className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-300 dark:border-neutral-600 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+    >
+      <Icon icon="flat-color-icons:google" width={20} height={20} />
+      Continuar con Google
+    </button>
+  );
+};
 
 const InputField = ({ placeholder, type = "text", icon, error, ...rest }) => (
   <div>
@@ -126,6 +141,8 @@ const LoginForm = ({ onGoSignup, onGoReset }) => {
         </div>
       </div>
 
+      <GoogleButton />
+
       <button
         onClick={onGoSignup}
         className="w-full py-3.5 rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary hover:text-white transition-all cursor-pointer"
@@ -193,6 +210,17 @@ const SignupForm = ({ onGoLogin }) => {
           loadingLabel="Creando cuenta..."
         />
       </form>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200 dark:border-neutral-700" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-white dark:bg-bg-dark px-4 text-gray-400">o</span>
+        </div>
+      </div>
+
+      <GoogleButton />
 
       <p className="text-center text-sm text-gray-500">
         ¿Ya tienes cuenta?{" "}
