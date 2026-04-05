@@ -11,6 +11,8 @@ const PerfilPublicoPage = lazy(() => import("../pages/PerfilPublicoPage"));
 const MensajesPage = lazy(() => import("../pages/MensajesPage"));
 const ColeccionesPage = lazy(() => import("../pages/ColeccionesPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const TerminosPage = lazy(() => import("../pages/TerminosPage"));
+const PrivacidadPage = lazy(() => import("../pages/PrivacidadPage"));
 
 export function MyRoutes() {
   return (
@@ -40,6 +42,8 @@ export function MyRoutes() {
             <Route path="/colecciones" element={<ColeccionesPage />} />
           </Route>
 
+          <Route path="/terminos" element={<TerminosPage />} />
+          <Route path="/privacidad" element={<PrivacidadPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

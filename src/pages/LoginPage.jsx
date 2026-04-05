@@ -152,9 +152,9 @@ const LoginForm = ({ onGoSignup, onGoReset }) => {
 
       <p className="text-[11px] text-gray-400 text-center leading-relaxed">
         Al continuar, aceptas los{" "}
-        <a href="#" className="text-primary hover:underline">Términos de servicio</a>{" "}
+        <a href="/terminos" className="text-primary hover:underline">Términos de servicio</a>{" "}
         y la{" "}
-        <a href="#" className="text-primary hover:underline">Política de privacidad</a>.
+        <a href="/privacidad" className="text-primary hover:underline">Política de privacidad</a>.
       </p>
     </div>
   );
