@@ -11,10 +11,8 @@ export function useImageExtractColor(imgRef, src) {
       try {
         const color = await fac.getColorAsync(img);
         setBgColor(color.hex);
-      } catch (error) {
-        console.warn(
-          "No se pudo obtener color promedio, usando gris por defecto"
-        );
+      } catch {
+        // fallback al color por defecto
       }
     };
     if (img.complete) {

@@ -41,8 +41,8 @@ export const PostVideoFrame = ({ src }) => {
         try {
           const color = await fac.getColorAsync(img);
           setBgColor(color.hex);
-        } catch (error) {
-          console.warn("No se pudo extraer color del frame", error);
+        } catch {
+          // fallback al color por defecto
         }
       };
     };

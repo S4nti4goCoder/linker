@@ -15,7 +15,8 @@ export const useOnlineStatus = () => {
         .from("usuarios")
         .update({ ultimo_acceso: new Date().toISOString() })
         .eq("id", dataUsuarioAuth.id)
-        .then();
+        .then(() => {})
+        .catch(() => {});
 
     // Actualizar al montar y al volver a la pestaña
     update();

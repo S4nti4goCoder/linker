@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "../hooks/ProtectedRoute";
 import { MainLayout } from "../layouts/MainLayout";
+import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const HomePage = lazy(() => import("../pages/HomePage"));
@@ -14,7 +15,7 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 export function MyRoutes() {
   return (
     <BrowserRouter>
-      <Suspense>
+      <Suspense fallback={<SpinnerLocal />}>
         <Routes>
           <Route
             path="/login"

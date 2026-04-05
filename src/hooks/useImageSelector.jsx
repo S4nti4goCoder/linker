@@ -47,6 +47,10 @@ const useImageSelectorBase = (syncWithStore = false) => {
         toast.error("Error al procesar la imagen.");
       }
     } else {
+      if (sizeMB > 50) {
+        toast.error("El video supera el límite de 50MB.");
+        return;
+      }
       const videoUrl = URL.createObjectURL(selectedFile);
       setFile(selectedFile);
       setFileUrl(videoUrl);

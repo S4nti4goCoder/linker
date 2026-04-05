@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { FormPost } from "./components/Forms/FormPost";
 import { usePostStore } from "./store/PostStore";
 import { Toaster } from "sonner";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,12 +31,14 @@ function App() {
   }, [theme]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Toaster position="top-left" richColors />
-      {stateForm && <FormPost />}
-      <MyRoutes />
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Toaster position="top-left" richColors />
+        {stateForm && <FormPost />}
+        <MyRoutes />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
