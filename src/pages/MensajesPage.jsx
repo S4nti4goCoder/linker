@@ -7,6 +7,7 @@ import {
   useObtenerMensajesQuery,
   useEnviarMensajeMutate,
 } from "../stack/MensajesStack";
+import { useNavigate } from "react-router-dom";
 import { getRelativeTime } from "../hooks/useRelativeTime";
 import { isOnline, getLastSeenText } from "../hooks/useOnlineStatus";
 import { useUltimoAccesoQuery } from "../stack/UsuariosStack";
@@ -92,6 +93,7 @@ const BurbujaMensaje = ({ mensaje, esPropio }) => (
 );
 
 const VistaChatActivo = ({ id_conversacion, onVolver }) => {
+  const navigate = useNavigate();
   const { dataUsuarioAuth } = useUsuariosStore();
   const { marcarMensajesLeidos } = useMensajesStore();
   const { data: conversaciones = [] } = useListarConversacionesQuery();
@@ -147,24 +149,29 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         >
           <Icon icon="mdi:arrow-left" className="text-xl" />
         </button>
-        <div className="relative">
-          <img
-            src={otroUsuario?.foto_perfil || "https://placehold.co/40x40"}
-            onError={(e) => (e.target.src = "https://placehold.co/40x40")}
-            alt={`Foto de ${otroUsuario?.nombre}`}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          {onlineChat && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-bg-dark rounded-full" />
-          )}
-        </div>
-        <div>
-          <p className="font-semibold text-sm">
-            {otroUsuario?.nombre || "Cargando..."}
-          </p>
-          <p className={`text-xs ${onlineChat ? "text-green-500" : "text-gray-400"}`}>
-            {ultimoAccesoChat ? getLastSeenText(ultimoAccesoChat) : "Mensaje directo"}
-          </p>
+        <div
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => navigate(`/perfil/${conv?.otro_id}`)}
+        >
+          <div className="relative">
+            <img
+              src={otroUsuario?.foto_perfil || "https://placehold.co/40x40"}
+              onError={(e) => (e.target.src = "https://placehold.co/40x40")}
+              alt={`Foto de ${otroUsuario?.nombre}`}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            {onlineChat && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-bg-dark rounded-full" />
+            )}
+          </div>
+          <div>
+            <p className="font-semibold text-sm hover:underline">
+              {otroUsuario?.nombre || "Cargando..."}
+            </p>
+            <p className={`text-xs ${onlineChat ? "text-green-500" : "text-gray-400"}`}>
+              {ultimoAccesoChat ? getLastSeenText(ultimoAccesoChat) : "Mensaje directo"}
+            </p>
+          </div>
         </div>
       </header>
 
