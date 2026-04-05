@@ -16,6 +16,8 @@ import { ImageSelectorEdit } from "../../hooks/useImageSelector";
 import { useNavigate } from "react-router-dom";
 import { useToggleSeguirMutate } from "../../stack/UsuariosStack";
 import { useToggleGuardadoMutate } from "../../stack/ColeccionesStack";
+import { isCreator } from "../../utils/creator";
+import { CreatorBadge } from "../ui/CreatorBadge";
 
 export const PublicacionCard = memo(({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -82,11 +84,12 @@ export const PublicacionCard = memo(({ item }) => {
             src={item?.foto_usuario || "https://placehold.co/48x48"}
             onError={(e) => (e.target.src = "https://placehold.co/48x48")}
             alt={`Foto de ${item?.nombre_usuario}`}
-            className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity"
+            className={`w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity ${isCreator(item?.id_usuario) ? "creator-glow" : ""}`}
           />
-          <span className="font-bold hover:underline">
+          <span className={`font-bold hover:underline ${isCreator(item?.id_usuario) ? "text-primary" : ""}`}>
             {item?.nombre_usuario}
           </span>
+          {isCreator(item?.id_usuario) && <CreatorBadge size={18} />}
         </div>
         <div className="flex items-center gap-2">
           {!esPropio && (

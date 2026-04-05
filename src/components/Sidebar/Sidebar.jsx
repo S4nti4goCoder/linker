@@ -7,6 +7,7 @@ import { BtnNewPost } from "../ui/buttons/BtnNewPost";
 import { NotificacionesDropdown } from "./NotificacionesDropdown";
 import { useListarConversacionesQuery } from "../../stack/MensajesStack";
 import { useState, useEffect } from "react";
+import { CREATOR_GITHUB, CREATOR_GITHUB_URL } from "../../utils/creator";
 
 const linksActivos = [
   { label: "Inicio", icon: "ic:baseline-home", to: "/" },
@@ -67,6 +68,17 @@ const SidebarContent = ({ totalNoLeidos, onNavigate }) => (
       <BtnLogout />
     </div>
     <BtnNewPost />
+    <a
+      href={CREATOR_GITHUB_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-center gap-1 text-[10px] text-gray-400 hover:text-primary transition-colors mt-2 pb-1"
+    >
+      Hecho con
+      <Icon icon="mdi:heart" className="text-red-400 text-xs" />
+      por
+      <span className="font-medium">{CREATOR_GITHUB}</span>
+    </a>
   </>
 );
 

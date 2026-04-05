@@ -33,3 +33,75 @@
 .animate-slide-in {
   animation: slide-in 0.2s ease-out;
 }
+
+@keyframes creator-glow {
+  0%, 100% {
+    box-shadow:
+      0 -4px 12px rgba(0, 145, 234, 0.4),
+      -3px -2px 8px rgba(0, 145, 234, 0.3),
+      3px -2px 8px rgba(0, 145, 234, 0.3),
+      0 0 6px rgba(0, 145, 234, 0.2);
+  }
+  33% {
+    box-shadow:
+      0 -6px 16px rgba(0, 145, 234, 0.5),
+      -4px -3px 10px rgba(0, 145, 234, 0.35),
+      4px -1px 8px rgba(0, 145, 234, 0.25),
+      0 0 8px rgba(0, 145, 234, 0.25);
+  }
+  66% {
+    box-shadow:
+      0 -5px 14px rgba(0, 145, 234, 0.45),
+      -2px -4px 10px rgba(0, 145, 234, 0.3),
+      5px -3px 12px rgba(0, 145, 234, 0.35),
+      0 0 7px rgba(0, 145, 234, 0.2);
+  }
+}
+
+.creator-glow {
+  animation: creator-glow 2s ease-in-out infinite;
+}
+
+.creator-badge {
+  position: relative;
+}
+
+.creator-badge::after {
+  content: "Creador de LinKer 🚀";
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: linear-gradient(135deg, #0091EA, #00B8D4);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 145, 234, 0.3);
+}
+
+.creator-badge::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  border: 5px solid transparent;
+  border-top-color: #0091EA;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.creator-badge:hover::after,
+.creator-badge:hover::before,
+.creator-badge.active::after,
+.creator-badge.active::before {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}

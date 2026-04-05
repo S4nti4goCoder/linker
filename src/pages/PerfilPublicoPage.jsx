@@ -10,6 +10,8 @@ import { useComentariosStore } from "../store/ComentariosStore";
 import { useImageExtractColor } from "../hooks/useImageExtractColor";
 import { Icon } from "@iconify/react";
 import { isValidUrl, isValidUsername } from "../utils/validation";
+import { isCreator, CREATOR_GITHUB_URL } from "../utils/creator";
+import { CreatorBadge } from "../components/ui/CreatorBadge";
 import {
   useToggleSeguirMutate,
   useEstadoSeguidorQuery,
@@ -62,7 +64,7 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
             src={usuario?.foto_perfil || "https://placehold.co/96x96"}
             onError={(e) => (e.target.src = "https://placehold.co/96x96")}
             crossOrigin="anonymous"
-            className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-bg-dark relative z-10"
+            className={`w-24 h-24 rounded-full object-cover border-4 border-white dark:border-bg-dark relative z-10 ${isCreator(Number(id)) ? "creator-glow" : ""}`}
           />
           <div className="flex items-center gap-2">
             {yoLoSigo && (
@@ -103,12 +105,38 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
         </div>
 
         <div className="mt-3 space-y-2">
-          <h1 className="text-xl font-bold">{usuario?.nombre}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">{usuario?.nombre}</h1>
+            {isCreator(Number(id)) && <CreatorBadge size={22} />}
+          </div>
+
+          {isCreator(Number(id)) && (
+            <a
+              href={CREATOR_GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors w-fit"
+            >
+              <Icon icon="mdi:star-four-points" width={14} />
+              Fundador de LinKer
+            </a>
+          )}
 
           {usuario?.bio && (
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              {usuario.bio}
-            </p>
+            isCreator(Number(id)) ? (
+              <div className="border-l-2 border-r-2 border-amber-400 px-3 py-2">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {usuario.bio}
+                </p>
+                <span className="block text-xs text-amber-400 font-medium mt-1 text-right">
+                  — Fundador
+                </span>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                {usuario.bio}
+              </p>
+            )
           )}
 
           <div className="flex flex-wrap gap-3">
@@ -161,6 +189,18 @@ const PerfilPublicoHeader = ({ usuario, id }) => {
               siguiendo
             </span>
           </div>
+
+          {isCreator(Number(id)) && (
+            <div className="mt-3 border border-primary/20 bg-primary/5 dark:bg-primary/10 rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-primary font-semibold text-sm">
+                <Icon icon="mdi:information-outline" width={18} />
+                Sobre LinKer
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                LinKer es una red social creada con el objetivo de conectar personas, compartir ideas y construir una comunidad auténtica. Desarrollada desde cero con React, Supabase y mucho café.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
