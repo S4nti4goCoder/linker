@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { useMostrarUsuarioAuthQuery } from "../stack/UsuariosStack";
 import { useMensajesRealtime } from "../hooks/useMensajesRealtime";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import logo from "../assets/logo.png";
 
 const SplashScreen = () => (
@@ -21,6 +22,7 @@ const SplashScreen = () => (
 export const MainLayout = () => {
   const { isLoading, error } = useMostrarUsuarioAuthQuery();
   useMensajesRealtime();
+  useOnlineStatus();
 
   if (isLoading) {
     return <SplashScreen />;

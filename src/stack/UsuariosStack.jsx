@@ -145,6 +145,16 @@ export const useSeguidosQuery = (id_seguidor) => {
   });
 };
 
+export const useUltimoAccesoQuery = (id) => {
+  const { obtenerUltimoAcceso } = useUsuariosStore();
+  return useQuery({
+    queryKey: ["ultimo acceso", id],
+    queryFn: () => obtenerUltimoAcceso(id),
+    enabled: !!id,
+    refetchInterval: 60_000,
+  });
+};
+
 export const useObtenerUsuarioPorIdQuery = (id) => {
   const { obtenerUsuarioPorId } = useUsuariosStore();
   return useQuery({

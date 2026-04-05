@@ -8,11 +8,17 @@ import {
   useEnviarMensajeMutate,
 } from "../stack/MensajesStack";
 import { getRelativeTime } from "../hooks/useRelativeTime";
+import { isOnline, getLastSeenText } from "../hooks/useOnlineStatus";
+import { useUltimoAccesoQuery } from "../stack/UsuariosStack";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 import { SkeletonMessage } from "../components/ui/spinners/SkeletonMessage";
 import { useQueryClient } from "@tanstack/react-query";
 
-const ConversacionItem = ({ conv, activa, onClick }) => (
+const ConversacionItem = ({ conv, activa, onClick }) => {
+  const { data: ultimoAcceso } = useUltimoAccesoQuery(conv.otro_id);
+  const online = isOnline(ultimoAcceso);
+
+  return (
   <button
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-4 py-3 transition-colors cursor-pointer text-left hover:bg-gray-100 dark:hover:bg-neutral-800 ${
@@ -26,6 +32,9 @@ const ConversacionItem = ({ conv, activa, onClick }) => (
         alt={`Foto de ${conv.otro_nombre}`}
         className="w-11 h-11 rounded-full object-cover"
       />
+      {online && (
+        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-bg-dark rounded-full" />
+      )}
       {conv.no_leidos > 0 && (
         <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
           {conv.no_leidos > 9 ? "9+" : conv.no_leidos}
@@ -50,7 +59,8 @@ const ConversacionItem = ({ conv, activa, onClick }) => (
       </p>
     </div>
   </button>
-);
+  );
+};
 
 const BurbujaMensaje = ({ mensaje, esPropio }) => (
   <div className={`flex ${esPropio ? "justify-end" : "justify-start"} mb-1`}>
@@ -96,6 +106,8 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
   const otroUsuario = conv
     ? { nombre: conv.otro_nombre, foto_perfil: conv.otro_foto }
     : null;
+  const { data: ultimoAccesoChat } = useUltimoAccesoQuery(conv?.otro_id);
+  const onlineChat = isOnline(ultimoAccesoChat);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -135,17 +147,24 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
         >
           <Icon icon="mdi:arrow-left" className="text-xl" />
         </button>
-        <img
-          src={otroUsuario?.foto_perfil || "https://placehold.co/40x40"}
-          onError={(e) => (e.target.src = "https://placehold.co/40x40")}
-          alt={`Foto de ${otroUsuario?.nombre}`}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        <div className="relative">
+          <img
+            src={otroUsuario?.foto_perfil || "https://placehold.co/40x40"}
+            onError={(e) => (e.target.src = "https://placehold.co/40x40")}
+            alt={`Foto de ${otroUsuario?.nombre}`}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          {onlineChat && (
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-bg-dark rounded-full" />
+          )}
+        </div>
         <div>
           <p className="font-semibold text-sm">
             {otroUsuario?.nombre || "Cargando..."}
           </p>
-          <p className="text-xs text-gray-400">Mensaje directo</p>
+          <p className={`text-xs ${onlineChat ? "text-green-500" : "text-gray-400"}`}>
+            {ultimoAccesoChat ? getLastSeenText(ultimoAccesoChat) : "Mensaje directo"}
+          </p>
         </div>
       </header>
 

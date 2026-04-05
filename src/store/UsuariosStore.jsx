@@ -63,6 +63,16 @@ export const useUsuariosStore = create((set) => ({
     return count;
   },
 
+  obtenerUltimoAcceso: async (id) => {
+    const { data, error } = await supabase
+      .from(tabla)
+      .select("ultimo_acceso")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data?.ultimo_acceso;
+  },
+
   obtenerUsuarioPorId: async (id) => {
     const { data, error } = await supabase
       .from(tabla)
