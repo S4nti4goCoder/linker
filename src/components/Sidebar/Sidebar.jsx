@@ -7,7 +7,9 @@ import { BtnNewPost } from "../ui/buttons/BtnNewPost";
 import { NotificacionesDropdown } from "./NotificacionesDropdown";
 import { useListarConversacionesQuery } from "../../stack/MensajesStack";
 import { useState, useEffect } from "react";
-import { CREATOR_GITHUB, CREATOR_GITHUB_URL } from "../../utils/creator";
+import { CREATOR_GITHUB, CREATOR_GITHUB_URL, isCreator } from "../../utils/creator";
+import { useUsuariosStore } from "../../store/UsuariosStore";
+import { useReportesPendientesQuery } from "../../stack/ReportesStack";
 
 const linksActivos = [
   { label: "Inicio", icon: "ic:baseline-home", to: "/" },
@@ -20,7 +22,7 @@ const linksActivos = [
   },
 ];
 
-const SidebarContent = ({ totalNoLeidos, onNavigate }) => (
+const SidebarContent = ({ totalNoLeidos, totalReportes, esCreador, onNavigate }) => (
   <>
     <div className="flex items-center gap-2 px-2 py-3">
       <img src={logo} alt="LinKer logo" className="h-8 w-8 shrink-0" />
@@ -59,6 +61,40 @@ const SidebarContent = ({ totalNoLeidos, onNavigate }) => (
         </NavLink>
       ))}
 
+      {esCreador && (
+        <>
+          <div className="w-full border-t border-gray-200 dark:border-gray-700 my-1" />
+          <NavLink
+            to="/admin"
+            onClick={onNavigate}
+            className={({ isActive }) =>
+              `relative flex items-center gap-3 p-2 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-primary/10 dark:hover:text-primary transition-all w-full ${
+                isActive
+                  ? "text-primary bg-primary/5 dark:bg-primary/10 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full" />
+                )}
+                <div className="relative">
+                  <Icon icon="mdi:shield-crown-outline" width={24} height={24} />
+                  {totalReportes > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {totalReportes > 9 ? "9+" : totalReportes}
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm">Administración</span>
+              </>
+            )}
+          </NavLink>
+        </>
+      )}
+
       <div className="w-full border-t border-gray-200 dark:border-gray-700 my-1" />
       <NotificacionesDropdown />
     </nav>
@@ -84,6 +120,9 @@ const SidebarContent = ({ totalNoLeidos, onNavigate }) => (
 
 export const Sidebar = () => {
   const { data: conversaciones = [] } = useListarConversacionesQuery();
+  const { dataUsuarioAuth } = useUsuariosStore();
+  const esCreador = isCreator(dataUsuarioAuth?.id);
+  const { data: reportes = [] } = useReportesPendientesQuery(esCreador);
   const totalNoLeidos = conversaciones.reduce(
     (acc, c) => acc + (c.no_leidos ?? 0),
     0,
@@ -123,14 +162,14 @@ export const Sidebar = () => {
             className="w-60 h-full p-3 bg-white dark:bg-bg-dark flex flex-col animate-slide-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <SidebarContent totalNoLeidos={totalNoLeidos} onNavigate={() => setOpen(false)} />
+            <SidebarContent totalNoLeidos={totalNoLeidos} totalReportes={reportes.length} esCreador={esCreador} onNavigate={() => setOpen(false)} />
           </div>
         </div>
       )}
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex h-screen w-[200px] shrink-0 p-2 bg-white dark:bg-bg-dark transition-all duration-300 flex-col">
-        <SidebarContent totalNoLeidos={totalNoLeidos} />
+        <SidebarContent totalNoLeidos={totalNoLeidos} totalReportes={reportes.length} esCreador={esCreador} />
       </div>
     </>
   );

@@ -10,6 +10,7 @@ const iconoTipo = {
   comentario: { icon: "mdi:comment", color: "text-blue-500 bg-blue-100 dark:bg-blue-500/20" },
   respuesta: { icon: "mdi:reply", color: "text-green-500 bg-green-100 dark:bg-green-500/20" },
   seguidor: { icon: "mdi:account-plus", color: "text-purple-500 bg-purple-100 dark:bg-purple-500/20" },
+  advertencia: { icon: "mdi:alert-circle", color: "text-amber-500 bg-amber-100 dark:bg-amber-500/20" },
 };
 
 const NotificacionItem = ({ notif, compact }) => {

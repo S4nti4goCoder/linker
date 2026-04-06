@@ -288,6 +288,7 @@ const MiPerfilPage = () => {
             )}
           </div>
         )}
+
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ const PerfilPublicoPage = lazy(() => import("../pages/PerfilPublicoPage"));
 const MensajesPage = lazy(() => import("../pages/MensajesPage"));
 const ColeccionesPage = lazy(() => import("../pages/ColeccionesPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const AdminPage = lazy(() => import("../pages/AdminPage"));
 const TerminosPage = lazy(() => import("../pages/TerminosPage"));
 const PrivacidadPage = lazy(() => import("../pages/PrivacidadPage"));
 
@@ -40,6 +41,7 @@ export function MyRoutes() {
             <Route path="/perfil/:id" element={<PerfilPublicoPage />} />
             <Route path="/mensajes" element={<MensajesPage />} />
             <Route path="/colecciones" element={<ColeccionesPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Route>
 
           <Route path="/terminos" element={<TerminosPage />} />
