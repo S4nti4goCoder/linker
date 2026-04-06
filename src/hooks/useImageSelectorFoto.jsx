@@ -23,9 +23,10 @@ export const ImageSelectorFoto = ({ onFileChange, fileUrl }) => {
         fileType: "image/webp",
       };
       const compressedFile = await imageCompression(selectedFile, options);
+      const baseName = (compressedFile.name || "image").replace(/\.[^.]+$/, "");
       const webpFile = new File(
         [compressedFile],
-        compressedFile.name.replace(/\.[^.]+$/, ".webp"),
+        `${baseName}.webp`,
         { type: "image/webp" }
       );
       const fileReader = new FileReader();

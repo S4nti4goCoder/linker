@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
 import { getValidatedExt } from "../utils/validation";
+import { subirArchivoR2, eliminarArchivoR2, obtenerRutaDesdeUrl } from "../utils/r2";
 
 const tabla = "publicaciones";
 
@@ -9,23 +10,15 @@ const inferirTipo = (filename) => {
   return ["mp4", "mov", "webm"].includes(ext) ? "video" : "imagen";
 };
 
-const construirRuta = (carpeta, id, filename) => {
-  const ext = getValidatedExt(filename);
+const construirRuta = (carpeta, id, file) => {
+  const ext = file.type === "image/webp" ? "webp" : getValidatedExt(file.name);
   return `${carpeta}/${id}.${ext}`;
 };
 
 const subirArchivo = async (carpeta, id, file) => {
-  const ruta = construirRuta(carpeta, id, file.name);
-  const { data, error } = await supabase.storage
-    .from("archivos")
-    .upload(ruta, file, { cacheControl: "3600", upsert: true });
-  if (error) throw new Error(error.message);
-  if (data) {
-    const { data: urlimagen } = await supabase.storage
-      .from("archivos")
-      .getPublicUrl(ruta);
-    return { publicUrl: urlimagen.publicUrl, type: inferirTipo(file.name) };
-  }
+  const ruta = construirRuta(carpeta, id, file);
+  const publicUrl = await subirArchivoR2(ruta, file);
+  return { publicUrl, type: inferirTipo(file.name) };
 };
 
 const InsertarPost = async (p, file) => {
@@ -75,7 +68,7 @@ export const usePostStore = create((set) => ({
       })
       .range(p.desde, p.desde + p.hasta - 1);
     if (error) throw new Error(error.message);
-    return data; // ← sin set({ dataPost }) — era estado muerto
+    return data;
   },
 
   mostrarPostSeguidos: async (p) => {
@@ -103,7 +96,6 @@ export const usePostStore = create((set) => ({
   },
 
   eliminarPost: async (id) => {
-    // Obtener la URL del archivo antes de borrar
     const { data: post } = await supabase
       .from(tabla)
       .select("url")
@@ -113,11 +105,8 @@ export const usePostStore = create((set) => ({
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);
 
-    // Eliminar archivo del storage si existe
-    if (post?.url && post.url !== "-") {
-      const ruta = post.url.split("/archivos/")[1];
-      if (ruta) await supabase.storage.from("archivos").remove([ruta]);
-    }
+    const ruta = obtenerRutaDesdeUrl(post?.url);
+    if (ruta) await eliminarArchivoR2(ruta).catch(() => {});
   },
 
   mostrarPostsLiked: async (id_usuario) => {

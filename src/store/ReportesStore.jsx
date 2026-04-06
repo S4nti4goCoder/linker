@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
 import { CREATOR_ID } from "../utils/creator";
+import { eliminarArchivoR2, obtenerRutaDesdeUrl } from "../utils/r2";
 
 const MAX_STRIKES = 3;
 
@@ -153,18 +154,22 @@ export const useReportesStore = create(() => ({
   },
 
   obtenerUsoStorage: async () => {
+    const R2_WORKER = import.meta.env.VITE_R2_WORKER_URL;
     const carpetas = ["publicaciones", "usuarios", "banners"];
     let totalBytes = 0;
     let totalArchivos = 0;
     const detalle = {};
 
     for (const carpeta of carpetas) {
-      const { data } = await supabase.storage.from("archivos").list(carpeta, { limit: 1000 });
-      const archivos = data?.filter((f) => f.name !== ".emptyFolderPlaceholder") ?? [];
-      const bytes = archivos.reduce((sum, f) => sum + (f.metadata?.size ?? 0), 0);
-      detalle[carpeta] = { archivos: archivos.length, bytes };
-      totalBytes += bytes;
-      totalArchivos += archivos.length;
+      try {
+        const res = await fetch(`${R2_WORKER}/list/${carpeta}`);
+        const data = await res.json();
+        detalle[carpeta] = { archivos: data.count, bytes: data.size };
+        totalBytes += data.size;
+        totalArchivos += data.count;
+      } catch {
+        detalle[carpeta] = { archivos: 0, bytes: 0 };
+      }
     }
 
     return { totalBytes, totalArchivos, detalle };
@@ -207,10 +212,8 @@ export const useReportesStore = create(() => ({
     if (e2) throw new Error("Error al eliminar publicación: " + e2.message);
 
     // 2.1 Eliminar archivo del storage
-    if (post?.url && post.url !== "-") {
-      const ruta = post.url.split("/archivos/")[1];
-      if (ruta) await supabase.storage.from("archivos").remove([ruta]);
-    }
+    const ruta = obtenerRutaDesdeUrl(post?.url);
+    if (ruta) await eliminarArchivoR2(ruta).catch(() => {});
 
     // 3. Marcar reporte como revisado
     const { error: e3 } = await supabase.from("reportes").update({ revisado: true }).eq("id", id_reporte);

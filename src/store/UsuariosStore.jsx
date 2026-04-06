@@ -1,20 +1,14 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
 import { getValidatedExt } from "../utils/validation";
+import { subirArchivoR2 } from "../utils/r2";
 
 const tabla = "usuarios";
 
 const subirOReemplazarFotoPerfil = async (id, file) => {
-  const ext = getValidatedExt(file.name);
+  const ext = file.type === "image/webp" ? "webp" : getValidatedExt(file.name);
   const ruta = `usuarios/${id}.${ext}`;
-  const { error } = await supabase.storage
-    .from("archivos")
-    .upload(ruta, file, { cacheControl: "3600", upsert: true });
-  if (error) throw new Error(error.message);
-  const { data: urlData } = supabase.storage
-    .from("archivos")
-    .getPublicUrl(ruta);
-  return urlData.publicUrl;
+  return await subirArchivoR2(ruta, file);
 };
 
 export const useUsuariosStore = create((set) => ({
@@ -41,18 +35,10 @@ export const useUsuariosStore = create((set) => ({
     if (error) throw new Error(error.message);
   },
 
-  // Subir banner
   subirBanner: async (id, file) => {
-    const ext = getValidatedExt(file.name);
+    const ext = file.type === "image/webp" ? "webp" : getValidatedExt(file.name);
     const ruta = `banners/${id}.${ext}`;
-    const { error } = await supabase.storage
-      .from("archivos")
-      .upload(ruta, file, { cacheControl: "3600", upsert: true });
-    if (error) throw new Error(error.message);
-    const { data: urlData } = supabase.storage
-      .from("archivos")
-      .getPublicUrl(ruta);
-    return urlData.publicUrl;
+    return await subirArchivoR2(ruta, file);
   },
 
   contarUsuariosTodos: async () => {

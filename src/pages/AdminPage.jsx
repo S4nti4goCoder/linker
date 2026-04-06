@@ -389,7 +389,7 @@ const ApelacionesSection = () => {
 };
 
 // ── Tab Storage ─────────────────────────────────
-const STORAGE_LIMIT = 1 * 1024 * 1024 * 1024; // 1 GB (Supabase free tier)
+const STORAGE_LIMIT = 10 * 1024 * 1024 * 1024; // 10 GB (Cloudflare R2 free tier)
 
 const formatBytes = (bytes) => {
   if (bytes === 0) return "0 B";
@@ -424,7 +424,7 @@ const StorageSection = () => {
             Uso total
           </h3>
           <span className="text-xs font-semibold">
-            {formatBytes(storage.totalBytes)} / 1 GB
+            {formatBytes(storage.totalBytes)} / 10 GB
           </span>
         </div>
         <div className="w-full h-3 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
