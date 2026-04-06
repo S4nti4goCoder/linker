@@ -45,6 +45,7 @@ const HomePage = () => {
   const { showModal } = useComentariosStore();
   const { itemSelect: itemSelectPost } = usePostStore();
   const [tab, setTab] = useState("todos");
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
   const {
     data: dataPost,
@@ -141,7 +142,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {dataUsuarioAuth?.foto_perfil === "-" && <FormActualizarPerfil />}
+      {dataUsuarioAuth?.foto_perfil === "-" && showOnboarding && <FormActualizarPerfil onClose={() => setShowOnboarding(false)} />}
       <HeaderSticky />
 
       <div className="flex border-b border-gray-200 dark:border-gray-600 shrink-0">
