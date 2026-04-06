@@ -8,6 +8,8 @@ import { usePostStore } from "../store/PostStore";
 import { getFormattedDate } from "../hooks/useFormattedDate";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
+import { checkText, CONTENT_BLOCKED_MESSAGE } from "../utils/contentFilter";
+import { checkImage, NSFW_BLOCKED_MESSAGE } from "../utils/nsfwDetector";
 
 export const useInsertarPostMutate = () => {
   const { insertarPost, file, setStateForm, setFile } = usePostStore();
@@ -17,6 +19,16 @@ export const useInsertarPostMutate = () => {
   return useMutation({
     mutationKey: ["insertar post"],
     mutationFn: async (data) => {
+      // Filtro de texto +18
+      const textCheck = checkText(data.descripcion);
+      if (textCheck.blocked) throw new Error(CONTENT_BLOCKED_MESSAGE);
+
+      // Filtro de imagen NSFW
+      if (file && file.type?.startsWith("image/")) {
+        const imgCheck = await checkImage(file);
+        if (imgCheck.nsfw) throw new Error(NSFW_BLOCKED_MESSAGE);
+      }
+
       const p = {
         descripcion: data.descripcion,
         url: "-",
@@ -153,8 +165,17 @@ export const useEditarPostMutate = (onClose) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["editar post"],
-    mutationFn: (data) =>
-      editarPost({ descripcion: data.descripcion, id: data.id }, data.file),
+    mutationFn: async (data) => {
+      const textCheck = checkText(data.descripcion);
+      if (textCheck.blocked) throw new Error(CONTENT_BLOCKED_MESSAGE);
+
+      if (data.file && data.file.type?.startsWith("image/")) {
+        const imgCheck = await checkImage(data.file);
+        if (imgCheck.nsfw) throw new Error(NSFW_BLOCKED_MESSAGE);
+      }
+
+      await editarPost({ descripcion: data.descripcion, id: data.id }, data.file);
+    },
     onError: (error) => toast.error("Error al editar: " + error.message),
     onSuccess: () => {
       toast.success("¡Publicación editada!");

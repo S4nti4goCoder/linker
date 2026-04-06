@@ -4,6 +4,7 @@ import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
 import { useComentariosStore } from "../store/ComentariosStore";
 import { usePostStore } from "../store/PostStore";
+import { checkText, CONTENT_BLOCKED_MESSAGE } from "../utils/contentFilter";
 
 export const useInsertarComentarioMutate = ({ setComentario }) => {
   const { insertarComentario } = useComentariosStore();
@@ -13,13 +14,17 @@ export const useInsertarComentarioMutate = ({ setComentario }) => {
 
   return useMutation({
     mutationKey: ["insertar comentario"],
-    mutationFn: (comentario) =>
-      insertarComentario({
+    mutationFn: (comentario) => {
+      const textCheck = checkText(comentario);
+      if (textCheck.blocked) throw new Error(CONTENT_BLOCKED_MESSAGE);
+
+      return insertarComentario({
         comentario,
         fecha: getFormattedDate(),
         id_usuario: dataUsuarioAuth?.id,
         id_publicacion: itemSelect?.id,
-      }),
+      });
+    },
     onError: (error) => {
       toast.error("Error al comentar: " + error.message);
     },

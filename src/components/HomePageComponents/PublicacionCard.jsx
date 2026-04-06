@@ -18,6 +18,7 @@ import { useToggleSeguirMutate } from "../../stack/UsuariosStack";
 import { useToggleGuardadoMutate } from "../../stack/ColeccionesStack";
 import { isCreator } from "../../utils/creator";
 import { CreatorBadge } from "../ui/CreatorBadge";
+import { useReportarPostMutate } from "../../stack/ReportesStack";
 
 export const PublicacionCard = memo(({ item }) => {
   const { setItemSelect } = usePostStore();
@@ -32,6 +33,8 @@ export const PublicacionCard = memo(({ item }) => {
   const [editFile, setEditFile] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showImageSelector, setShowImageSelector] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportMotivo, setReportMotivo] = useState("");
   const textareaRef = useRef(null);
 
   const esPropio = Number(item?.id_usuario) === Number(dataUsuarioAuth?.id);
@@ -45,6 +48,7 @@ export const PublicacionCard = memo(({ item }) => {
   const { mutate: toggleSeguir, isPending: isSiguiendo } =
     useToggleSeguirMutate(item?.id_usuario);
   const { mutate: toggleGuardado } = useToggleGuardadoMutate(item?.id);
+  const { mutate: reportar, isPending: isReporting } = useReportarPostMutate();
 
   useEffect(() => {
     if (showEditForm) {
@@ -113,53 +117,66 @@ export const PublicacionCard = memo(({ item }) => {
           <span className="text-gray-500 text-sm whitespace-nowrap">
             {getRelativeTime(item?.fecha)}
           </span>
-          {esPropio && (
-            <div className="relative">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                aria-label="Opciones de publicación"
-                className="cursor-pointer p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                <Icon icon="mdi:dots-horizontal" className="text-gray-500" />
-              </button>
-              {showMenu && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
-                  />
-                  <div className="absolute right-0 top-8 z-20 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-200 dark:border-neutral-700 overflow-hidden w-40">
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              aria-label="Opciones de publicación"
+              className="cursor-pointer p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              <Icon icon="mdi:dots-horizontal" className="text-gray-500" />
+            </button>
+            {showMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowMenu(false)}
+                />
+                <div className="absolute right-0 top-8 z-20 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-200 dark:border-neutral-700 overflow-hidden w-40">
+                  {esPropio ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setShowEditForm(true);
+                          setShowMenu(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer"
+                      >
+                        <Icon
+                          icon="mdi:pencil-outline"
+                          className="text-blue-500"
+                        />
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowConfirm(true);
+                          setShowMenu(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer text-red-500"
+                      >
+                        <Icon
+                          icon="mdi:trash-can-outline"
+                          className="text-red-500"
+                        />
+                        Eliminar
+                      </button>
+                    </>
+                  ) : (
                     <button
                       onClick={() => {
-                        setShowEditForm(true);
-                        setShowMenu(false);
-                      }}
-                      className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer"
-                    >
-                      <Icon
-                        icon="mdi:pencil-outline"
-                        className="text-blue-500"
-                      />
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowConfirm(true);
+                        setShowReport(true);
                         setShowMenu(false);
                       }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer text-red-500"
                     >
-                      <Icon
-                        icon="mdi:trash-can-outline"
-                        className="text-red-500"
-                      />
-                      Eliminar
+                      <Icon icon="mdi:flag-outline" className="text-red-500" />
+                      Reportar
                     </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -270,6 +287,63 @@ export const PublicacionCard = memo(({ item }) => {
                   {isEditing ? "Guardando..." : "Guardar"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal reportar */}
+      {showReport && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Reportar publicación">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl w-full max-w-sm p-4 sm:p-6">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
+                <Icon icon="mdi:flag-outline" className="text-2xl text-red-500" />
+              </div>
+              <h2 className="text-lg font-bold">Reportar publicación</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                ¿Por qué quieres reportar este contenido?
+              </p>
+            </div>
+            <div className="mt-4 space-y-2">
+              {[
+                "Contenido sexual o +18",
+                "Violencia o contenido perturbador",
+                "Acoso o intimidación",
+                "Spam o engaño",
+                "Otro motivo",
+              ].map((motivo) => (
+                <button
+                  key={motivo}
+                  onClick={() => setReportMotivo(motivo)}
+                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer ${
+                    reportMotivo === motivo
+                      ? "bg-primary/10 text-primary border border-primary"
+                      : "bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700"
+                  }`}
+                >
+                  {motivo}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => { setShowReport(false); setReportMotivo(""); }}
+                className="flex-1 px-4 py-2 rounded-lg text-sm border border-gray-300 dark:border-neutral-700 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  reportar({ id_publicacion: item?.id, motivo: reportMotivo });
+                  setShowReport(false);
+                  setReportMotivo("");
+                }}
+                disabled={!reportMotivo || isReporting}
+                className="flex-1 px-4 py-2 rounded-lg text-sm bg-red-500 text-white hover:bg-red-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isReporting ? "Enviando..." : "Enviar reporte"}
+              </button>
             </div>
           </div>
         </div>

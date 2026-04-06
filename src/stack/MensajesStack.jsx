@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMensajesStore } from "../store/MensajesStore";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
+import { checkText, CONTENT_BLOCKED_MESSAGE } from "../utils/contentFilter";
 
 // Listar todas las conversaciones del usuario autenticado
 export const useListarConversacionesQuery = () => {
@@ -63,12 +64,16 @@ export const useEnviarMensajeMutate = (id_conversacion) => {
 
   return useMutation({
     mutationKey: ["enviar mensaje", id_conversacion],
-    mutationFn: (contenido) =>
-      enviarMensaje({
+    mutationFn: (contenido) => {
+      const textCheck = checkText(contenido);
+      if (textCheck.blocked) throw new Error(CONTENT_BLOCKED_MESSAGE);
+
+      return enviarMensaje({
         id_conversacion,
         id_emisor: dataUsuarioAuth.id,
         contenido,
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mensajes", id_conversacion] });
       queryClient.invalidateQueries({ queryKey: ["conversaciones"] });
