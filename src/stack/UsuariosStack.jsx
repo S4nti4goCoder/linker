@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSubcription } from "../store/AuthStore";
+import { useSubscription } from "../store/AuthStore";
 import { useUsuariosStore } from "../store/UsuariosStore";
 import { toast } from "sonner";
 
 export const useMostrarUsuarioAuthQuery = () => {
   const { mostrarUsuarioAuth } = useUsuariosStore();
-  const { user } = useSubcription();
+  const { user } = useSubscription();
   return useQuery({
     queryKey: ["mostrar user auth"],
     queryFn: () => mostrarUsuarioAuth({ id_auth: user?.id }),

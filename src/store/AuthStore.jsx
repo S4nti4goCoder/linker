@@ -48,7 +48,7 @@ export const useAuthStore = create((set) => ({
   },
 }));
 
-export const useSubcription = create((set) => {
+export const useSubscription = create((set) => {
   const store = { user: null, loading: true };
 
   supabase.auth.getSession().then(({ data: { session } }) => {

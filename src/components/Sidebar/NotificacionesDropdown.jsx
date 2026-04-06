@@ -55,12 +55,12 @@ export const NotificacionesDropdown = () => {
         table: "notificaciones",
         filter: `id_usuario_destino=eq.${dataUsuarioAuth.id}`,
       }, async (payload) => {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("notificaciones")
           .select(`*, origen:id_usuario_origen(nombre, foto_perfil)`)
           .eq("id", payload.new.id)
           .maybeSingle();
-        if (data) agregarNotificacion(data);
+        if (!error && data) agregarNotificacion(data);
       })
       .subscribe();
 

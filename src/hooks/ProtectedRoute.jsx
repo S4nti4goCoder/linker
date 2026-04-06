@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
-import { useSubcription } from "../store/AuthStore";
+import { useSubscription } from "../store/AuthStore";
 import { SpinnerLocal } from "../components/ui/spinners/SpinnerLocal";
 
 export const ProtectedRoute = ({ children, authenticated = true }) => {
-  const { user, loading } = useSubcription();
+  const { user, loading } = useSubscription();
 
   if (loading) return <SpinnerLocal />;
 

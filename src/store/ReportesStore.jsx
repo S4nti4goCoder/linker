@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../supabase/supabase.config";
+import { CREATOR_ID } from "../utils/creator";
 
 const MAX_STRIKES = 3;
 
@@ -70,7 +71,7 @@ export const useReportesStore = create(() => ({
 
     await supabase.from("notificaciones").insert({
       id_usuario_destino: id,
-      id_usuario_origen: 1,
+      id_usuario_origen: CREATOR_ID,
       tipo: "advertencia",
       mensaje: "Tu cuenta ha sido suspendida por el administrador por infringir las normas de la comunidad.",
     });
@@ -145,7 +146,7 @@ export const useReportesStore = create(() => ({
 
     await supabase.from("notificaciones").insert({
       id_usuario_destino: id_usuario,
-      id_usuario_origen: 1,
+      id_usuario_origen: CREATOR_ID,
       tipo: "advertencia",
       mensaje,
     });
@@ -206,7 +207,7 @@ export const useReportesStore = create(() => ({
     const mensaje = MENSAJES_STRIKE[Math.min(nuevoStrikes, MAX_STRIKES)];
     const { error: e5 } = await supabase.from("notificaciones").insert({
       id_usuario_destino: id_autor,
-      id_usuario_origen: 1,
+      id_usuario_origen: CREATOR_ID,
       tipo: "advertencia",
       mensaje: `${mensaje} Motivo: ${motivo}`,
     });

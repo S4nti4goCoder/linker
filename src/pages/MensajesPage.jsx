@@ -97,7 +97,7 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
   const { dataUsuarioAuth } = useUsuariosStore();
   const { marcarMensajesLeidos } = useMensajesStore();
   const { data: conversaciones = [] } = useListarConversacionesQuery();
-  const { data: mensajes = [], isLoading } =
+  const { data: mensajes = [], isLoading, isError } =
     useObtenerMensajesQuery(id_conversacion);
   const { mutate: enviar, isPending } = useEnviarMensajeMutate(id_conversacion);
   const [texto, setTexto] = useState("");
@@ -124,7 +124,7 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
       queryClient.invalidateQueries({
         queryKey: ["conversaciones", dataUsuarioAuth.id],
       });
-    });
+    }).catch(() => {});
   }, [id_conversacion, dataUsuarioAuth?.id]);
 
   const handleEnviar = () => {
@@ -178,6 +178,11 @@ const VistaChatActivo = ({ id_conversacion, onVolver }) => {
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {isLoading ? (
           <SpinnerLocal />
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+            <Icon icon="mdi:message-remove-outline" className="text-5xl" />
+            <p className="text-sm">No se pudieron cargar los mensajes</p>
+          </div>
         ) : mensajes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
             <Icon icon="mdi:message-outline" className="text-5xl" />

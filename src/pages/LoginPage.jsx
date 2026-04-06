@@ -7,7 +7,7 @@ import {
   useResetPasswordMutate,
 } from "../stack/LoginStack";
 import { useAuthStore } from "../store/AuthStore";
-import { Toaster } from "sonner";
+
 import { useForm } from "react-hook-form";
 
 const GoogleButton = () => {
@@ -304,8 +304,6 @@ const LoginPage = () => {
 
   return (
     <main className="flex h-screen w-full bg-white dark:bg-bg-dark text-black dark:text-white">
-      <Toaster />
-
       {/* Panel izquierdo */}
       <section className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-primary via-[#0091EA] to-[#00B8D4] flex-col justify-center items-center relative overflow-hidden">
         {/* Decoración de fondo */}
