@@ -11,6 +11,7 @@ import {
   useAdminLogQuery,
   useApelacionesPendientesQuery,
   useResolverApelacionMutate,
+  useStorageUsageQuery,
 } from "../stack/ReportesStack";
 import { useReportesStore } from "../store/ReportesStore";
 
@@ -387,6 +388,99 @@ const ApelacionesSection = () => {
   );
 };
 
+// ── Tab Storage ─────────────────────────────────
+const STORAGE_LIMIT = 1 * 1024 * 1024 * 1024; // 1 GB (Supabase free tier)
+
+const formatBytes = (bytes) => {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+const carpetaConfig = {
+  publicaciones: { icon: "mdi:image-multiple", label: "Publicaciones", color: "text-blue-500" },
+  usuarios: { icon: "mdi:account-circle", label: "Fotos de perfil", color: "text-green-500" },
+  banners: { icon: "mdi:panorama", label: "Banners", color: "text-purple-500" },
+};
+
+const StorageSection = () => {
+  const { data: storage, isLoading } = useStorageUsageQuery();
+
+  if (isLoading) return <SpinnerLocal />;
+  if (!storage) return null;
+
+  const porcentaje = Math.min((storage.totalBytes / STORAGE_LIMIT) * 100, 100);
+  const colorBarra = porcentaje > 80 ? "bg-red-500" : porcentaje > 50 ? "bg-amber-500" : "bg-green-500";
+
+  return (
+    <div className="p-4 space-y-5">
+      {/* Uso total */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <Icon icon="mdi:harddisk" className="text-lg" />
+            Uso total
+          </h3>
+          <span className="text-xs font-semibold">
+            {formatBytes(storage.totalBytes)} / 1 GB
+          </span>
+        </div>
+        <div className="w-full h-3 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full ${colorBarra} rounded-full transition-all duration-500`}
+            style={{ width: `${Math.max(porcentaje, 0.5)}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-gray-400">
+          <span>{porcentaje.toFixed(1)}% usado</span>
+          <span>{storage.totalArchivos} archivos</span>
+        </div>
+      </div>
+
+      {/* Detalle por carpeta */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold">Detalle por categoría</h3>
+        {Object.entries(storage.detalle).map(([carpeta, info]) => {
+          const config = carpetaConfig[carpeta];
+          const pct = storage.totalBytes > 0 ? (info.bytes / storage.totalBytes) * 100 : 0;
+          return (
+            <div key={carpeta} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+              <Icon icon={config.icon} className={`text-2xl ${config.color}`} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold">{config.label}</p>
+                  <span className="text-xs text-gray-400">{formatBytes(info.bytes)}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex-1 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden mr-3">
+                    <div
+                      className={`h-full ${config.color.replace("text-", "bg-")} rounded-full`}
+                      style={{ width: `${Math.max(pct, 0.5)}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-gray-400">{info.archivos} archivos</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Recomendaciones */}
+      {porcentaje > 70 && (
+        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg">
+          <Icon icon="mdi:alert" className="text-amber-500 text-lg shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-600 dark:text-amber-400">
+            Estás usando más del 70% del almacenamiento gratuito. Considera eliminar contenido antiguo.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ── Página Admin ─────────────────────────────────
 const AdminPage = () => {
   const [tab, setTab] = useState("reportes");
@@ -465,6 +559,17 @@ const AdminPage = () => {
             </span>
           )}
         </button>
+        <button
+          onClick={() => setTab("storage")}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+            tab === "storage"
+              ? "text-primary border-b-2 border-primary"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          }`}
+        >
+          <Icon icon="mdi:harddisk" width={18} />
+          Storage
+        </button>
       </div>
 
       <div className="overflow-y-auto h-full">
@@ -472,6 +577,7 @@ const AdminPage = () => {
         {tab === "usuarios" && <UsuariosSection />}
         {tab === "historial" && <HistorialSection />}
         {tab === "apelaciones" && <ApelacionesSection />}
+        {tab === "storage" && <StorageSection />}
       </div>
     </div>
   );

@@ -20,12 +20,18 @@ export const ImageSelectorFoto = ({ onFileChange, fileUrl }) => {
         maxSizeMB: selectedFile.size > 1024 * 1024 ? 0.1 : 0.2,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
+        fileType: "image/webp",
       };
       const compressedFile = await imageCompression(selectedFile, options);
+      const webpFile = new File(
+        [compressedFile],
+        compressedFile.name.replace(/\.[^.]+$/, ".webp"),
+        { type: "image/webp" }
+      );
       const fileReader = new FileReader();
-      fileReader.readAsDataURL(compressedFile);
+      fileReader.readAsDataURL(webpFile);
       fileReader.onload = () => {
-        onFileChange(compressedFile, fileReader.result);
+        onFileChange(webpFile, fileReader.result);
       };
     } catch (error) {
       toast.error("Error al comprimir la imagen.");

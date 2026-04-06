@@ -103,8 +103,21 @@ export const usePostStore = create((set) => ({
   },
 
   eliminarPost: async (id) => {
+    // Obtener la URL del archivo antes de borrar
+    const { data: post } = await supabase
+      .from(tabla)
+      .select("url")
+      .eq("id", id)
+      .maybeSingle();
+
     const { error } = await supabase.from(tabla).delete().eq("id", id);
     if (error) throw new Error(error.message);
+
+    // Eliminar archivo del storage si existe
+    if (post?.url && post.url !== "-") {
+      const ruta = post.url.split("/archivos/")[1];
+      if (ruta) await supabase.storage.from("archivos").remove([ruta]);
+    }
   },
 
   mostrarPostsLiked: async (id_usuario) => {

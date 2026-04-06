@@ -152,6 +152,24 @@ export const useReportesStore = create(() => ({
     });
   },
 
+  obtenerUsoStorage: async () => {
+    const carpetas = ["publicaciones", "usuarios", "banners"];
+    let totalBytes = 0;
+    let totalArchivos = 0;
+    const detalle = {};
+
+    for (const carpeta of carpetas) {
+      const { data } = await supabase.storage.from("archivos").list(carpeta, { limit: 1000 });
+      const archivos = data?.filter((f) => f.name !== ".emptyFolderPlaceholder") ?? [];
+      const bytes = archivos.reduce((sum, f) => sum + (f.metadata?.size ?? 0), 0);
+      detalle[carpeta] = { archivos: archivos.length, bytes };
+      totalBytes += bytes;
+      totalArchivos += archivos.length;
+    }
+
+    return { totalBytes, totalArchivos, detalle };
+  },
+
   obtenerAdminLog: async () => {
     const { data, error } = await supabase
       .from("admin_log")
@@ -175,12 +193,11 @@ export const useReportesStore = create(() => ({
   },
 
   eliminarPublicacionReportada: async ({ id_reporte, id_publicacion, id_autor, motivo }) => {
-    // 1. Obtener strikes actuales del autor
-    const { data: usuario, error: e1 } = await supabase
-      .from("usuarios")
-      .select("strikes")
-      .eq("id", id_autor)
-      .maybeSingle();
+    // 1. Obtener strikes actuales del autor y URL del archivo
+    const [{ data: usuario, error: e1 }, { data: post }] = await Promise.all([
+      supabase.from("usuarios").select("strikes").eq("id", id_autor).maybeSingle(),
+      supabase.from("publicaciones").select("url").eq("id", id_publicacion).maybeSingle(),
+    ]);
     if (e1) throw new Error("Error al obtener usuario: " + e1.message);
 
     const nuevoStrikes = (usuario?.strikes ?? 0) + 1;
@@ -188,6 +205,12 @@ export const useReportesStore = create(() => ({
     // 2. Eliminar la publicación
     const { error: e2 } = await supabase.from("publicaciones").delete().eq("id", id_publicacion);
     if (e2) throw new Error("Error al eliminar publicación: " + e2.message);
+
+    // 2.1 Eliminar archivo del storage
+    if (post?.url && post.url !== "-") {
+      const ruta = post.url.split("/archivos/")[1];
+      if (ruta) await supabase.storage.from("archivos").remove([ruta]);
+    }
 
     // 3. Marcar reporte como revisado
     const { error: e3 } = await supabase.from("reportes").update({ revisado: true }).eq("id", id_reporte);

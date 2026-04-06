@@ -132,6 +132,15 @@ export const useResolverApelacionMutate = () => {
   });
 };
 
+export const useStorageUsageQuery = () => {
+  const { obtenerUsoStorage } = useReportesStore();
+  return useQuery({
+    queryKey: ["storage-usage"],
+    queryFn: obtenerUsoStorage,
+    staleTime: 1000 * 60 * 10,
+  });
+};
+
 export const useAdminLogQuery = () => {
   const { obtenerAdminLog } = useReportesStore();
   return useQuery({

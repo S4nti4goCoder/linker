@@ -26,8 +26,8 @@ const useImageSelectorBase = (syncWithStore = false) => {
     }
 
     if (type.startsWith("image/")) {
-      if (sizeMB > 8) {
-        toast.error("El archivo supera el límite de 8MB.");
+      if (sizeMB > 10) {
+        toast.error("La imagen supera el límite de 10MB.");
         return;
       }
       try {
@@ -35,12 +35,18 @@ const useImageSelectorBase = (syncWithStore = false) => {
           maxSizeMB: sizeMB > 1 ? 0.1 : 0.2,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
+          fileType: "image/webp",
         };
         const compressedFile = await imageCompression(selectedFile, options);
+        const webpFile = new File(
+          [compressedFile],
+          compressedFile.name.replace(/\.[^.]+$/, ".webp"),
+          { type: "image/webp" }
+        );
         const reader = new FileReader();
-        reader.readAsDataURL(compressedFile);
+        reader.readAsDataURL(webpFile);
         reader.onload = () => setFileUrl(reader.result);
-        setFile(compressedFile);
+        setFile(webpFile);
         setFileType("image");
         if (syncWithStore) setFilePost(compressedFile);
       } catch {
