@@ -35,6 +35,8 @@ export const PublicacionCard = memo(({ item }) => {
   const [showImageSelector, setShowImageSelector] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [reportMotivo, setReportMotivo] = useState("");
+  const [expanded, setExpanded] = useState(false);
+  const LIMITE_CARACTERES = 200;
   const textareaRef = useRef(null);
 
   const esPropio = Number(item?.id_usuario) === Number(dataUsuarioAuth?.id);
@@ -350,7 +352,27 @@ export const PublicacionCard = memo(({ item }) => {
       )}
 
       <div className="mt-3">
-        <p className="mb-2">{item?.descripcion}</p>
+        <p className="mb-2">
+          {!expanded && item?.descripcion?.length > LIMITE_CARACTERES
+            ? <>
+                {item.descripcion.slice(0, LIMITE_CARACTERES)}...
+                <button
+                  onClick={() => setExpanded(true)}
+                  className="text-primary hover:underline ml-1 text-sm font-medium cursor-pointer"
+                >
+                  Ver más
+                </button>
+              </>
+            : item?.descripcion}
+          {expanded && item?.descripcion?.length > LIMITE_CARACTERES && (
+            <button
+              onClick={() => setExpanded(false)}
+              className="text-primary hover:underline ml-1 text-sm font-medium cursor-pointer"
+            >
+              Ver menos
+            </button>
+          )}
+        </p>
         <div>
           {item?.url !== "-" &&
             (item?.type === "imagen" ? (

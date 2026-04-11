@@ -16,6 +16,7 @@ export const FormPost = () => {
   const { stateImage, setStateImage, setStateForm, file } = usePostStore();
   const { mutate, isPending } = useInsertarPostMutate();
   const { handleSubmit, setValue } = useForm();
+  const MAX_CARACTERES = 500;
   const puedePublicar = postText.trim().length > 0 || file !== null;
 
   const addEmoji = (emoji) => {
@@ -25,13 +26,15 @@ export const FormPost = () => {
     const end = textarea.selectionEnd;
     const newText =
       postText.substring(0, start) + emoji + postText.substring(end);
+    if (newText.length > MAX_CARACTERES) return;
     setPostText(newText);
     setValue("descripcion", newText);
   };
 
   const handleTextchange = (e) => {
-    setPostText(e.target.value);
-    setValue("descripcion", e.target.value);
+    const value = e.target.value.slice(0, MAX_CARACTERES);
+    setPostText(value);
+    setValue("descripcion", value);
   };
 
   return (
@@ -66,6 +69,21 @@ export const FormPost = () => {
                 className="w-full bg-transparent placeholder-gray-500 dark:placeholder-gray-400 outline-none resize-none text-black dark:text-white"
                 rows={4}
               />
+              {postText.length > 0 && (
+                <div className="flex justify-end mt-1">
+                  <span
+                    className={`text-xs ${
+                      postText.length >= MAX_CARACTERES
+                        ? "text-red-500 font-semibold"
+                        : postText.length > MAX_CARACTERES * 0.8
+                        ? "text-yellow-500"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {postText.length}/{MAX_CARACTERES}
+                  </span>
+                </div>
+              )}
               <div className="mt-4 flex items-center justify-between">
                 <button
                   disabled={!puedePublicar || isPending}
